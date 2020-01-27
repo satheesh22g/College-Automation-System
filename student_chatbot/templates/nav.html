@@ -1,0 +1,78 @@
+ <div>
+  
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+      
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+       <head>
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+      <script type = "text/javascript" 
+         src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
+
+    <style>
+ 
+  </style>
+
+    </head>
+
+
+  <div class="wrapper">
+         
+            <nav class="navbar-fixed-top">
+              <div class="col-md-3">
+                 <div class="menu-icon">
+                  <i class="fa fa-bars fa-2x"></i>
+               </div>
+
+               <div class="logo" style="margin: 0px;position: absolute;">
+                  <a id="navbarHeader" class="navbar-brand" href="{{ url_for('dashboard') }}"><img padding="0" align="top" src="{{ url_for('static', filename='smallicon.png') }}" width="75" height="55" alt=""></a>
+               </div>
+               </div>
+               <div class="col-md-7">
+               {% with messages = get_flashed_messages() %}
+               {% if messages %}
+         
+               <div class="alert">
+                  
+                   
+                 
+                 {% for message in messages %}
+                    <h4 style="color: red;margin-top: 5px;"><strong> {{ message }} </strong><span class="closebtn" style="cursor: pointer;" onclick="this.parentElement.style.display='none';">&times;</span>  </h4>
+                 {% endfor %}
+                
+               </div>
+               
+                 {% endif %}
+             {% endwith %}
+               </div>
+               <div class="col-md-2">
+               <div class="menu">
+                  <ul> {% if 'user' not in session %}
+           
+                     {% else %}
+                     <li><div id="btn-group">
+            <a class="btn btn-primary" href="{{ url_for('logout') }}"> Logout </a>
+        </div></li>
+                     {% endif %}
+                  </ul>
+               </div>
+            </nav>
+</div>
+        </div>
+
+
+
+
+</div>
+ </div>
+</body>

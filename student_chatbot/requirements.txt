@@ -1,0 +1,13 @@
+Flask
+
+Flask-Session
+
+psycopg2
+
+SQLAlchemy
+
+flask-bcrypt
+
+gunicorn
+
+requests

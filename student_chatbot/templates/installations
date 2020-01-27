@@ -1,0 +1,5 @@
+pip install flask_bcrypt
+pip install flask
+pip install flask_session
+pip install sqlalchemy
+pip install requests

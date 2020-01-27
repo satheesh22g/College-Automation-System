@@ -1,0 +1,39 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+         
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg.png');">
+  <div class = "panel panel-primary" style="width: 60%;margin-top: 10%;margin-left: 7%;">
+    <div class = "panel-heading">
+       <h3 class = "panel-title">Attendance</h3>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>Rool Number</th>
+          <th>Name</th>
+          <th>Attendance</th>
+       </tr>
+        {% for result in results %}
+       <tr>
+           <td>{{ result.sid }}</td>
+     <td>{{ result.name }}</td>
+     <td>{{ result.attend }}</td>
+       </tr>
+       {% endfor %}
+    </table>
+ </div>
+    
+</body>
+    </html>
