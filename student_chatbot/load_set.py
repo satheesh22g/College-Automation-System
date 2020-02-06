@@ -29,16 +29,16 @@ def admin():
     passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
     db.execute("INSERT INTO accounts (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
     db.commit()
-'''
 def student_profile():
-    f = open("attend.csv")
+    f = open("student_profile.csv")
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for sid, name, branch,year,gender,phone in reader:
-        db.execute("INSERT INTO attendance(sid, name, branch,year,gender,phone) VALUES(:i, :n, :b,:y,:g,:p)", {"i": sid, "n": name, "b":branch,"y":year,"g":gender,"p":phone})
+    for sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number in reader:
+        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number) VALUES(:a, :b, :c,:d,:e,:f,:g,:h,:i,:j)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"g": phone,"h": entrance_type,"i": father_name,"j":father_number})
     db.commit()
     print("student profile Completed ... ")
+'''
 def faculty_profile():
     f = open("attend.csv")
     reader = csv.reader(f)
@@ -60,6 +60,6 @@ def hod_profile():
 
 if __name__ == "__main__":
     attendance()
-    '''student_profile()'''
+    student_profile()
     admin()
     

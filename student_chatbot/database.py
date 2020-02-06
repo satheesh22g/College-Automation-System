@@ -32,13 +32,17 @@ class Attendance(Base):
     user_id = Column(String(30), ForeignKey('accounts.id'))
 
 class Profile(Base):
-    __tablename__ = 'profile'
+    __tablename__ = 'student_profile'
     sid = Column(String, primary_key=True)
     name = Column(String(30),nullable=False)
     branch = Column(String(30),nullable=False)
     year = Column(Integer,nullable=False)
     gender = Column(String(30),nullable=False)
-    phone = Column(Integer,nullable=False)
+    dob = Column(DateTime, nullable=True)
+    phone = Column(Integer)
+    entrance_type = Column(String(30))
+    father_name = Column(Integer)
+    father_number = Column(Integer)
     user_id = Column(String(30), ForeignKey('accounts.id'))
 class Feedback(Base):
     __tablename__ = 'feedback'
