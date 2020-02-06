@@ -11,3 +11,5 @@ flask-bcrypt
 gunicorn
 
 requests
+
+sqlalchemy_imageattach

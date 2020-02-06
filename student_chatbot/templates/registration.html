@@ -18,7 +18,8 @@
 
         
          <div class="container">
-          <a href="{{ url_for('dashboard') }}"><img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
+          <a href="{{ url_for('dashboard') }}">
+            <img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
     <div class="d-flex justify-content-center h-100">
         <div class="card">
             <div class="card-header">
@@ -34,7 +35,7 @@
                     <select name="usertyp" required maxlength="30">
                       <option value="Student">Student</option>
                       <option value="Faculty">Faculty</option>
-                      <option value="Hod">HOD</option>
+                      <option value="HOD">HOD</option>
                       <option value="Councellor">Councellor</option>
                     </select>
                     </div>
@@ -44,9 +45,19 @@
                             <span class="input-group-text"><i class="fas fa-user"></i></span>
                         </div>
                         
-                      <input class="form-control" name="username" type="text" placeholder="Roll Number" required maxlength="10" pattern="[*A-Za-z0-9]{10}" title="Roll Number Must 10 letters and numbers">>
+                      <input class="form-control" name="name" type="text" placeholder="Your Name" required>
                         
                     </div>
+                    <div class="input-group form-group">
+                     
+                      <div class="input-group-prepend">
+                          <span class="input-group-text"><i class="fas fa-user"></i></span>
+                      </div>
+                      
+                    <input class="form-control" name="username" type="text" placeholder="Roll Number" required maxlength="10">
+                      
+                  </div>
+                    
                     
                     <div class="input-group form-group">
                         <div class="input-group-prepend">

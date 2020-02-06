@@ -15,13 +15,15 @@
     </head>
 <body style="background-image:url('/static/bg.png');">
   <div class = "panel panel-primary" style="width: 60%;margin-top: 10%;margin-left: 7%;">
-    <div class = "panel-heading">
-       <h3 class = "panel-title">Attendance</h3>
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
     </div>
    
     <table class = "table">
        <tr style="background-color: beige;">
-          <th>Rool Number</th>
+          <th>Roll Number</th>
           <th>Name</th>
           <th>Attendance</th>
        </tr>

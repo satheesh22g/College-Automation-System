@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='feedback.css') }}">
+<style>
+  body{
+    font-family: cursive;
+  }
+.container-contact1-form-btn {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+transition: all 0.5s;
+cursor: pointer;
+}
+
+.contact1-form-btn {
+  min-width: 193px;
+  height: 50px;
+  border-radius: 25px;
+  border: 2px solid rgb(255, 0, 119);
+  font-family: Montserrat-Bold;
+  font-size: 20px;
+  line-height: 1.5;
+  color: rgb(255, 0, 119);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+
+.contact1-form-btn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  padding-top: 7px;
+}
+
+.contact1-form-btn span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+  padding-top: 7px;
+}
+
+.contact1-form-btn:hover span {
+padding-right: 25px;
+color:rgb(255, 0, 119);
+}
+
+.contact1-form-btn:hover span:after {
+opacity: 1;
+right: 0;
+}
+</style>
+</head>
+<body style="background-image:url('/static/bg.png');">
+  {%if 'admin' in session['usert']%}
+  {%for res in result%}
+ <div style="width: 30%;height:30%;padding:50px;border: 1px solid red;margin: 5px;"> 
+  <h4 style="color: aliceblue;">Roll number:{{res.sid}}</h4>
+  <h4 style="color: aliceblue;">Name: {{res.name}}</h4>
+  <h4 style="color: aliceblue;">Subject: {{res.subject}}</h4>
+  <h4 style="color: aliceblue;">Message: {{res.message}}</h4></div>
+  {%endfor%}
+  {%else%}
+	<div class="contact1">
+		<div class="container-contact1" style="height:80%;">
+			<div class="contact1-pic js-tilt" data-tilt>
+        <a href="{{ url_for('dashboard') }}">
+        <img src="{{ url_for('static', filename='email.png') }}" alt="">
+        </a>
+        <h2 style="font-family:cursive;color:rgb(233, 88, 88); margin-left: 20%;">{{msg1}}</h2>
+        <h2 style="font-family:cursive;color:rgb(233, 88, 88); margin-left: 20%;">{{msg2}}</h2>
+			</div>
+			<form class="contact1-form validate-form" action="{{ url_for('Suggestions') }}" method="post">
+				<span class="contact1-form-title">
+					Feedback/Suggestion/Complaint
+				</span>
+				<div class="wrap-input1 validate-input" >
+					<input class="input1" type="text" name="name" placeholder="Name (Optional)">
+          <span class="shadow-input1"></span>
+          
+				</div>
+				<div class="wrap-input1 validate-input">
+					<input class="input1" type="text" name="subject" placeholder="Subject" required>
+					<span class="shadow-input1"></span>
+				</div>
+				<div class="wrap-input1 validate-input">
+					<textarea class="input1" name="message" placeholder="Message" required></textarea>
+					<span class="shadow-input1"></span>
+				</div>
+				<div class="container-contact1-form-btn">
+					<button class="contact1-form-btn">
+						<span style="margin-bottom: 5px;">
+							Submit
+							<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+						</span>
+					</button>
+				</div>
+			</form>
+		</div>
+  </div>
+  {%endif%}
+</body>
+</html>
