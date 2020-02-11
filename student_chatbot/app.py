@@ -8,7 +8,7 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 import re
 import matplotlib.pyplot as plt
-
+from playsound import playsound
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
@@ -26,8 +26,10 @@ db = scoped_session(sessionmaker(bind=engine))
 
 @app.route("/")
 def index():
-
-    return render_template("intro.html")
+    if 'user' not in session:
+        return render_template("intro.html")
+    else:
+        return redirect(url_for('dashboard'))
 # MAIN
 @app.route("/dashboard")
 def dashboard():
@@ -63,7 +65,8 @@ def quer():
 
 @app.route("/profile")
 def profile():
-    return render_template("profile.html")
+    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
+    return render_template("profile.html",results=res)
 
 @app.route("/attendance")
 def attendance():

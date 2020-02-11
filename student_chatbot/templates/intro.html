@@ -96,6 +96,9 @@
   .sidenav a {font-size: 18px;}
 }
     </style>
+
+   
+  
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
     </head>
 
@@ -119,13 +122,19 @@
 
 
 </div>
-  
+<audio loop="loop" id="my_audio" src="static/audio.mp3">
+ 
+</audio>
       <a class="open-button btn btn-primary" href="{{ url_for('login') }}"><span>Login</span></a>
       
   
 </div>
 
-
+<script type="text/javascript">
+  window.onload=function(){
+    document.getElementById("my_audio").play();
+  }
+</script>
 
 
         </body>
