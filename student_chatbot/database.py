@@ -21,16 +21,12 @@ class Marks(Base):
     name = Column(String(250), nullable=False)
     percent = Column(Integer)
     user_id = Column(String(30), ForeignKey('accounts.id'))
-    
-
-
 class Attendance(Base):
     __tablename__ = 'attendance'
     sid = Column(Integer, primary_key=True)
     name = Column(String(30),nullable=False)
     attend = Column(Integer,nullable=False)
     user_id = Column(String(30), ForeignKey('accounts.id'))
-
 class Profile(Base):
     __tablename__ = 'student_profile'
     sid = Column(String, primary_key=True)

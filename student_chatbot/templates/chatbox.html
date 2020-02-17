@@ -31,7 +31,7 @@
                     <textarea name="messag_send" class="messag_send" id="messag_send" placeholder="Enter Your Message and press CTRL"></textarea>
                 </div>
                 <div class="chat_entry">
-                       <form name="chat_form" class="chat_form has-validation-callback" id="chat_form" action="{{ url_for('quer') }}" method="post">
+                       <form autocomplete="off" name="chat_form" class="chat_form has-validation-callback" id="chat_form" action="{{ url_for('quer') }}" method="post">
                     
                       <p>
                           <input type="text" name="msg" id="email_chat" class="email_chat" style="color: #1A1A1A; margin-top:35px;" placeholder="Enter Your message" required>

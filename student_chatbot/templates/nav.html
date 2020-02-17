@@ -35,7 +35,7 @@ text-transform: capitalize;
 
 
   <div class="wrapper">
-         
+   {% if 'user' in session %}
             <nav class="navbar-fixed-top">
               <div class="col-md-3">
                  <div class="menu-icon">
@@ -48,7 +48,7 @@ text-transform: capitalize;
                </div>
                </div>
            <div class="col-md-5">
-            
+            <a style="font-size: 100%;text-decoration: none;" href="{{url_for('changepass')}}">change password</a>
                </div>   
                <div class="col-md-2">
                   {% if 'user' in session %}
@@ -67,11 +67,5 @@ text-transform: capitalize;
                </div>
             </nav>
 </div>
-        </div>
-
-
-
-
-</div>
- </div>
+{% endif %}
 </body>

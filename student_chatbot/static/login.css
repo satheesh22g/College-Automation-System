@@ -6,7 +6,9 @@ html,body{
 background-image: url('/static/login.png');
 background-size: cover;
 background-repeat: no-repeat;
+position: fixed;
 height: 100%;
+width: 100%;
 font-family: 'Numans', sans-serif;
 
 }
@@ -17,8 +19,8 @@ align-content: center;
 }
 
 .card{
-height: 370px;
-margin-top: auto;
+height: 73%;
+margin-top: 5%;
 margin-bottom: auto;
 width: 400px;
 background-color: rgba(0,0,0,0.5) !important;

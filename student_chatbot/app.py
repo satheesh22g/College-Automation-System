@@ -7,8 +7,8 @@ from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 import requests
 import re
+import pandas as pd
 import matplotlib.pyplot as plt
-from playsound import playsound
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
@@ -42,7 +42,7 @@ def dashboard():
 @app.route("/query", methods=["POST"])
 def quer():
     if request.method == 'POST':
-        ss=request.form.get("msg")
+        ss=request.form.get("msg").lower()
     if session['usert']=="Student":
         if "show my attendance" in ss:
             return redirect(url_for('attendance'))
@@ -52,12 +52,13 @@ def quer():
     else:
         if "show graph" in ss:
             return redirect(url_for('plot_graph'))
-        if "less than 75" in ss:
+        if (re.search('attendance', ss) and re.search('75', ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search('75', ss) and re.search('<', ss)) or re.search('attendance shortage', ss):
             result=db.execute("SELECT * FROM attendance WHERE attend < 75 ORDER BY sid").fetchall()
             return render_template("quer.html", results=result)
-        elif "65" in ss or "detain" in ss:
+        elif (re.search('attendance', ss) and re.search('65', ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search('65', ss) and re.search('<', ss)) or re.search('detain', ss):
             result=db.execute("SELECT * FROM attendance WHERE attend < 65 ORDER BY sid").fetchall()
             return render_template("quer.html", results=result)
+        
         else:
             flash("Wrong! Try Again")
             return redirect(url_for('dashboard'))
@@ -71,12 +72,15 @@ def profile():
 @app.route("/attendance")
 def attendance():
     result=db.execute("SELECT * FROM attendance WHERE sid = :u", {"u": session['user']}).fetchall()
+     
     return render_template("attendance.html",results=result)
 
 @app.route("/marks")
 def marks():
     return render_template("marks.html")
-
+@app.route("/attendance_display")
+def attendance_update():
+    return render_template("attendance_form.html")
 @app.route("/suggestions", methods=["GET", "POST"])
 def Suggestions():
     msg1=msg2=""
@@ -139,11 +143,52 @@ def register():
                 session['namet'] = name
                 session['usert'] = usert
                 flash("Your successfully Registrated")
+                return redirect(url_for('dashboard'))
         except exc.IntegrityError:
             message = "Roll Number already exists."
             db.execute("ROLLBACK")
             db.commit()
     return render_template("registration.html", message=message)
+
+# Change Pasword
+@app.route("/change-password", methods=["GET", "POST"])
+def changepass():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    msg=""
+    if request.method == "POST":
+        try:
+            epswd = request.form.get("epassword")
+            cpswd = request.form.get("cpassword")
+            passw_hash = bcrypt.generate_password_hash(cpswd).decode('utf-8')
+            exist=db.execute("SELECT password FROM accounts WHERE id = :u", {"u": session['user']}).fetchone()
+            if bcrypt.check_password_hash(exist['password'], epswd) is True:
+                res=db.execute("UPDATE accounts SET password = :u WHERE id = :v",{"u":passw_hash,"v":session['user']})
+                db.commit()
+                if res.rowcount > 0:
+                    return redirect(url_for('dashboard'))
+        except exc.IntegrityError:
+            msg = "Unable to process try again"
+    msg="Existing Not matching"
+    return render_template("change_password.html",m=msg)
+
+# Reset
+@app.route("/reset", methods=["GET", "POST"])
+def reset():
+    msg=""
+    if session['usert']=="admin":
+        
+        if request.method == "POST":
+            rollno = request.form.get("rollno")
+            passw_hash = bcrypt.generate_password_hash("srit").decode('utf-8')
+            res=db.execute("UPDATE accounts SET password = :u WHERE id = :v",{"u":passw_hash,"v":rollno})
+            db.commit()
+            if res is not None:
+                return redirect(url_for('dashboard'))
+        msg=""
+        return render_template("pswdreset.html",m=msg)
+    else:
+        return redirect(url_for('dashboard'))
 # LOGOUT
 @app.route("/logout")
 def logout():
