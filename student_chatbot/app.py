@@ -43,6 +43,8 @@ def dashboard():
 def quer():
     if request.method == 'POST':
         ss=request.form.get("msg").lower()
+        profile=db.execute("select sid from student_profile").fetchall()
+        profile_result=list([profile[i][0] for i in range(len(profile))])
     if session['usert']=="Student":
         if "show my attendance" in ss:
             return redirect(url_for('attendance'))
@@ -58,7 +60,9 @@ def quer():
         elif (re.search('attendance', ss) and re.search('65', ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search('65', ss) and re.search('<', ss)) or re.search('detain', ss):
             result=db.execute("SELECT * FROM attendance WHERE attend < 65 ORDER BY sid").fetchall()
             return render_template("quer.html", results=result)
-        
+        elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
+            result=db.execute("SELECT * from student_profile where sid =  :s",{"s":ss.split()[-1].upper()})
+            return render_template("profile.html", results=result)
         else:
             flash("Wrong! Try Again")
             return redirect(url_for('dashboard'))

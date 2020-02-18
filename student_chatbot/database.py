@@ -3,7 +3,6 @@ import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime
-
 from sqlalchemy.orm import relationship
 from sqlalchemy import create_engine
 Base = declarative_base()
@@ -27,6 +26,7 @@ class Attendance(Base):
     name = Column(String(30),nullable=False)
     attend = Column(Integer,nullable=False)
     user_id = Column(String(30), ForeignKey('accounts.id'))
+    accounts = relationship(Accounts)
 class Profile(Base):
     __tablename__ = 'student_profile'
     sid = Column(String, primary_key=True)
@@ -40,6 +40,7 @@ class Profile(Base):
     father_name = Column(Integer)
     father_number = Column(Integer)
     user_id = Column(String(30), ForeignKey('accounts.id'))
+    accounts = relationship(Accounts)
 class Feedback(Base):
     __tablename__ = 'feedback'
     sid = Column(Integer, primary_key=True)
