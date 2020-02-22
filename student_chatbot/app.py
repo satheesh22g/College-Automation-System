@@ -1,4 +1,5 @@
 import os
+from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
@@ -63,6 +64,9 @@ def quer():
         elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
             result=db.execute("SELECT * from student_profile where sid =  :s",{"s":ss.split()[-1].upper()})
             return render_template("profile.html", results=result)
+        elif (ss.split()[-1].upper() in profile_result) and re.search('attendance', ss):
+            result=db.execute("SELECT * from attendance where sid =  :s",{"s":ss.split()[-1].upper()})
+            return render_template("profile.html", results=result)
         else:
             flash("Wrong! Try Again")
             return redirect(url_for('dashboard'))
@@ -76,7 +80,6 @@ def profile():
 @app.route("/attendance")
 def attendance():
     result=db.execute("SELECT * FROM attendance WHERE sid = :u", {"u": session['user']}).fetchall()
-     
     return render_template("attendance.html",results=result)
 
 @app.route("/marks")
@@ -125,6 +128,14 @@ def plot_graph():
     plt.ylabel(d, fontsize=16)
     plt.savefig('static/graph.png')
     return render_template('graphs.html',result=result)
+@app.route('/download')
+def download_file():
+    s=db.execute("select * from student_profile").fetchall()
+    df = pd.DataFrame(list(s))
+    writer = pd.ExcelWriter('outputt.xlsx')
+    df.to_excel(writer,sheet_name="lkjhgf")
+    x=writer.save()
+    return send_file('outputt.xlsx', as_attachment=True,mimetype='.xlsx')
 # REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -136,7 +147,7 @@ def register():
     if request.method == "POST":
         try: 
             usern = request.form.get("username")
-            name = request.form.get("name")
+            name = request.form.get("name").upper()
             usert = request.form.get("usertyp")
             passw = request.form.get("password")
             passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
@@ -207,7 +218,7 @@ def login():
     message = ""
 
     if request.method == "POST":
-        usern = request.form.get("username")
+        usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
         result = db.execute("SELECT * FROM accounts WHERE id = :u", {"u": usern}).fetchone()
 
