@@ -1,12 +1,16 @@
 import os
+import sys
 from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base, Attendance, Marks,Accounts, Profile, Feedback
+from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Students,Departments,Faculty,Faculty_Profile
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
+from werkzeug.utils import secure_filename
+import docx2txt
 import requests
+import csv
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -25,6 +29,8 @@ engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread'
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 
+def str_to_class(str):
+    return getattr(sys.modules[__name__], str)
 @app.route("/")
 def index():
     if 'user' not in session:
@@ -42,41 +48,67 @@ def dashboard():
 
 @app.route("/query", methods=["POST"])
 def quer():
-    if request.method == 'POST':
-        ss=request.form.get("msg").lower()
-        profile=db.execute("select sid from student_profile").fetchall()
-        profile_result=list([profile[i][0] for i in range(len(profile))])
-    if session['usert']=="Student":
-        if "show my attendance" in ss:
-            return redirect(url_for('attendance'))
+    try:
+
+        
+        if request.method == 'POST':
+            ss=request.form.get("msg").lower()
+            profile=db.execute("select sid from student_profile").fetchall()
+            profile_result=list([profile[i][0] for i in range(len(profile))])
+            roll_flag = re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}$", ss)
+            s="".join(re.findall("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}$", ss))
+        if session['usert']=="Student":
+            if "show my attendance" in ss:
+                return redirect(url_for('attendance'))
+            else:
+                flash("Wrong! Try Again")
+                return redirect(url_for('dashboard'))
         else:
-            flash("Wrong! Try Again")
-            return redirect(url_for('dashboard'))
-    else:
-        if "show graph" in ss:
-            return redirect(url_for('plot_graph'))
-        if (re.search('attendance', ss) and re.search('75', ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search('75', ss) and re.search('<', ss)) or re.search('attendance shortage', ss):
-            result=db.execute("SELECT * FROM attendance WHERE attend < 75 ORDER BY sid").fetchall()
-            return render_template("quer.html", results=result)
-        elif (re.search('attendance', ss) and re.search('65', ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search('65', ss) and re.search('<', ss)) or re.search('detain', ss):
-            result=db.execute("SELECT * FROM attendance WHERE attend < 65 ORDER BY sid").fetchall()
-            return render_template("quer.html", results=result)
-        elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
-            result=db.execute("SELECT * from student_profile where sid =  :s",{"s":ss.split()[-1].upper()})
-            return render_template("profile.html", results=result)
-        elif (ss.split()[-1].upper() in profile_result) and re.search('attendance', ss):
-            result=db.execute("SELECT * from attendance where sid =  :s",{"s":ss.split()[-1].upper()})
-            return render_template("profile.html", results=result)
-        else:
-            flash("Wrong! Try Again")
-            return redirect(url_for('dashboard'))
+            if "show graph" in ss:
+                return redirect(url_for('plot_graph'))
+            if re.search('attendance', ss) and re.search("(1|2|3|4)", ss) and re.search('students', ss) and re.search('year', ss):
+                result=db.execute("select * from attendance where year=:i;",{"i":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                if result is not None:
+                    return render_template("attendance.html", results=result)
+                else:
+                    flash("Wrong! Try Again")
+                    return redirect(url_for('dashboard'))
+            if "marks" in ss:
+                result=db.execute("select *,(sub1+sub2+sub3+sub4+sub5+sub6+sub7+sub8) as total,(sub1+sub2+sub3+sub4+sub5+sub6+sub7+sub8)/8 as avg from marks where avg<60;").fetchall()
+                return render_template("marks.html", results=result)
+            if re.search('attendance shortage', ss):
+                result=db.execute("select * from attendance where attend_perc<65").fetchall()
+                return render_template("attendance.html",results=result)
+            if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('<', ss)):
+                result=db.execute("select * from attendance where attend_perc<:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
+                return render_template("attendance.html",results=result)
+            if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('greater than', ss) or re.search('greaterthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('>', ss)):
+                result=db.execute("select * from attendance where attend_perc>:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
+                return render_template("attendance.html",results=result)
+            elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
+                result=db.execute("SELECT * from student_profile where sid =  :s;",{"s":ss.split()[-1].upper()})
+                attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":ss.split()[-1].upper()})
+                marks=db.execute("SELECT * from marks where student_id =  :s;",{"s":ss.split()[-1].upper()})
+                return render_template("student_profile.html", results=result,marks=marks,attend=attend)
+            elif roll_flag and re.search('attendance', ss):
+                attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":s.upper()})
+                return render_template("attendance.html", results=attend)
+            else:
+                flash("Wrong! Try Again")
+                return redirect(url_for('dashboard'))
+    except:
+        flash("Input out of range")
+    return redirect(url_for('dashboard'))
     
 
 @app.route("/profile")
 def profile():
-    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
-    return render_template("profile.html",results=res)
-
+    if session['usert']=="Student":
+        res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
+        return render_template("student_profile.html",results=res)
+    else:
+        res=db.execute("SELECT * FROM Faculty_Profile WHERE id = :u", {"u": session['user']}).fetchall()
+        return render_template("faculty_profile.html",results=res)
 @app.route("/attendance")
 def attendance():
     result=db.execute("SELECT * FROM attendance WHERE sid = :u", {"u": session['user']}).fetchall()
@@ -136,6 +168,71 @@ def download_file():
     df.to_excel(writer,sheet_name="lkjhgf")
     x=writer.save()
     return send_file('outputt.xlsx', as_attachment=True,mimetype='.xlsx')
+
+@app.route("/admin-updates", methods=["GET", "POST"])
+def admin_update():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    if session['usert']=="admin":
+        dept_id = request.form.get('dept_id')
+        try:
+            if request.method == "POST":
+                
+                faculty_list=db.execute("select * from faculty where dept_id=:i",{"i":dept_id}).fetchall()
+                table = request.form.get('table')
+                return redirect(url_for('dashboard'))
+        except:
+            message = "error"
+            return render_template("admin_updates.html",msg=message)
+        return render_template("admin_updates.html")
+    else:
+        return redirect(url_for('dashboard'))
+    return render_template("admin_updates.html",flist=faculty_list)
+@app.route("/load-data", methods=["GET", "POST"])
+def load_data():
+    if request.method == "POST":
+        dept_id = request.form.get('dept_id')
+        table = request.form['table']
+        try: 
+            file1 = request.files['file']
+            filename = secure_filename(file1.filename)
+            ext = os.path.splitext(filename)[-1].lower()
+            if ext == ".xlsx":
+                read_file = pd.read_excel(filename)
+                read_file.to_csv("o.csv", index = None, header=True)
+                f = open("o.csv")
+            elif ext ==".csv":
+                f = open(filename)
+            else:
+                output = "is an unknown file format."
+                return render_template('load_data.html', output=output)
+            
+            reader = csv.reader(f)
+            try:
+                if table=="Attendance":
+                    for attend, dept_id,year,student_id in reader:
+                        db.execute("INSERT INTO attendance(attend,dept_id,year,student_id) VALUES(:a, :d, :y, :s)", { "a": attend, "d":dept_id, "y":year, "s":student_id })
+                    db.commit()
+                    return redirect(url_for('dashboard'))
+                elif table=="Marks":
+                    for id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year in reader:
+                        db.execute("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)", {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
+                    db.commit()
+                elif table=="Profile":
+                    for sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number in reader:
+                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number) VALUES(:a, :b, :c,:d,:e,:f,:g,:h,:i,:j)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"g": phone,"h": entrance_type,"i": father_name,"j":father_number})
+                    db.commit()
+                elif table=="Faculty":
+                    for id, name, dept_id in reader:
+                        db.execute("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)", {"s":id, "n":name, "d":dept_id })
+                    db.commit()
+            except:
+                message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
+                return render_template('load_data.html', output=message)
+        except exc.SQLAlchemyError:
+            message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
+            return render_template('load_data.html', output=message)
+    return render_template("load_data.html")
 # REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -146,8 +243,8 @@ def register():
 
     if request.method == "POST":
         try: 
-            usern = request.form.get("username")
-            name = request.form.get("name").upper()
+            usern = request.form.get("username").upper()
+            name = request.form.get("name")
             usert = request.form.get("usertyp")
             passw = request.form.get("password")
             passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
@@ -238,4 +335,5 @@ def login():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
+    app.jinja_env.cache = {}
     app.run(host='0.0.0.0', port=5000)

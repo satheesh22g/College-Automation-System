@@ -1,6 +1,8 @@
 <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
         
 body, button {
@@ -50,7 +52,7 @@ button > span {
 	grid-gap: 0.375em 0.875em;
 	font-size: 36px;
     margin-top: 1%;
-    margin-left: 10%;
+    margin-left: 12%;
 	padding: 1%;
 	width: 48%;
 	height: 90%;
@@ -91,17 +93,35 @@ button > span {
   overflow: hidden;
   background-color: #f1f1f1;
 }
+.btn
+{
+	padding: 15px;
+	padding-top:5px ;
+	padding-bottom: 5px;
+	font-size: medium;
+	text-decoration: none;
+	float: right;
+	background-color: rgb(72, 182, 255);
+	color: black;
+	border-radius: 6px;
+}
+
     </style>
 </head>
 
 <body style="background-image:url('static/bg2.png');">
-	<button type="button" class="collapsible"><strong>Profile</strong></button>
-<div class="content">
+	<button type="button" class="collapsible"><strong>Profile</strong>	<a class="btn" href="{{ url_for('dashboard') }}"><strong>Back</strong></a></button>
+
+	<div class="content">
 	{% for result in results %}
-	<img style="margin: 12%;" src="http://www.webprosindia.com/sritstudent/StudentPhotos/{{result.sid}}.jpg">
+	
+	<img style="margin: 12%;width: 15%;height: 35%;" src="http://www.webprosindia.com/sritstudent/StudentPhotos/{{result.sid}}.jpg">
+
+	
     <div class="keyboard" ontouchstart="">
        
         <div class="row">
+		
 			<p style="height: 2px;font-size: large;padding-bottom: 2%;text-align: center;">Bio Data</p>
             <button type="button" class="btn2"><span class="sm">Roll Number</span></button>
             <button type="button" class="btn2"><span class="sm">{{result.sid}}</span></button>
@@ -115,20 +135,118 @@ button > span {
             <button type="button" class="btn2"><span class="sm">{{result.gender}}</span></button>
             <button type="button" class="btn2"><span class="sm">DoB</span></button>
             <button type="button" class="btn2"><span class="sm">{{result.dob}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Phone Number</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.number}}</span></button>
+            
             <button type="button" class="btn2"><span class="sm">Entrance Type</span></button>
             <button type="button" class="btn2"><span class="sm">{{result.entrance_type}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Father Name</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.father_name}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Father Number</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.father_number}}</span></button>
+            <button type="button" class="btn2"><span class="sm">Hostel H/Dayscholar D</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.HorD}}</span></button>
+			
         </div>
-        </div>
+
 
   {% endfor %}
   
    </div>
+   </div>
+
+   
+   <button type="button" class="collapsible"><strong>Attendance</strong>	<a class="btn" href="{{ url_for('dashboard') }}"><strong>Back</strong></a></button>
+   <div class="content"><div class = "panel panel-primary" style="width: fit-content;margin-top: 1%;margin-left: 1%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance</h3>
+      
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>Roll Number</th>
+          <th>Name</th>
+          <th>Sub1</th>
+          <th>Sub2</th>
+          <th>Sub3</th>
+          <th>Sub4</th>
+          <th>Sub5</th>
+          <th>Sub6</th>
+          <th>Sub7</th>
+          <th>Sub8</th>
+          <th>Sub9</th>
+          <th>Sub10</th>
+          <th>Sub11</th>
+          <th>Sub12</th>
+          <th>Sub13</th>
+          <th>Attendance</th>
+          <th>Percentage</th>
+	   </tr>
+	   
+        {% for i in attend %}
+       <tr>
+     <td>{{ i.student_id }}</td>
+     <td>{{ i.student_name }}</td>
+     <td>{{ i.sub1 }}</td>
+     <td>{{ i.sub2 }}</td>
+     <td>{{ i.sub3 }}</td>
+     <td>{{ i.sub4 }}</td>
+     <td>{{ i.sub5 }}</td>
+     <td>{{ i.sub6 }}</td>
+     <td>{{ i.sub7 }}</td>
+     <td>{{ i.sub8 }}</td>
+     <td>{{ i.sub9 }}</td>
+     <td>{{ i.sub10 }}</td>
+     <td>{{ i.sub11}}</td>
+     <td>{{ i.sub12 }}</td>
+     <td>{{ i.sub13 }}</td>
+     <td>{{ i.attend }}</td>
+     <td>{{ i.attend_perc }}</td>
+       </tr>
+       {% endfor %}
+    </table>
+ </div>
+   </div>
+   <button type="button" class="collapsible"><strong>Marks</strong><a class="btn" href="{{ url_for('dashboard') }}"><strong>Back</strong></a>	</button>
+   <div class="content">
+	<div class = "panel panel-primary" style="width: 60%;margin-top: 1%;margin-left: 7%;">
+		<div class = "panel-heading col-md-12">
+		   <h3 class = "panel-title col-md-6">Marks</h3>
+
+		</div>
+	   
+		<table class = "table">
+		   <tr style="background-color: beige;">
+			  <th>SEM</th>
+			  <th>roll number</th>
+			  <th>Sub1</th>
+			  <th>Sub2</th>
+			  <th>Sub3</th>
+			  <th>Sub4</th>
+			  <th>Sub5</th>
+			  <th>Sub6</th>
+			  <th>sub7</th>
+			  <th>sub8</th>
+			  <th>total</th>
+			  <th>avg</th>
+		   </tr>
+		   {% for res in results%}
+		   <tr>
+			
+				<td>SEM 1</td>
+				<td>{{res.student_id}}</td>
+				<td>{{res.sub1}}</td>
+				<td>{{res.sub2}}</td>
+				<td>{{res.sub3}}</td>
+				<td>{{res.sub4}}</td>
+				<td>{{res.sub5}}</td>
+				<td>{{res.sub6}}</td>
+				<td>{{res.sub7}}</td>
+				<td>{{res.sub8}}</td>
+				<th>{{res.total}}</th>
+				<th>{{res.avg}}</th>
+		   </tr>
+		   {% endfor %}
+		</table>
+	 </div>
+	 
+   </div>
+
    <script>
 	var coll = document.getElementsByClassName("collapsible");
 	var i;

@@ -1,9 +1,4 @@
-bcrypt==3.1.7
-certifi==2019.11.28
-cffi==1.14.0
-chardet==3.0.4
-Click==7.0
-cycler==0.10.0
+# pip install -m requirements.txt
 Flask==1.1.1
 Flask-Bcrypt==0.7.1
 Flask-Session==0.3.1
@@ -21,4 +16,4 @@ requests==2.22.0
 six==1.14.0
 SQLAlchemy==1.3.13
 urllib3==1.25.8
-Werkzeug==0.16.0
+Werkzeug==1.0.0

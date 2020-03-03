@@ -212,7 +212,10 @@
                 <p>
                 {% if "admin" in session['usert'] %}
                 <a href="{{url_for('reset')}}">Reset Password</a>
+                <a href="{{url_for('admin_update')}}">Updations</a>
+                <a href="{{url_for('load_data')}}">Load Data</a>
                 <a href="{{url_for('adminfeedbacks')}}">Feedbacks</a>
+                
                 {%else%}
   <a href="{{url_for('profile')}}">Profile</a>
   <a href="{{url_for('attendance')}}">Attendance</a>

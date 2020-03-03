@@ -13,34 +13,94 @@ class Accounts(Base):
     name = Column(String(250),nullable=False)
     user_type = Column(String(250), nullable=False)
     password = Column(String(250))
-
-class Marks(Base):
-    __tablename__ = 'marks'
-    sid = Column(String(250), primary_key=True)
-    name = Column(String(250), nullable=False)
-    percent = Column(Integer)
-    user_id = Column(String(30), ForeignKey('accounts.id'))
-class Attendance(Base):
-    __tablename__ = 'attendance'
-    sid = Column(Integer, primary_key=True)
+class Departments(Base):
+    __tablename__ = 'departments'
+    did = Column(Integer, primary_key=True)
     name = Column(String(30),nullable=False)
-    attend = Column(Integer,nullable=False)
-    user_id = Column(String(30), ForeignKey('accounts.id'))
-    accounts = relationship(Accounts)
-class Profile(Base):
+
+class Students(Base):
+    __tablename__ = 'students'
+    sid = Column(String, primary_key=True)
+    sname = Column(String(30),nullable=False)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship(Departments)
+class Faculty(Base):
+    __tablename__ = 'faculty'
+    id = Column(String, primary_key=True)
+    name = Column(String(30),nullable=False)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship(Departments)
+class Student_Profile(Base):
     __tablename__ = 'student_profile'
     sid = Column(String, primary_key=True)
     name = Column(String(30),nullable=False)
     branch = Column(String(30),nullable=False)
-    year = Column(Integer,nullable=False)
+    year = Column(Integer)
     gender = Column(String(30),nullable=False)
     dob = Column(DateTime, nullable=True)
-    phone = Column(Integer)
     entrance_type = Column(String(30))
-    father_name = Column(Integer)
-    father_number = Column(Integer)
-    user_id = Column(String(30), ForeignKey('accounts.id'))
-    accounts = relationship(Accounts)
+    HorD = Column(String)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship(Departments)
+    faculty_id = Column(String, ForeignKey('faculty.id'))
+    faculty = relationship(Faculty)
+class Faculty_Profile(Base):
+    __tablename__ = 'faculty_profile'
+    id = Column(String, primary_key=True)
+    name = Column(String(30),nullable=False)
+    branch = Column(String(30),nullable=False)
+    gender = Column(String(30))
+    dob = Column(DateTime)
+    phone = Column(Integer)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship(Departments)
+class Marks(Base):
+    __tablename__ = 'marks'
+    id = Column(Integer, primary_key=True)
+    sub1 = Column(Integer)
+    sub2 = Column(Integer)
+    sub3 = Column(Integer)
+    sub4 = Column(Integer)
+    sub5 = Column(Integer)
+    sub6 = Column(Integer)
+    sub7 = Column(Integer)
+    sub8 = Column(Integer)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship(Departments)
+    student_id = Column(String(30),ForeignKey('students.sid'))
+    students = relationship(Students)
+    year = Column(Integer)
+    faculty_id = Column(String, ForeignKey('faculty.id'))
+    faculty = relationship(Faculty)
+class Attendance(Base):
+    __tablename__ = 'attendance'
+    sid = Column(Integer, primary_key=True)
+    #total_days = Column(Integer)
+    student_id = Column(String, ForeignKey('student_profile.sid'))
+    student_profile = relationship(Student_Profile) 
+    student_name = Column(String)
+    sub1 = Column(Integer)
+    sub2 = Column(Integer)
+    sub3 = Column(Integer)
+    sub4 = Column(Integer)
+    sub5 = Column(Integer)
+    sub6 = Column(Integer)
+    sub7 = Column(Integer)
+    sub8 = Column(Integer)
+    sub9 = Column(Integer)
+    sub10 = Column(Integer)
+    sub11= Column(Integer)
+    sub12 = Column(Integer)
+    sub13 = Column(Integer)
+    sub14 = Column(Integer)
+    attend=Column(Integer)
+    attend_perc = Column(Integer)
+    dept_id = Column(Integer, ForeignKey('departments.did'))
+    year = Column(Integer)
+    departments = relationship(Departments)
+    faculty_id = Column(String, ForeignKey('faculty.id'))
+    faculty = relationship(Faculty)
+
 class Feedback(Base):
     __tablename__ = 'feedback'
     sid = Column(Integer, primary_key=True)
