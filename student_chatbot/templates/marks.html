@@ -14,9 +14,9 @@
             
     </head>
 <body style="background-image:url('/static/bg2.png');">
-  <div class = "panel panel-primary" style="width: 60%;margin-top: 10%;margin-left: 7%;">
+  <div class = "panel panel-primary" style="width: 80%;margin-top: 5%;margin-left: 1.2%;">
     <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <h3 class = "panel-title col-md-6">Marks</h3>
        <span class="col-md-4"></span>
        <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
     </div>
@@ -24,23 +24,20 @@
     <table class = "table">
        <tr style="background-color: beige;">
           <th>SEM</th>
-          <th>roll number</th>
-          <th>Sub1</th>
-          <th>Sub2</th>
-          <th>Sub3</th>
-          <th>Sub4</th>
-          <th>Sub5</th>
-          <th>Sub6</th>
-          <th>sub7</th>
-          <th>sub8</th>
+          <th>Roll Number</th>
+          <th>Name</th>
+          {%for i in sub%}
+          <th>{{i.name}}</th>
+          {% endfor %}
           <th>total</th>
-          <th>avg</th>
+          <th>Percentage</th>
        </tr>
        {% for res in results%}
        <tr>
         
-            <td>SEM 1</td>
+            <td>1</td>
             <td>{{res.student_id}}</td>
+            <td>{{res.name}}</td>
             <td>{{res.sub1}}</td>
             <td>{{res.sub2}}</td>
             <td>{{res.sub3}}</td>
@@ -50,7 +47,7 @@
             <td>{{res.sub7}}</td>
             <td>{{res.sub8}}</td>
             <th>{{res.total}}</th>
-            <th>{{res.avg}}</th>
+            <th>({{'%0.2f' % res.average}}%)</th>
        </tr>
        {% endfor %}
     </table>

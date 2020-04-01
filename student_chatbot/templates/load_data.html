@@ -1,15 +1,22 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>admin</title>
+    <title>Update</title>
     <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
     <style>
-      
+      html, body {
+      min-height: 100%;
+      }
+      body, div, form, input, select, textarea, p { 
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      line-height: 22px;
+      }
       h1 {
       margin: 15px 0;
       font-weight: 400;
@@ -34,7 +41,30 @@
       }
       input:hover, select:hover, textarea:hover {
       outline: none;
-      border: 1px solid #095484;
+      box-shadow: 0 0 5px 0 #095484;
+      }
+      input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      }
+      select {
+      width: 100%;
+      padding: 7px 0;
+      background: transparent;
+      }
+      textarea {
+      width: calc(100% - 2px);
+      padding: 5px;
+      }
+      .item {
+      position: relative;
+      margin: 10px 0;
+      }
+      .item:hover p, .item:hover i {
+      color: #095484;
+      }
+      input:hover, select:hover, textarea:hover {
+      box-shadow: 0 0 5px 0 #095484;
       }
       .status:hover input {
       box-shadow: none;
@@ -52,20 +82,11 @@
       .status-item span {
       margin: 0 20px 0 5px;
       }
-      select {
-      width: 100%;
-      padding: 7px 0;
-      background: transparent;
-      }
-      textarea {
-      width: calc(100% - 6px);
-      }
-      .item {
-      position: relative;
-      margin: 10px 0;
-      }
       input[type="date"]::-webkit-inner-spin-button {
       display: none;
+      }
+      input[type="time"]::-webkit-inner-spin-button {
+      margin: 2px 22px 0 0;
       }
       .item i, input[type="date"]::-webkit-calendar-picker-indicator {
       position: absolute;
@@ -73,12 +94,12 @@
       color: #a9a9a9;
       }
       .item i {
-      right: 2%;
+      right: 1%;
       top: 30px;
       z-index: 1;
       }
       [type="date"]::-webkit-calendar-picker-indicator {
-      right: 1%;
+      right: 0;
       z-index: 2;
       opacity: 0;
       cursor: pointer;
@@ -88,7 +109,7 @@
       text-align: center;
       }
       button {
-      width: 150px;
+      width: auto;
       padding: 10px;
       border: none;
       -webkit-border-radius: 5px; 
@@ -102,80 +123,78 @@
       button:hover {
       background-color: #0666a3;
       }
-    
+      @media (min-width: 568px) {
+      .name-item {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      }
+      .name-item input {
+      width: calc(50% - 20px);
+      }
+      }
     </style>
   </head>
   <body>
+    <h1>IN Progress</h1>
     <div class="testbox">
       <form action="{{ url_for('load_data') }}"  method = "POST" enctype = "multipart/form-data">
-         <h1>Loading data from XL sheet</h1>
-         <div class="item">
-            <p><strong>Department:</strong></p>
-            <select name="dept_id" required>
-              <option value="">*Please select*</option>
-              <option value="1">Civil Engineering</option>
-              <option value="2">Electrical Engineering</option>
-              <option value="3">Mechanical Engineering</option>
-              <option value="4">Electronics and Communication Engineering</option>
-              <option value="5">Computer Science and Engineering</option>
-            </select>
-          </div>
-   
+     
        
-
-        
-          <div class="item status">
-            <p><strong>Choose any one:</strong></p>
-            <div class="status-item">
-              <label for="table"><input type="radio" id="table" name="table" value= "Attendance"> <span>Attendance</span></label>
-              <label><input type="radio" name="table" value="Marks"> <span>Marks</span></label>
-              <label><input type="radio" name="table" value="Profile"> <span>Profile</span></label>
-              <label><input type="radio" name="table" value="Faculty"> <span>Faculty</span></label>
-            </div>
-          </div>
-          
-          
-          
-            <label>
-              <p><strong>Total Days:</strong></p>
-                <input type="text" name="total_days" class="table-child" disabled="true"/>
-            </label>
-            <input id="button" type="button" value="Click">
-            <br>
-            <div id="fn" hidden>First Name :
-              <input type="text" />
-            </div>
-            <br>
-            <div id="ln" hidden>Last Name :
-              <input type="text" />
-            </div>
-       
-      
         <div class="item">
-          <p><strong>Choose XL sheet:</strong></p>
+          <p><strong>Department:</strong></p>
+          <select name="dept_id" required>
+            <option value="">*Please select*</option>
+            <option value="1">Civil Engineering</option>
+            <option value="2">Electrical Engineering</option>
+            <option value="3">Mechanical Engineering</option>
+            <option value="4">Electronics and Communication Engineering</option>
+            <option value="5">Computer Science and Engineering</option>
+          </select>
+        </div>
+        <div class="item">
+          <p><strong>Faculty Name:</strong></p>
+          <select name= "faculty">
+            <option value= "" SELECTED>*Please select*</option>
+            {% for f in flist %}
+            <option value= "{{f.id}}">{{f.name}}</option>
+            {% endfor %}
+        </select>
+        
+        
+        </div>
+        <div class="item">
+          <p><strong>Year:</strong></p>
+          <select name= "year" required>
+            <option value="">*Please select*</option>
+            <option value= "1" >year 1</option>
+            <option value= "2" >year 2</option>
+            <option value= "3" >year 3</option>
+            <option value= "4" >year 4</option>
+        </select>
+        </div>
+        <div class="item status">
+          <p><strong>Choose any one:</strong></p>
+          <div class="status-item">
+            <label><input type="radio" name="table" value= "Attendance"> <span>Attendance</span></label>
+            <label><input type="radio" name="table" value="Marks"> <span>Marks</span></label>
+            <label><input type="radio" name="table" value="Profile"> <span>Profile</span></label>
+            <label><input type="radio" name="table" value="Faculty"> <span>Faculty</span></label>
+          </div>
+        </div>
+        <div class="item">
+          <p><strong>Choose XL sheet</strong></p>
           <input type = "file" name = "file" required />
         </div>
         <div class="item">
           <p><h3>{{output}}</h3></p>
         </div>
+        
         <div class="btn-block">
-          <button type="submit" href="/">Send</button>
+          <button type="submit" href="/">Submit</button>
         </div>
       </form>
-      
     </div>
-    <script>
-      $(function() {
-    // select by name to handle disabling the button if the radio is deselected
-    $("[name='table']").click(function(e) {
-        // enable/disable child items if parent is not checked
-        $(".table-child").prop("disabled", !$('#table').is(':checked'));        
-    });
-});
-$("#button").click(function() {
-  $("#fn").show();
-  $("#ln").show();
-});
-    </script>
+    
   </body>
 </html>

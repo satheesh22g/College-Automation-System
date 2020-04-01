@@ -154,13 +154,24 @@
         </div>
         <div class="item">
           <p><strong>Faculty Name:</strong></p>
-          <select name= colours>
+          <select name= "faculty">
+            <option value= "" SELECTED>*Please select*</option>
             {% for f in flist %}
-            <option value= "{{f}}" SELECTED>{{f}}</option>"
+            <option value= "{{f.id}}">{{f.name}}</option>
             {% endfor %}
         </select>
         
         
+        </div>
+        <div class="item">
+          <p><strong>Year:</strong></p>
+          <select name= "year" required>
+            <option value="">*Please select*</option>
+            <option value= "1" >year 1</option>
+            <option value= "2" >year 2</option>
+            <option value= "3" >year 3</option>
+            <option value= "4" >year 4</option>
+        </select>
         </div>
         <div class="item status">
           <p><strong>Choose any one:</strong></p>
@@ -176,7 +187,7 @@
           <input type = "file" name = "file" required />
         </div>
         <div class="item">
-    <h6>{{msg}}</h6>
+          <p><h3>{{output}}</h3></p>
         </div>
         
         <div class="btn-block">
@@ -184,5 +195,6 @@
         </div>
       </form>
     </div>
+    
   </body>
 </html>

@@ -4,21 +4,27 @@ from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Students,Departments,Faculty,Faculty_Profile
+from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Students,Departments,Faculty,Faculty_Profile, Faculty_Feedback
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.utils import secure_filename
+from autocorrect import Speller
 import docx2txt
 import requests
 import csv
 import re
+import time
 import pandas as pd
 import matplotlib.pyplot as plt
+import datetime
+import matplotlib
+matplotlib.use('Agg')
+from matplotlib import pyplot as plt
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
 
-
+currentTime = datetime.datetime.now()
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
@@ -28,9 +34,11 @@ Session(app)
 engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
-
+# For autocorrect the input
+spell = Speller(lang='en')
 def str_to_class(str):
     return getattr(sys.modules[__name__], str)
+
 @app.route("/")
 def index():
     if 'user' not in session:
@@ -43,85 +51,247 @@ def dashboard():
     if 'user' not in session:
         return redirect(url_for('index'))
     else:
-        return render_template("menu.html")
-
-
+        if session['usert']=="clerk":
+            return render_template("clerk_menu.html")
+        else:
+            return render_template("menu.html")
 @app.route("/query", methods=["POST"])
 def quer():
+    flash(session['namet'],"name")
+    wish=""
+    if currentTime.hour < 12:
+        wish="Good Morning"
+    elif 12 <= currentTime.hour < 18:
+        wish='Good afternoon.'
+    else:
+        wish='Good evening.'
     try:
-
-        
         if request.method == 'POST':
-            ss=request.form.get("msg").lower()
+            ss=spell(request.form.get("msg").lower())
             profile=db.execute("select sid from student_profile").fetchall()
             profile_result=list([profile[i][0] for i in range(len(profile))])
-            roll_flag = re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}$", ss)
-            s="".join(re.findall("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}$", ss))
+            roll_flag = re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss)
+            s="".join(re.findall("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss))
         if session['usert']=="Student":
             if "show my attendance" in ss:
+                flash(ss, "success")
                 return redirect(url_for('attendance'))
             else:
-                flash("Wrong! Try Again")
+                flash("Wrong! Try Again","error")
+                print("error 1")
                 return redirect(url_for('dashboard'))
         else:
-            if "show graph" in ss:
-                return redirect(url_for('plot_graph'))
-            if re.search('attendance', ss) and re.search("(1|2|3|4)", ss) and re.search('students', ss) and re.search('year', ss):
-                result=db.execute("select * from attendance where year=:i;",{"i":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                if result is not None:
-                    return render_template("attendance.html", results=result)
-                else:
-                    flash("Wrong! Try Again")
-                    return redirect(url_for('dashboard'))
-            if "marks" in ss:
-                result=db.execute("select *,(sub1+sub2+sub3+sub4+sub5+sub6+sub7+sub8) as total,(sub1+sub2+sub3+sub4+sub5+sub6+sub7+sub8)/8 as avg from marks where avg<60;").fetchall()
-                return render_template("marks.html", results=result)
-            if re.search('attendance shortage', ss):
-                result=db.execute("select * from attendance where attend_perc<65").fetchall()
+            # <----------------Queries for Count----------------------->
+            if re.search('fail', ss) and re.search('how',ss) and re.search('many',ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss):
+                result=db.execute("SELECT count(*) ,year,departments.name FROM marks INNER JOIN departments ON departments.did=marks.dept_id and (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                flash(ss, "success")
+                print(1)
+                return render_template("count_students.html", results=result)
+            #how many students have less than 75 attendance in year 2
+            if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and re.search('how', ss) and re.search('many', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)) and re.search('less than',ss) or re.search('lessthan',ss) or re.search('<',ss):
+                result=db.execute("SELECT count(*) ,year,departments.name FROM attendance INNER JOIN departments ON departments.did=attendance.dept_id and attend_perc<:a and year=:y;",{"a":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                flash(ss, "success")
+                print(2)
+                return render_template("count_students.html", results=result)
+            # <----------------Queries for Graphs----------------------->
+            if re.search('gra7ph', ss):
+                flash(ss, "success")
+                data = db.execute("select average from marks where year=:y",{"y":4})
+                df = pd.DataFrame(data)
+                plt.plot(df)
+                plt.show()
+                #time.sleep(10)
+                plt.clf()
+                print(3)
+                return redirect(url_for('dashboard'))
+            # show graph for marks of my counsel students
+            if re.search('graph', ss) and (re.search('council', ss) or re.search('counsel', ss))and re.search('marks', ss):
+                flash(ss, "success")
+                data = db.execute("select round(average) from marks where councelor_id=:f",{"f":session['user']})
+                df = pd.DataFrame(data)
+                plt.plot(df)
+                plt.xlabel('Roll Numbers') 
+                plt.ylabel('Percentage') 
+                plt.savefig("static/graph")
+                print(4)
+                return render_template("graph.html")
+            if re.search('compare', ss) and re.search('graph', ss) and re.search('marks', ss) and roll_flag:
+                lst=[]
+                flash(ss, "success")
+                s=ss.split()
+                for i in s:
+                    if re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", i):
+                        lst.append("".join(re.findall("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", i)))
+                #s1 = db.execute("select sub1 from marks where councelor_id=:f",{"f":677})
+                x = ['','Sub1','Sub2','Sub3','Sub4','Sub5','Sub6']
+                s2 = db.execute("select sub1,sub2,sub3,sub4,sub5,sub6 from marks where student_id=:f",{"f":lst[0].upper()})
+                s1 = db.execute("select sub1,sub2,sub3,sub4,sub5,sub6 from marks where student_id=:f",{"f":str(lst[1]).upper()})
+                ax = plt.subplot()
+                df1 = pd.DataFrame(s1).transpose()
+                df2 = pd.DataFrame(s2).transpose()
+                plt.style.use('classic')
+                ax.plot(df1,label='s1', color='blue')
+                ax.plot(df2,label='s2', color='red')
+                ax.set_xticklabels(x)
+                plt.xlabel('Subjects') 
+                plt.ylabel('Marks') 
+                #plt.show()
+                plt.savefig("static/graph")
+                print(5)
+                return render_template("graph.html")
+            # <----------------Queries for Councel students----------------------->
+            if (re.search('council', ss) or re.search('counsel', ss)) and re.search("student", ss) and re.search('show', ss):
+                flash(ss, "success")
+                students=db.execute("select sid,name from student_profile where faculty_id=:f;",{"f":int(session['user'])}).fetchall()
+                attend = db.execute("select attend,attend_perc from attendance where councelor_id=:f;",{"f":int(session['user'])}).fetchall()
+                marks = db.execute("select average from marks where councelor_id=:f;",{"f":session['user']}).fetchall()
+                print(6)
+                return render_template("counsel_students.html", students=zip(students, attend,marks))
+            # <----------------Queries for Attendance----------------------->
+            if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss) or re.search('<', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)):
+                flash(ss, "success")
+                result=db.execute("select * from attendance where attend_perc<:i and year=:y;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
+                print(7)
                 return render_template("attendance.html",results=result)
+            if re.search('attendance', ss) and re.search('shortage',ss):
+                flash(ss, "success")
+                result=db.execute("select * from attendance where attend_perc<65").fetchall()
+                var = "select * from attendance where attend_perc<65"
+                print(8)
+                return render_template("attendance.html",results=result,var=var)
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('<', ss)):
+                flash(ss, "success")
                 result=db.execute("select * from attendance where attend_perc<:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
+                print(9)
                 return render_template("attendance.html",results=result)
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('greater than', ss) or re.search('greaterthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('>', ss)):
+                flash(ss, "success")
                 result=db.execute("select * from attendance where attend_perc>:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
+                print(10)
                 return render_template("attendance.html",results=result)
-            elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
-                result=db.execute("SELECT * from student_profile where sid =  :s;",{"s":ss.split()[-1].upper()})
-                attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":ss.split()[-1].upper()})
-                marks=db.execute("SELECT * from marks where student_id =  :s;",{"s":ss.split()[-1].upper()})
-                return render_template("student_profile.html", results=result,marks=marks,attend=attend)
             elif roll_flag and re.search('attendance', ss):
-                attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":s.upper()})
-                return render_template("attendance.html", results=attend)
+                flash(ss, "success")
+                attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":s.upper()}).fetchall()
+                print(11)
+                if attend:
+                    return render_template("attendance.html", results=attend)
+                else:
+                    print("error 3")
+                    flash("student not found")
+                    return redirect(url_for('dashboard'))
+
+            if re.search('attendance', ss) and re.search("(1|2|3|4)", ss) and re.search('students', ss) and re.search('year', ss):
+                flash(ss, "success")
+                result=db.execute("select * from attendance where year=:i;",{"i":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                if result is not None:
+                    print(12)
+                    return render_template("attendance.html", results=result)
+                else:
+                    print("error 3")
+                    flash("Wrong! Try Again","error")
+                    return redirect(url_for('dashboard'))
+            # <----------------Queries for Marks----------------------->
+            if re.search('all', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year', ss) and re.search('clear',ss):
+                flash(ss, "success")
+                sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                result=db.execute("SELECT * FROM marks where (sub1>40 and sub2>40 and sub3>40 and sub4>40 and sub5>40 and sub6>40 and sub7>40 and sub8>40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                print(13)
+                return render_template("marks.html", results=result,sub=sub)
+            if re.search('fail', ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and ((re.search('cse',ss) or re.search('case',ss)) or re.search('computer science',ss)):
+                flash(ss, "success")
+                result=db.execute("SELECT * FROM marks where (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                print(14)
+                return render_template("marks.html", results=result,sub=sub)
+            if re.search('topper of', ss) and (re.search('case',ss) or re.search('cse',ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year', ss):
+                flash(ss, "success")
+                result=db.execute("SELECT *, max(average) from marks where dept_id=:d and year=:y",{"d":5,"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
+                sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                print(15)
+                return render_template("marks.html", results=result,sub=sub)
+            elif (re.search('marks', ss) or re.search('percentage', ss)) and (re.search('case',ss) or re.search('cse',ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('less than', ss) or re.findall('lessthan', ss) or re.findall('<', ss)):
+                flash(ss, "success")
+                sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
+                result=db.execute("SELECT * from marks where year=:y and average<:a;",{"y":int("".join(re.findall(r'(?<![0-9])[0-9](?![0-9])', ss))),"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
+                print(16)
+                return render_template("marks.html", results=result,sub=sub)
+            elif (re.search('marks', ss) or re.search('percentage', ss)) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and (re.search('cse',ss) or re.search('case',ss) or re.search('computer science',ss)):
+                flash(ss, "success")
+                result=db.execute("SELECT * from marks where year=2;",{"y":int("".join(re.findall('(1|2|3|4)', ss)))}).fetchall()
+                print(17)
+                return render_template("marks.html", results=result,sub=sub)
+            elif re.search('topper', ss) and (re.search('case',ss) or re.search('cse',ss)):
+                flash(ss, "success")
+                result=db.execute("SELECT *, max(average) from marks where dept_id=:d",{"d":5}).fetchall()
+                if result[0].year==4:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                if result[0].year==3:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                if result[0].year==2:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                print(18)
+                return render_template("marks.html", results=result,sub=sub)
+            
+            # <----------------Queries for Profile----------------------->
+            elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
+                flash(ss, "success")
+                result=db.execute("SELECT * from student_profile where sid = :s;",{"s":ss.split()[-1].upper()}).fetchall()
+                attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
+                marks=db.execute("SELECT * from marks where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
+                if result[0].year==4:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                if result[0].year==3:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                if result[0].year==2:
+                    sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
+                print(19)
+                return render_template("student_profile.html", results=result,marks=marks,attend=attend,sub=sub)
+                
             else:
-                flash("Wrong! Try Again")
+                flash(ss, "success")
+                print("error 6")
+                flash("Wrong! Try Again","error")
                 return redirect(url_for('dashboard'))
     except:
-        flash("Input out of range")
-    return redirect(url_for('dashboard'))
+        flash("Input out of range","error")
+        print(ss)
+        print("error 7")
+        return redirect(url_for('dashboard'))
+    return render_template('chatbox.html',wish=wish,ss=ss)
     
-
+@app.route("/<sid>/Council-Students")
+def council_students(sid):
+    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": sid}).fetchall()
+    attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":sid}).fetchall()
+    marks=db.execute("SELECT * from marks where student_id = :s;",{"s":sid}).fetchall()
+    return render_template("student_profile.html",results=res,marks=marks,attend=attend)
 @app.route("/profile")
 def profile():
     if session['usert']=="Student":
         res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
-        return render_template("student_profile.html",results=res)
+        attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":session['user']}).fetchall()
+        marks=db.execute("SELECT * from marks where student_id = :s;",{"s":session['user']}).fetchall()
+        return render_template("student_profile.html",results=res,marks=marks,attend=attend)
     else:
         res=db.execute("SELECT * FROM Faculty_Profile WHERE id = :u", {"u": session['user']}).fetchall()
         return render_template("faculty_profile.html",results=res)
 @app.route("/attendance")
 def attendance():
-    result=db.execute("SELECT * FROM attendance WHERE sid = :u", {"u": session['user']}).fetchall()
+    result=db.execute("SELECT * FROM attendance WHERE student_id = :u", {"u": session['user']}).fetchall()
     return render_template("attendance.html",results=result)
 
 @app.route("/marks")
 def marks():
-    return render_template("marks.html")
+    result=db.execute("SELECT * FROM marks WHERE student_id = :u", {"u": session['user']}).fetchall()
+    return render_template("marks.html",results=result)
 @app.route("/attendance_display")
 def attendance_update():
     return render_template("attendance_form.html")
 @app.route("/suggestions", methods=["GET", "POST"])
 def Suggestions():
+    too_old = datetime.datetime.today() - datetime.timedelta(days=1)
+    db.execute("delete from faculty_feedback where date<=:i",{"i":too_old})
+    db.commit()
     msg1=msg2=""
     try:
         if request.method == "POST":
@@ -138,31 +308,46 @@ def Suggestions():
             db.execute("ROLLBACK")
             db.commit()
     return render_template("feedback.html",msg1=msg1,msg2=msg2)
-
+# Faculty Feedback
+@app.route("/Faculty-Feedback", methods=["GET", "POST"])
+def Faculty_Feedback():
+    
+    too_old = datetime.datetime.today() - datetime.timedelta(days=1)
+    db.execute("delete from faculty_feedback where date<=:i",{"i":too_old})
+    db.commit()
+    msg1=msg2=""
+    try:
+        if request.method == "POST":
+            sub1 = request.form.get("sub1")
+            sub2 = request.form.get("sub2")
+            sub3 = request.form.get("sub3")
+            sub4 = request.form.get("sub4")
+            sub5 = request.form.get("sub5")
+            sub6 = request.form.get("sub6")
+            lab1 = request.form.get("lab1")
+            lab2 = request.form.get("lab2")
+            result1 = db.execute("INSERT INTO faculty_feedback (sub1,sub2,sub3,sub4,sub5,sub6,lab1,lab2,date,student_id) VALUES (:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:lab1,:lab2,:date,:s)", {"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"lab1":lab1,"lab2":lab2,"date":datetime.datetime.today(),"s":session['user']})
+            db.commit()
+            msg1= "Submitted!"
+            msg2 = "Thank You for your Feedback"
+    except exc.IntegrityError:
+            msg1 = "Already Submitted."
+            db.execute("ROLLBACK")
+            db.commit()
+    return render_template("feedback.html",msg1=msg1,msg2=msg2)
 # To display all the complaints to the admin
 @app.route("/adminfeedbacks")
 def adminfeedbacks():
     result=db.execute("SELECT * FROM feedback").fetchall()
     return render_template('feedback.html',result=result)
-
-@app.route("/graphs")
-def plot_graph():
-    result=db.execute("SELECT sid,attend FROM attendance WHERE attend < 75 ORDER BY sid").fetchall()
-    x=["sart","ygf"]
-    y=[]
-    for i,j in result:
-        y.append(j)
-    plt.plot(x,y)
-    
-    d="sath"
-    plt.title(d)
-    plt.xlabel(d, fontsize=18)
-    plt.ylabel(d, fontsize=16)
-    plt.savefig('static/graph.png')
-    return render_template('graphs.html',result=result)
-@app.route('/download')
-def download_file():
-    s=db.execute("select * from student_profile").fetchall()
+@app.route("/feedbacks")
+def show_feedback():
+    # display FeedBack  To HOD
+    result = db.execute("select * from faculty_feedback").fetchall()
+    return render_template('show_feedback.html',res=result)
+@app.route('/<data>/download')
+def download_file(data):
+    s=db.execute(data).fetchall()
     df = pd.DataFrame(list(s))
     writer = pd.ExcelWriter('outputt.xlsx')
     df.to_excel(writer,sheet_name="lkjhgf")
@@ -171,28 +356,11 @@ def download_file():
 
 @app.route("/admin-updates", methods=["GET", "POST"])
 def admin_update():
-    if 'user' not in session:
-        return redirect(url_for('login'))
-    if session['usert']=="admin":
-        dept_id = request.form.get('dept_id')
-        try:
-            if request.method == "POST":
-                
-                faculty_list=db.execute("select * from faculty where dept_id=:i",{"i":dept_id}).fetchall()
-                table = request.form.get('table')
-                return redirect(url_for('dashboard'))
-        except:
-            message = "error"
-            return render_template("admin_updates.html",msg=message)
-        return render_template("admin_updates.html")
-    else:
-        return redirect(url_for('dashboard'))
-    return render_template("admin_updates.html",flist=faculty_list)
-@app.route("/load-data", methods=["GET", "POST"])
-def load_data():
+    faculty_list=db.execute('select * from faculty').fetchall()
     if request.method == "POST":
         dept_id = request.form.get('dept_id')
-        table = request.form['table']
+        faculty = (request.form.get('faculty'))
+        table = request.form['name']
         try: 
             file1 = request.files['file']
             filename = secure_filename(file1.filename)
@@ -205,7 +373,7 @@ def load_data():
                 f = open(filename)
             else:
                 output = "is an unknown file format."
-                return render_template('load_data.html', output=output)
+                return render_template('admin_updates.html', output=output,flist=faculty_list)
             
             reader = csv.reader(f)
             try:
@@ -219,8 +387,66 @@ def load_data():
                         db.execute("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)", {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
                     db.commit()
                 elif table=="Profile":
-                    for sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number in reader:
-                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,phone,entrance_type,father_name,father_number) VALUES(:a, :b, :c,:d,:e,:f,:g,:h,:i,:j)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"g": phone,"h": entrance_type,"i": father_name,"j":father_number})
+                    for sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,fact_id in reader:
+                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
+                    db.commit()
+                elif table=="Faculty":
+                    for id, name, dept_id in reader:
+                        db.execute("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)", {"s":id, "n":name, "d":dept_id })
+                    db.commit()
+            except:
+                message = "columns must be in correct order {}".format(str_to_class-olumns.keys())
+                return render_template('admin_updates.html', output=message,flist=faculty_list)
+        except exc.SQLAlchemyError:
+            message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
+            return render_template('admin_updates.html', output=message,flist=faculty_list)
+    
+    return render_template("admin_updates.html",flist=faculty_list)
+@app.route("/load-data", methods=["GET", "POST"])
+def load_data():
+    faculty_list=db.execute('select * from faculty').fetchall()
+    if request.method == "POST":
+        dept_id = request.form.get('dept_id')
+        faculty_id = request.form.get('faculty')
+        year = request.form.get('year')
+        table = request.form['table']
+        try: 
+            file1 = request.files['file']
+            filename = secure_filename(file1.filename)
+            ext = os.path.splitext(filename)[-1].lower()
+            if ext == ".xlsx":
+                read_file = pd.read_excel(filename)
+                read_file.to_csv("o.csv", index = None, header=True)
+                f = open("o.csv")
+            elif ext ==".csv":
+                f = open(filename)
+            else:
+                output = "is an unknown file format."
+                return render_template('load_data.html', output=output,flist=faculty_list)
+            
+            reader = csv.reader(f)
+            try:
+                if table=="Attendance":
+                    if year=="4":
+                        for student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc in reader:
+                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                        db.commit()
+                        return redirect(url_for('dashboard'))
+                    elif year=="3":
+                        for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc in reader:
+                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:sub10,:sub11,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"sub10":sub10,"sub11":sub11,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                        db.commit()
+                    elif year=="2":
+                        for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,faculty_id in reader:
+                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                            db.commit()
+                elif table=="Marks":
+                    for id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year in reader:
+                        db.execute("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)", {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
+                    db.commit()
+                elif table=="Profile":
+                    for sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,fact_id in reader:
+                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
                     db.commit()
                 elif table=="Faculty":
                     for id, name, dept_id in reader:
@@ -228,11 +454,12 @@ def load_data():
                     db.commit()
             except:
                 message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
-                return render_template('load_data.html', output=message)
+                return render_template('load_data.html', output=message,flist=faculty_list)
         except exc.SQLAlchemyError:
             message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
-            return render_template('load_data.html', output=message)
-    return render_template("load_data.html")
+            return render_template('load_data.html', output=message,flist=faculty_list)
+    
+    return render_template("load_data.html",flist=faculty_list)
 # REGISTER
 @app.route("/register", methods=["GET", "POST"])
 def register():
@@ -254,7 +481,7 @@ def register():
                 session['user'] = usern
                 session['namet'] = name
                 session['usert'] = usert
-                flash("Your successfully Registrated")
+                flash("Your successfully Registrated",'greet')
                 return redirect(url_for('dashboard'))
         except exc.IntegrityError:
             message = "Roll Number already exists."
@@ -311,23 +538,19 @@ def logout():
 def login():
     if 'user' in session:
         return redirect(url_for('dashboard'))
-
     message = ""
-
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
         result = db.execute("SELECT * FROM accounts WHERE id = :u", {"u": usern}).fetchone()
-
         if result is not None:
             print(result['password'])
             if bcrypt.check_password_hash(result['password'], passw) is True:
                 session['user'] = usern
                 session['namet'] = result.name
                 session['usert'] = result.user_type
-                flash("Hii  "+result.name)
+                flash("Hii  "+result.name,"greet")
                 return redirect(url_for('dashboard'))
-
         message = "Username or password is incorrect."
     return render_template("login.html", message=message)
 
@@ -335,5 +558,4 @@ def login():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.jinja_env.cache = {}
     app.run(host='0.0.0.0', port=5000)

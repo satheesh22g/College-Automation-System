@@ -14,9 +14,11 @@
             
     </head>
 <body style="background-image:url('/static/bg2.png');">
-  <div class = "panel panel-primary" style="width: fit-content;margin-top: 10%;margin-left: 1%;">
+  <div class = "panel panel-primary" style="width: fit-content;margin-top: 4%;margin-left: 1%;">
     <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <h3 class = "panel-title col-md-6">Attendance of {{results[0].year}} year students
+       
+       </h3>
        <span class="col-md-4"></span>
        <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
     </div>
@@ -65,4 +67,5 @@
     </table>
  </div>    
 </body>
+
     </html>
