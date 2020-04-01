@@ -67,14 +67,15 @@ def quer():
         wish='Good evening.'
     try:
         if request.method == 'POST':
-            ss=spell(request.form.get("msg").lower())
+            msg=request.form.get("msg").lower()
+            ss=spell(msg)
             profile=db.execute("select sid from student_profile").fetchall()
             profile_result=list([profile[i][0] for i in range(len(profile))])
             roll_flag = re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss)
             s="".join(re.findall("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss))
         if session['usert']=="Student":
             if "show my attendance" in ss:
-                flash(ss, "success")
+                flash(msg, "success")
                 return redirect(url_for('attendance'))
             else:
                 flash("Wrong! Try Again","error")
@@ -84,18 +85,18 @@ def quer():
             # <----------------Queries for Count----------------------->
             if re.search('fail', ss) and re.search('how',ss) and re.search('many',ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss):
                 result=db.execute("SELECT count(*) ,year,departments.name FROM marks INNER JOIN departments ON departments.did=marks.dept_id and (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                flash(ss, "success")
+                flash(msg, "success")
                 print(1)
                 return render_template("count_students.html", results=result)
             #how many students have less than 75 attendance in year 2
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and re.search('how', ss) and re.search('many', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)) and re.search('less than',ss) or re.search('lessthan',ss) or re.search('<',ss):
                 result=db.execute("SELECT count(*) ,year,departments.name FROM attendance INNER JOIN departments ON departments.did=attendance.dept_id and attend_perc<:a and year=:y;",{"a":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                flash(ss, "success")
+                flash(msg, "success")
                 print(2)
                 return render_template("count_students.html", results=result)
             # <----------------Queries for Graphs----------------------->
             if re.search('gra7ph', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 data = db.execute("select average from marks where year=:y",{"y":4})
                 df = pd.DataFrame(data)
                 plt.plot(df)
@@ -106,7 +107,7 @@ def quer():
                 return redirect(url_for('dashboard'))
             # show graph for marks of my counsel students
             if re.search('graph', ss) and (re.search('council', ss) or re.search('counsel', ss))and re.search('marks', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 data = db.execute("select round(average) from marks where councelor_id=:f",{"f":session['user']})
                 df = pd.DataFrame(data)
                 plt.plot(df)
@@ -117,7 +118,7 @@ def quer():
                 return render_template("graph.html")
             if re.search('compare', ss) and re.search('graph', ss) and re.search('marks', ss) and roll_flag:
                 lst=[]
-                flash(ss, "success")
+                flash(msg, "success")
                 s=ss.split()
                 for i in s:
                     if re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", i):
@@ -141,7 +142,7 @@ def quer():
                 return render_template("graph.html")
             # <----------------Queries for Councel students----------------------->
             if (re.search('council', ss) or re.search('counsel', ss)) and re.search("student", ss) and re.search('show', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 students=db.execute("select sid,name from student_profile where faculty_id=:f;",{"f":int(session['user'])}).fetchall()
                 attend = db.execute("select attend,attend_perc from attendance where councelor_id=:f;",{"f":int(session['user'])}).fetchall()
                 marks = db.execute("select average from marks where councelor_id=:f;",{"f":session['user']}).fetchall()
@@ -149,28 +150,28 @@ def quer():
                 return render_template("counsel_students.html", students=zip(students, attend,marks))
             # <----------------Queries for Attendance----------------------->
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss) or re.search('<', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("select * from attendance where attend_perc<:i and year=:y;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
                 print(7)
                 return render_template("attendance.html",results=result)
             if re.search('attendance', ss) and re.search('shortage',ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("select * from attendance where attend_perc<65").fetchall()
                 var = "select * from attendance where attend_perc<65"
                 print(8)
                 return render_template("attendance.html",results=result,var=var)
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('<', ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("select * from attendance where attend_perc<:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
                 print(9)
                 return render_template("attendance.html",results=result)
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('greater than', ss) or re.search('greaterthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('>', ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("select * from attendance where attend_perc>:i;",{"i":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
                 print(10)
                 return render_template("attendance.html",results=result)
             elif roll_flag and re.search('attendance', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 attend=db.execute("SELECT * from attendance where student_id =  :s;",{"s":s.upper()}).fetchall()
                 print(11)
                 if attend:
@@ -181,7 +182,7 @@ def quer():
                     return redirect(url_for('dashboard'))
 
             if re.search('attendance', ss) and re.search("(1|2|3|4)", ss) and re.search('students', ss) and re.search('year', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("select * from attendance where year=:i;",{"i":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 if result is not None:
                     print(12)
@@ -192,36 +193,36 @@ def quer():
                     return redirect(url_for('dashboard'))
             # <----------------Queries for Marks----------------------->
             if re.search('all', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year', ss) and re.search('clear',ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 result=db.execute("SELECT * FROM marks where (sub1>40 and sub2>40 and sub3>40 and sub4>40 and sub5>40 and sub6>40 and sub7>40 and sub8>40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 print(13)
                 return render_template("marks.html", results=result,sub=sub)
             if re.search('fail', ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and ((re.search('cse',ss) or re.search('case',ss)) or re.search('computer science',ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("SELECT * FROM marks where (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;",{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 print(14)
                 return render_template("marks.html", results=result,sub=sub)
             if re.search('topper of', ss) and (re.search('case',ss) or re.search('cse',ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("SELECT *, max(average) from marks where dept_id=:d and year=:y",{"d":5,"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
                 sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 print(15)
                 return render_template("marks.html", results=result,sub=sub)
             elif (re.search('marks', ss) or re.search('percentage', ss)) and (re.search('case',ss) or re.search('cse',ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('less than', ss) or re.findall('lessthan', ss) or re.findall('<', ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 result=db.execute("SELECT * from marks where year=:y and average<:a;",{"y":int("".join(re.findall(r'(?<![0-9])[0-9](?![0-9])', ss))),"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
                 print(16)
                 return render_template("marks.html", results=result,sub=sub)
             elif (re.search('marks', ss) or re.search('percentage', ss)) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and (re.search('cse',ss) or re.search('case',ss) or re.search('computer science',ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("SELECT * from marks where year=2;",{"y":int("".join(re.findall('(1|2|3|4)', ss)))}).fetchall()
                 print(17)
                 return render_template("marks.html", results=result,sub=sub)
             elif re.search('topper', ss) and (re.search('case',ss) or re.search('cse',ss)):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("SELECT *, max(average) from marks where dept_id=:d",{"d":5}).fetchall()
                 if result[0].year==4:
                     sub = db.execute('select name,sem from subjects where year=:y and sem like "%_1"',{"y":4}).fetchall()
@@ -234,7 +235,7 @@ def quer():
             
             # <----------------Queries for Profile----------------------->
             elif (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
-                flash(ss, "success")
+                flash(msg, "success")
                 result=db.execute("SELECT * from student_profile where sid = :s;",{"s":ss.split()[-1].upper()}).fetchall()
                 attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
                 marks=db.execute("SELECT * from marks where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
@@ -248,7 +249,7 @@ def quer():
                 return render_template("student_profile.html", results=result,marks=marks,attend=attend,sub=sub)
                 
             else:
-                flash(ss, "success")
+                flash(msg, "success")
                 print("error 6")
                 flash("Wrong! Try Again","error")
                 return redirect(url_for('dashboard'))
