@@ -42,10 +42,10 @@ def Faculty():
     print("faculty Completed .................................... ")
 
 def admin():
-    usern = '100'
+    usern = 'ADMIN'
     name = 'admin'
     usert = 'admin'
-    passw = '1111'
+    passw = 'srit'
     passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
     db.execute("INSERT INTO accounts (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
     db.commit()
@@ -124,17 +124,17 @@ def cse2marks():
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,avg,dept_id,year,councelor_id in reader:
-        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,average,dept_id,year,councelor_id) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:total,:avg,:d,:y,:c)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"total":total,"avg":avg,"d":dept_id,  "y":year, "c":councelor_id})
+    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,avg,dept_id,year,councelor_id,sem in reader:
+        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,average,dept_id,year,councelor_id,sem) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:total,:avg,:d,:y,:c,:sem)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"total":total,"avg":avg,"d":dept_id,  "y":year, "c":councelor_id,"sem":sem})
     db.commit()
     print("marks Completed .................................................... ")
 def cse3marks():
-    f = open("cse3marks.csv")
+    f = open("cse3marks2.csv")
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,total,avg,dept_id,year,councelor_id in reader:
-        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,total,average,dept_id,year,councelor_id) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:s9,:total,:avg,:d,:y,:c)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"s9":sub9,"total":total,"avg":avg,"d":dept_id,  "y":year,"c":councelor_id})
+    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,total,avg,dept_id,year,councelor_id,sem in reader:
+        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,total,average,dept_id,year,councelor_id,sem) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:s9,:total,:avg,:d,:y,:c,:sem)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"s9":sub9,"total":total,"avg":avg,"d":dept_id,  "y":year,"c":councelor_id,"sem":sem})
     db.commit()
     print("marks Completed .................................................... ")
 def cse4marks():
@@ -142,8 +142,8 @@ def cse4marks():
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,avg,dept_id,year,councelor_id in reader:
-        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,average,dept_id,year,councelor_id) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:total,:avg,:d,:y,:c)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"total":total,"avg":avg,"d":dept_id,  "y":year,"c":councelor_id})
+    for student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,avg,dept_id,year,councelor_id,sem in reader:
+        db.execute("INSERT INTO marks(student_id,name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,total,average,dept_id,year,councelor_id,sem) VALUES(:s,:n,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:total,:avg,:d,:y,:c,:sem)", {"s":student_id,"n":name,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"total":total,"avg":avg,"d":dept_id,  "y":year,"c":councelor_id,"sem":sem})
     db.commit()
     print("marks Completed .................................................... ")
 def _3cse_attendance():
@@ -151,8 +151,8 @@ def _3cse_attendance():
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,faculty_id in reader:
-        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:sub10,:sub11,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"sub10":sub10,"sub11":sub11,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+    for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,faculty_id,sem in reader:
+        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,councelor_id,sem) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:sub10,:sub11,:attend, :attend_perc,:dept_id,:year,:faculty_id,:sem)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"sub10":sub10,"sub11":sub11,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id,"sem":sem})
     db.commit()
     print("attendance Completed ................................................ ")
 def _2cse_attendance():
@@ -160,16 +160,16 @@ def _2cse_attendance():
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,faculty_id in reader:
-        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+    for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,faculty_id,sem in reader:
+        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,councelor_id,sem) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:attend, :attend_perc,:dept_id,:year,:faculty_id,:sem)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id,"sem":sem})
     db.commit()
 def _4cse_attendance():
     f = open("year4attendance.csv")
     reader = csv.reader(f)
     header = next(reader)
     print("Running script ... ")
-    for student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,faculty_id in reader:
-        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+    for student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,faculty_id,sem in reader:
+        db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,councelor_id,sem) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:attend, :attend_perc,:dept_id,:year,:faculty_id,:sem)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id,"sem":sem})
     db.commit()
     print("attendance Completed ................................................ ")
 def faculty_profile():
@@ -192,24 +192,24 @@ def hod_profile():
     db.commit()
     print("hod profile Completed ... ")'''
 def dummy():
-    db.execute("DELETE FROM attendance where ;")
+    db.execute("delete from accounts")
     db.commit()
 if __name__ == "__main__":
-    #dummy()
-    department()
-    Faculty()
-    faculty_profile()
+    dummy()
+    # department()
+    # Faculty()
+    # faculty_profile()
     admin()
     cse_faculty_accounts()
-    cse_student_profile()
-    eee_student_profile()
-    ce_student_profile()
-    me_student_profile()
-    _3cse_attendance()
-    _4cse_attendance()
-    _2cse_attendance()
-    cse2marks()
-    cse3marks()
-    cse4marks()
+    # cse_student_profile()
+    # eee_student_profile()
+    # ce_student_profile()
+    # me_student_profile()
+    # _3cse_attendance()
+    # _4cse_attendance()
+    # _2cse_attendance()
+    # cse2marks()
+    #cse3marks()
+    # cse4marks()
     cse_clerk()
-    cse_subjects()
+    # cse_subjects()

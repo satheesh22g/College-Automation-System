@@ -84,6 +84,7 @@ class Marks(Base):
     faculty_id = Column(String, ForeignKey('faculty.id'))
     councelor_id = Column(String, ForeignKey('faculty.id'))
     faculty = relationship(Faculty)
+    sem = Column(Integer)
 class Subjects(Base):
     __tablename__ = 'subjects'
     code = Column(String, primary_key=True)
@@ -120,6 +121,7 @@ class Attendance(Base):
     faculty_id = Column(String, ForeignKey('faculty.id'))
     councelor_id = Column(String, ForeignKey('faculty.id'))
     faculty = relationship(Faculty)
+    sem = Column(Integer)
     
 class Faculty_Feedback(Base):
     __tablename__ = 'faculty_feedback'
