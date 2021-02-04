@@ -7,37 +7,28 @@
 
 ### What Will I Learn?
   * Develop a RESTful web application using the Python framework Flask
-  * Implementing third-party OAuth authentication.
+  * Implementing OAuth authentication.
   * Implementing CRUD (create, read, update and delete) operations.
-  * How to handle chatterbot module in python
-  * How to use Kivy Python Graphics Library 
+  * How to handle chatterbot module in python 
 
 ## Skills used for this project
 - Natural language processing tool kit
-- Python Artificial Intelligence Markup Language
 - Pattern Matching
-- Kivy Python Graphics Library
 - Python –flask
 - SQL alchemy
-- Python -speech recognition
 
 
 #### PreRequisites
   * [Python ~3.7](https://www.python.org/)
   * [SQL alchemy](https://www.sqlalchemy.org/)
   * [ChatterBot](https://chatterbot.readthedocs.io/en/stable/)
-  * [kivy](kivy.org)
   
-#### Setup Project:
-  1. Download or Clone [Student-Informative-Chat-Bot-System](Student-Informative-Chat-Bot-System) repository.
-  2. Find the student_chatbot folder and replace it with the content of this current repository, by either downloading or cloning it from [Here](https://github.com/satheeshg/https://github.com/satheesh22g/Student-Informative-Chat-Bot-System).
-
 ### How to Run
-1. Install VirtualBox and Vagrant
+1. Install Python ~ 3.7
 2. Clone this repo
 3. Unzip the file
 4. go student_chatbot folder
-```
+
 5. install all requirements using pip 
 ```
 $ pip install -r requirements.txt
@@ -54,14 +45,4 @@ $ Python input_data.py
 ```
 $ Python app.py
 ```
-10. Open the browser and go to http://localhost:5000
-
-
-```
-###Demo Screenshots
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(1).png)
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(2).png)
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(3).png)
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(4).png)
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(5).png)
-![Screenshot](https://github.com/satheesh22g/Student-Informative-Chat-Bot-System/blob/master/student_chatbot/Screenshots/Screenshot%20(6).png)
+10. Open the browser and go to [http://localhost:5000](http://localhost:5000)
