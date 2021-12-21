@@ -12,7 +12,6 @@
   * How to handle chatterbot module in python 
 
 ## Skills used for this project
-- Natural language processing tool kit
 - Pattern Matching
 - Python –flask
 - SQL alchemy
@@ -21,7 +20,6 @@
 #### PreRequisites
   * [Python ~3.7](https://www.python.org/)
   * [SQL alchemy](https://www.sqlalchemy.org/)
-  * [ChatterBot](https://chatterbot.readthedocs.io/en/stable/)
   
 ### How to Run
 1. Install Python ~ 3.7
