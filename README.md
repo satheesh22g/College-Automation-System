@@ -1,8 +1,6 @@
 # Batch No - B7
 
-# Student Informative Voice Based Chat Bot System 
-### Project Overview
->Chat bot is an automation system and different formats of chat bots are command-line, graphical, web application, and voice based. Chat bots typically provide a text-based user interface, allowing the user to type commands and receive text as well as text to speech response. The functionality of a Chat bot works only on the existing commands. Chat bots  usually remember previous commands in order to provide functionality
+# College Automation System with simple chatbot 
 
 
 ### What Will I Learn?
