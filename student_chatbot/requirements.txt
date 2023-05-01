@@ -1,5 +1,5 @@
 # pip install -m requirements.txt
-Flask==1.1.1
+Flask==2.3.2
 Flask-Bcrypt==0.7.1
 Flask-Session==0.3.1
 idna==2.8
