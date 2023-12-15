@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+   <head>
+    <title>Book World</title>   
+    <link href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"
+          rel="stylesheet">
+    <strong><link rel="stylesheet" href="{{ url_for('static', filename='main.css') }}"></strong>
+    <script src="/static/js/prevent_back.js" type="text/javascript"></script>
+   
+  </head>
+  <body onload="changeHashOnLoad()">
+
+   
+    <div>
+    {% block content %}
+    {% endblock %}
+    </div> 
+  </body>
+</html>
+

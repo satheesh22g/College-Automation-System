@@ -1,0 +1,59 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+         
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg2.png');">
+  <div class = "panel panel-primary" style="width: fit-content;margin-top: 9%;margin-left: 4%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>Roll Number</th>
+          <th>Name</th>
+          <th>Attendance</th>
+          <th>Marks</th>
+       </tr>
+      
+        {% for i in students %}
+       <tr>
+        
+     <td><a href = "{{url_for('council_students', sid = i[0][0])}}">{{ i[0][0] }}</td>
+     <td><a href = "{{url_for('council_students', sid = i[0][0])}}">{{ i[0][1] }}</a></td>
+     <td>{{ i[1][1]}}</td>
+     <td>({{'%0.2f' % i[2][0]}}%)</td>
+    </tr>
+     {% endfor %}
+  
+   
+    
+      
+    </table>
+ </div>    
+</body>
+    </html>
+<!-- @app.route("/<sid>/Council-Students")
+def council_students(sid):
+    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": sid}).fetchall()
+    attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":sid}).fetchall()
+    marks=db.execute("SELECT * from marks where student_id = :s;",{"s":sid}).fetchall()
+    return render_template("student_profile.html",results=res,marks=marks,attend=attend)
+
+    if re.search('council', ss):
+        students=db.execute("select sid,name from student_profile where faculty_id=:f;",{"f":int(session['user'])}).fetchall()
+        attend = db.execute("select attend,attend_perc from attendance where councelor_id=:f;",{"f":int(session['user'])}).fetchall()
+        #marks = db.execute("select average from marks where councelor_id=:f;",{"f":session['user']}).fetchall()
+        return render_template("counsel_students.html", students=zip(students, attend)) -->

@@ -1,0 +1,9 @@
+{%if 'admin' in session['usert']%}
+  {%for res in result%}
+ <div style="width: 30%;height:30%;padding:50px;border: 1px solid red;margin: 5px;">
+  <h4 style="color: aliceblue;">Roll number:{{res.sid}}</h4>
+  <h4 style="color: aliceblue;">Name: {{res.name}}</h4>
+  <h4 style="color: aliceblue;">Subject: {{res.subject}}</h4>
+  <h4 style="color: aliceblue;">Message: {{res.message}}</h4></div>
+  {%endfor%}
+  {% endif %}

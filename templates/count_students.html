@@ -1,0 +1,30 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+         
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg2.png');">
+  <div class = "panel panel-primary" style="width: 50%;margin-top: 9%;margin-left: 4%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Total Number Students from {{results[0][1]}}rd year {{results[0][2]}}</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+      <h1 style="text-align: left;padding-left: 10%;"> {{results[0][0]}}</h1>
+    </table>
+ </div>
+    
+</body>
+    </html>

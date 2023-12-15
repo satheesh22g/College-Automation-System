@@ -1,0 +1,87 @@
+<head>
+  
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+       <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
+      
+      <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+      
+  <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+ <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+      <style>
+      .username
+      {
+         font-family: "Comic Sans MS", cursive, sans-serif;
+font-size: 19px;
+letter-spacing: -0.8px;
+word-spacing: -0.6px;
+margin-top: 10%;
+color: #FF0000;
+font-weight: 700;
+text-decoration: none;
+font-style: normal;
+font-variant: normal;
+text-transform: capitalize;
+      }</style>
+
+    </head>
+
+
+  <div class="wrapper">
+   {% if 'user' in session %}
+            <nav class="navbar-fixed-top" id="navbar">
+              <div class="col-md-3">
+                 <div class="menu-icon">
+                  <i class="fa fa-bars fa-2x"></i>
+               </div>
+
+      <div class="logo" style="margin: 0px;position: absolute;">
+         <a id="navbarHeader" class="navbar-brand" href="{{ url_for('dashboard') }}">
+         <img padding="0" align="top" src="{{ url_for('static', filename='smallicon.png') }}" width="75" height="55" alt=""></a>
+               </div>
+               </div>
+           <div class="col-md-5">
+            <a style="font-size: 100%;text-decoration: none;" href="{{url_for('changepass')}}">change password</a>
+               </div>   
+               <div class="col-md-2">
+                  {% if 'user' in session %}
+                  <h4 class="username">{{session['namet']}}</h4>
+               </div>{% endif %}
+               <div class="col-md-2">
+               <div class="menu">
+                  <ul> {% if 'user' not in session %}
+           
+                     {% else %}
+                     <li><div id="btn-group">
+            <a class="btn btn-primary" href="{{ url_for('logout') }}"> Logout </a>
+        </div></li>
+                     {% endif %}
+                  </ul>
+               </div>
+            </nav>
+</div>
+{% endif %}
+<div id="startchange"></div>
+<script>
+   $(document).ready(function(){       
+   var scroll_start = 0;
+   var startchange = $('#startchange');
+   var offset = startchange.offset();
+   $(document).scroll(function() { 
+      scroll_start = $(this).scrollTop();
+      if(scroll_start > offset.top) {
+          $('#navbar').css('background-color', 'rgba(0, 0, 0, 0.9)');
+       } else {
+          $('#navbar').css('background-color', 'transparent');
+       }
+   });
+});
+</script>
+</body>

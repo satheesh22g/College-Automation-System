@@ -1,0 +1,71 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+         
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg2.png');">
+  <div class = "panel panel-primary" style="width: fit-content;margin-top: 4%;margin-left: 1%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance of {{results[0].year}} year students
+       
+       </h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>Roll Number</th>
+          <th>Name</th>
+          <th>Sub1</th>
+          <th>Sub2</th>
+          <th>Sub3</th>
+          <th>Sub4</th>
+          <th>Sub5</th>
+          <th>Sub6</th>
+          <th>Sub7</th>
+          <th>Sub8</th>
+          <th>Sub9</th>
+          <th>Sub10</th>
+          <th>Sub11</th>
+          <th>Sub12</th>
+          <th>Sub13</th>
+          <th>Attendance</th>
+          <th>Percentage</th>
+       </tr>
+        {% for result in results %}
+       <tr>
+     <td>{{ result.student_id }}</td>
+     <td>{{ result.student_name }}</td>
+     <td>{{ result.sub1 }}</td>
+     <td>{{ result.sub2 }}</td>
+     <td>{{ result.sub3 }}</td>
+     <td>{{ result.sub4 }}</td>
+     <td>{{ result.sub5 }}</td>
+     <td>{{ result.sub6 }}</td>
+     <td>{{ result.sub7 }}</td>
+     <td>{{ result.sub8 }}</td>
+     <td>{{ result.sub9 }}</td>
+     <td>{{ result.sub10 }}</td>
+     <td>{{ result.sub11}}</td>
+     <td>{{ result.sub12 }}</td>
+     <td>{{ result.sub13 }}</td>
+     <td>{{ result.attend }}</td>
+     <td>{{ result.attend_perc }}</td>
+       </tr>
+       {% endfor %}
+    </table>
+ </div>    
+</body>
+
+    </html>

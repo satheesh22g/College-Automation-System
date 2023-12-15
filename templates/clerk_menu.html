@@ -1,0 +1,297 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+        <title>{{session['usert']}}</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+
+  <style>
+    body
+    {
+      position: fixed;
+    }
+    a
+    {
+      font-size: 2px;
+    }
+/* Login Button */
+.open-button {
+      background-color: #555;
+      color: white;
+      opacity: 0.8;
+      position: fixed;
+      top: 20%;
+      left:30%;
+      border-radius: 6px;
+      background-color:rgb(9, 70, 161);
+      border: none;
+      color: #FFFFFF;
+      text-align: center;
+      font-size: 24px;
+      width: min-content;
+      transition: all 0.5s;
+      cursor: pointer;
+      margin-top: 25%;
+      margin-left: 17%;
+    }
+    .open-button span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+}
+
+.open-button span:after {
+      content: '\00bb';
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+}
+
+.open-button:hover span {
+  padding-right: 25px;
+}
+
+.open-button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+   /*Side Nav */
+    .message
+{
+      height:100px;
+      width:100%;
+      margin-bottom:50px;
+}
+.sidenav {
+      margin-top: 50px;
+      width: 14%;
+      position: fixed;
+      z-index: 1;
+      top: 20px;
+      left: 10px;
+      overflow-x: hidden;
+      padding: 8px 0;
+      
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 150%;
+  color: #2196F3;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #064579;
+}
+
+.main {
+  margin-left: 140px; /* Same width as the sidebar + left position in px */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+/* intro text style */
+
+.Iam {
+
+  font: normal 24px/50px Montserrat;
+  color: white;
+  margin-top: 7%;
+  margin-left: 40%;
+  font-family: cursive;
+}
+.Iam p {
+  height: 50px;
+  float: left;
+  margin-right: 0.5em;
+}
+.Iam b {
+  float: left;
+  overflow: hidden;
+  position: relative;
+  height: 50px;
+  
+}
+.Iam .innerIam {
+  display: inline-block;
+  color: #e74c3c;
+  position: relative;
+  white-space: nowrap;
+  font-family: cursive;
+ 
+
+
+/*animation*/
+-webkit-animation:move 5s;
+   -moz-animation:move 5s;
+    -ms-animation:move 5s;
+     -o-animation:move 5s;
+        animation:move 5s;
+/*animation-iteration-count*/
+-webkit-animation-iteration-count:infinite;
+   -moz-animation-iteration-count:infinite;
+    -ms-animation-iteration-count:infinite;
+     -o-animation-iteration-count:infinite;
+        animation-iteration-count:infinite;
+/*animation-delay*/
+-webkit-animation-delay:1s;
+   -moz-animation-delay:1s;
+    -ms-animation-delay:1s;
+     -o-animation-delay:1s;
+        animation-delay:1s;
+}
+@keyframes move{
+0%  { top: 0px; }
+20% { top: -50px; }
+40% { top: -100px; }
+60% { top: -150px; }
+80% { top: -200px; }
+}
+
+@-webkit-keyframes move {
+    0%  { top: 0px; }
+    20% { top: -50px; }
+    40% { top: -100px; }
+    60% { top: -150px; }
+    80% { top: -200px; }
+}
+@-moz-keyframes move {
+    0%  { top: 0px; }
+    20% { top: -50px; }
+    40% { top: -100px; }
+    60% { top: -150px; }
+    80% { top: -200px; }
+}
+@-o-keyframes move {
+    0%  { top: 0px; }
+    20% { top: -50px; }
+    40% { top: -100px; }
+    60% { top: -150px; }
+    80% { top: -200px; }
+}
+@keyframes move {
+    0%  { top: 0px; }
+    20% { top: -50px; }
+    40% { top: -100px; }
+    60% { top: -150px; }
+    80% { top: -200px; }
+}
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+         <script>
+            $(document).ready(function(){
+             
+                
+                $("#div3").fadeOut(5000);
+              });
+            
+            </script>
+    </head>
+
+
+    <body style="background-image:url('static/bg.png');" onload="myFunction()">
+      
+      
+     {% if 'user' in session %}
+               <div class="sidenav">
+            
+                <a href="{{url_for('admin_update')}}">Updations</a>
+                <a href="{{url_for('load_data')}}">Load Data</a>
+                <a href="{{url_for('adminfeedbacks')}}">Feedbacks</a>
+        
+</div>
+           
+
+{% endif %}
+
+<div class="Iam">
+
+  <p>Welcome to</p>
+  <b>
+    <div class="innerIam">
+      <br /> 
+      Student<br />
+     informative<br />
+      chatbot<br />
+      system
+      </div>
+  </b>
+  
+  </div>
+<div>
+{% with messages = get_flashed_messages() %}
+               {% if messages %}
+         
+               <div class="alert">
+                  
+                   
+                 
+                 {% for message in messages %}
+                    <h4 style="color: red;margin-top: 19%;margin-left: 43%;font-size: 27px;" id="div3"><strong> {{ message }} </strong>  </h4>
+                 {% endfor %}
+                
+               </div>
+               
+                 {% endif %}
+             {% endwith %}
+
+</div>
+<script>
+  
+  (function (global) { 
+
+if(typeof (global) === "undefined") {
+    throw new Error("window is undefined");
+}
+
+var _hash = "!";
+var noBackPlease = function () {
+    global.location.href += "#";
+
+    // making sure we have the fruit available for juice (^__^)
+    global.setTimeout(function () {
+        global.location.href += "!";
+    }, 50);
+};
+
+global.onhashchange = function () {
+    if (global.location.hash !== _hash) {
+        global.location.hash = _hash;
+    }
+};
+
+global.onload = function () {            
+    noBackPlease();
+
+    // disables backspace on page except on input fields and textarea..
+    document.body.onkeydown = function (e) {
+        var elm = e.target.nodeName.toLowerCase();
+        if (e.which === 8 && (elm !== 'input' && elm  !== 'textarea')) {
+            e.preventDefault();
+        }
+        // stopping event bubbling up the DOM tree..
+        e.stopPropagation();
+    };          
+}
+
+})(window);
+</script>
+
+        </body>
+
+</html>

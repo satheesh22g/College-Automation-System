@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Update</title>
+    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
+    <style>
+      html, body {
+      min-height: 100%;
+      }
+      body, div, form, input, select, textarea, p { 
+      padding: 0;
+      margin: 0;
+      outline: none;
+      font-family: Roboto, Arial, sans-serif;
+      font-size: 14px;
+      color: #666;
+      line-height: 22px;
+      }
+      h1 {
+      margin: 15px 0;
+      font-weight: 400;
+      }
+      .testbox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: inherit;
+      padding: 3px;
+      }
+      form {
+      width: 100%;
+      padding: 20px;
+      background: #fff;
+      box-shadow: 0 2px 5px #ccc; 
+      }
+      input, select, textarea {
+      margin-bottom: 10px;
+      border: 1px solid #ccc;
+      border-radius: 3px;
+      }
+      input:hover, select:hover, textarea:hover {
+      outline: none;
+      box-shadow: 0 0 5px 0 #095484;
+      }
+      input {
+      width: calc(100% - 10px);
+      padding: 5px;
+      }
+      select {
+      width: 100%;
+      padding: 7px 0;
+      background: transparent;
+      }
+      textarea {
+      width: calc(100% - 2px);
+      padding: 5px;
+      }
+      .item {
+      position: relative;
+      margin: 10px 0;
+      }
+      .item:hover p, .item:hover i {
+      color: #095484;
+      }
+      input:hover, select:hover, textarea:hover {
+      box-shadow: 0 0 5px 0 #095484;
+      }
+      .status:hover input {
+      box-shadow: none;
+      }
+      .status label:hover input {
+      box-shadow: 0 0 5px 0 #095484;
+      }
+      .status-item input, .status-item span {
+      width: auto;
+      vertical-align: middle;
+      }
+      .status-item input {
+      margin: 0;
+      }
+      .status-item span {
+      margin: 0 20px 0 5px;
+      }
+      input[type="date"]::-webkit-inner-spin-button {
+      display: none;
+      }
+      input[type="time"]::-webkit-inner-spin-button {
+      margin: 2px 22px 0 0;
+      }
+      .item i, input[type="date"]::-webkit-calendar-picker-indicator {
+      position: absolute;
+      font-size: 20px;
+      color: #a9a9a9;
+      }
+      .item i {
+      right: 1%;
+      top: 30px;
+      z-index: 1;
+      }
+      [type="date"]::-webkit-calendar-picker-indicator {
+      right: 0;
+      z-index: 2;
+      opacity: 0;
+      cursor: pointer;
+      }
+      .btn-block {
+      margin-top: 20px;
+      text-align: center;
+      }
+      button {
+      width: auto;
+      padding: 10px;
+      border: none;
+      -webkit-border-radius: 5px; 
+      -moz-border-radius: 5px; 
+      border-radius: 5px; 
+      background-color: #095484;
+      font-size: 16px;
+      color: #fff;
+      cursor: pointer;
+      }
+      button:hover {
+      background-color: #0666a3;
+      }
+      @media (min-width: 568px) {
+      .name-item {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      }
+      .name-item input {
+      width: calc(50% - 20px);
+      }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>IN Progress</h1>
+    <div class="testbox">
+      <form action="{{ url_for('load_data') }}"  method = "POST" enctype = "multipart/form-data">
+     
+       
+        <div class="item">
+          <p><strong>Department:</strong></p>
+          <select name="dept_id" required>
+            <option value="">*Please select*</option>
+            <option value="1">Civil Engineering</option>
+            <option value="2">Electrical Engineering</option>
+            <option value="3">Mechanical Engineering</option>
+            <option value="4">Electronics and Communication Engineering</option>
+            <option value="5">Computer Science and Engineering</option>
+          </select>
+        </div>
+        <div class="item">
+          <p><strong>Faculty Name:</strong></p>
+          <select name= "faculty">
+            <option value= "" SELECTED>*Please select*</option>
+            {% for f in flist %}
+            <option value= "{{f.id}}">{{f.name}}</option>
+            {% endfor %}
+        </select>
+        
+        
+        </div>
+        <div class="item">
+          <p><strong>Year:</strong></p>
+          <select name= "year" required>
+            <option value="">*Please select*</option>
+            <option value= "1" >year 1</option>
+            <option value= "2" >year 2</option>
+            <option value= "3" >year 3</option>
+            <option value= "4" >year 4</option>
+        </select>
+        </div>
+        <div class="item status">
+          <p><strong>Choose any one:</strong></p>
+          <div class="status-item">
+            <label><input type="radio" name="table" value= "Attendance"> <span>Attendance</span></label>
+            <label><input type="radio" name="table" value="Marks"> <span>Marks</span></label>
+            <label><input type="radio" name="table" value="Profile"> <span>Profile</span></label>
+            <label><input type="radio" name="table" value="Faculty"> <span>Faculty</span></label>
+          </div>
+        </div>
+        <div class="item">
+          <p><strong>Choose XL sheet</strong></p>
+          <input type = "file" name = "file" required />
+        </div>
+        <div class="item">
+          <p><h3>{{output}}</h3></p>
+        </div>
+        
+        <div class="btn-block">
+          <button type="submit" href="/">Submit</button>
+        </div>
+      </form>
+    </div>
+    
+  </body>
+</html>

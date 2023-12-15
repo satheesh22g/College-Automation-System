@@ -1,0 +1,162 @@
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <style>
+        
+body, button {
+	font: 1em -apple-system, BlinkMacSystemFont,"Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+}
+button {
+	background-color: #eee;
+	border: 0;
+	border-radius: 0.125em;
+	box-shadow:
+		-0.2em -0.125em 0.125em rgba(0, 0, 0, 0.25), 
+		0 0 0 0.04em rgba(0, 0, 0, 0.3), 
+		0.02em 0.02em 0.02em rgba(0, 0, 0, 0.4) inset, 
+		-0.05em -0.05em 0.02em rgba(255, 255, 255, 0.8) inset;
+	color: #777;
+	margin:5px;
+	font-size: 1em;
+	outline: 0;
+	position: relative;
+	vertical-align: top;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	appearance: none;
+	-webkit-tap-highlight-color: transparent;
+	-webkit-user-select: none;
+	-moz-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+button:not(:last-of-type) {
+	margin-right: 0.35em;
+}
+
+button > span {
+	
+	font-size: 0.5em;
+
+}
+
+/* Keyboard */
+.keyboard {
+	float: left;
+	background-image: linear-gradient(90deg, #888, #ccc);
+	border-radius: 0.5em;
+	box-shadow: -1em -1em 1.5em rgba(245, 243, 243, 0.233), 0 0 0 1px #aaa inset;
+	display: grid;
+	grid-gap: 0.375em 0.875em;
+	font-size: 36px;
+    margin-top: 1%;
+    margin-left: 10%;
+	padding: 1%;
+	width: 48%;
+	height: 90%;
+	padding-bottom: 2%;
+	margin-bottom: 2%;
+}
+
+.btn2 {
+	width: 45%;
+	height: 1.125em;
+}
+.sm {
+    width:fit-content
+	font-size: 0.4em;
+	line-height: 1.25;
+}
+.collapsible {
+  background-color: rgb(72, 182, 255);
+  color: black;
+  cursor: pointer;
+  padding: 12px;
+  width: 100%;
+  border: none;
+  text-align: left;
+  outline: none;
+  font-size: 25px;
+  font-family: 'Courier New';
+  font-style: oblique;
+}
+
+.active, .collapsible:hover {
+  background-color: rgb(0, 140, 255);
+}
+
+.content {
+  padding: 0 18px;
+  display: none;
+  overflow: hidden;
+  background-color: #f1f1f1;
+}
+.btn
+{
+	padding: 15px;
+	padding-top:5px ;
+	padding-bottom: 5px;
+	font-size: medium;
+	text-decoration: none;
+	float: right;
+	background-color: rgb(72, 182, 255);
+	color: black;
+	border-radius: 6px;
+}
+
+    </style>
+</head>
+
+<body style="background-image:url('static/bg2.png');">
+	<button type="button" class="collapsible"><strong>Profile</strong>	<a class="btn" href="{{ url_for('dashboard') }}"><strong>Back</strong></a></button>
+
+	<div class="content">
+	{% for result in results %}
+	
+
+	
+    <div class="keyboard" ontouchstart="">
+       
+        <div class="row">
+		
+			<p style="height: 2px;font-size: large;padding-bottom: 2%;text-align: center;">Bio Data</p>
+            <button type="button" class="btn2"><span class="sm">Roll Number</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.id}} {{result.sid}}</span></button>
+            <button type="button" class="btn2"><span class="sm">Name</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.name}}</span></button>
+            <button type="button" class="btn2"><span class="sm">Department</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.branch}}</span></button>
+            <button type="button" class="btn2"><span class="sm">Gender</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.gender}}</span></button>
+            <button type="button" class="btn2"><span class="sm">DoB</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.dob}}</span></button>
+            <button type="button" class="btn2"><span class="sm">Phone Number</span></button>
+            <button type="button" class="btn2"><span class="sm">{{result.number}}</span></button>
+            </div>
+	
+        </div>
+
+
+  {% endfor %}
+  
+   </div>
+
+   
+
+   <script>
+	var coll = document.getElementsByClassName("collapsible");
+	var i;
+	
+	for (i = 0; i < coll.length; i++) {
+	  coll[i].addEventListener("click", function() {
+		this.classList.toggle("active");
+		var content = this.nextElementSibling;
+		if (content.style.display === "block") {
+		  content.style.display = "none";
+		} else {
+		  content.style.display = "block";
+		}
+	  });
+	}
+	</script>
+</body>

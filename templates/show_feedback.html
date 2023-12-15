@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+	<meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
+	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='feedback.css') }}">
+  <script>
+    $(document).ready(function(){
+     
+        
+        $("#div3").fadeOut(5000);
+        $("#div4").fadeOut(5000);
+      });
+    
+    </script>
+<style>
+
+  body{
+    font-family: cursive;
+  }
+.container-contact1-form-btn {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  text-align: center;
+transition: all 0.5s;
+cursor: pointer;
+}
+
+.contact1-form-btn {
+  min-width: 193px;
+  height: 50px;
+  border-radius: 25px;
+  border: 2px solid rgb(255, 0, 119);
+  font-family: Montserrat-Bold;
+  font-size: 20px;
+  line-height: 1.5;
+  color: rgb(255, 0, 119);
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+
+  -webkit-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+}
+
+
+.contact1-form-btn span {
+  cursor: pointer;
+  display: inline-block;
+  position: relative;
+  transition: 0.5s;
+  padding-top: 7px;
+}
+
+.contact1-form-btn span:after {
+  content: '\00bb';
+  position: absolute;
+  opacity: 0;
+  top: 0;
+  right: -20px;
+  transition: 0.5s;
+  padding-top: 7px;
+}
+
+.contact1-form-btn:hover span {
+padding-right: 25px;
+color:rgb(255, 0, 119);
+}
+
+.contact1-form-btn:hover span:after {
+opacity: 1;
+right: 0;
+}
+/* Faculty Feedback*/
+.testbox {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: inherit;
+      padding: 3px;
+      }
+
+      table {
+      width: 100%;
+      }
+      h4 {
+      padding: 15px 0 5px;
+      }
+      .question-answer label {
+      display: inline-block;
+      padding: 0 20px 15px 0;
+      }
+      .question-answer input {
+      width: auto;
+      }
+      th, td {
+      width: 17%;
+      padding: 15px 0;
+      text-align: center;
+      vertical-align: unset;
+      line-height: 18px;
+      font-weight: 400;
+      word-break: break-all;
+      border-bottom: 1px solid #095484;
+      color: #095484;
+      }
+      .first-col {
+      width: 26%;
+      text-align: left;
+      }
+      .btn-block {
+      margin-top: 20px;
+      text-align: center;
+      }
+   
+      @media (min-width: 568px) {
+      th, td {
+      word-break: keep-all;
+      }
+      }
+</style>
+</head>
+<body style="background-image:url('/static/bg.png');">
+
+<button type="button" class="btn btn-info btn-lg" style="margin: 2%;" data-toggle="modal" data-target="#myModal">Chatbox Query Suggestion</button>
+  <div class="modal fade" id="myModal" role="dialog">
+    <div class="modal-dialog modal-lg" style="width: 100%;margin: 2px;">
+
+      <!-- Modal content-->
+      <div class="modal-content">
+        <div class="modal-header" style="height: 50px;">
+          <button type="button" class="btn btn-default" style="float: right;margin-top: 0px;" data-dismiss="modal">Close</button>
+                </div>
+        <div class="modal-body">
+	<div class="contact1">
+		<div class="container-contact1" style="height:80%;">
+			<div class="contact1-pic js-tilt" data-tilt>
+        <a href="{{ url_for('dashboard') }}">
+        <img src="{{ url_for('static', filename='email.png') }}" alt="">
+        </a>
+       
+			</div>
+			<form class="contact1-form validate-form" action="{{ url_for('Suggestions') }}" method="post">
+				<span class="contact1-form-title">
+					Feedback/Suggestion/Complaint
+				</span>
+				<div class="wrap-input1 validate-input" >
+					<input class="input1" type="text" name="name" placeholder="Name (Optional)">
+          <span class="shadow-input1"></span>
+
+				</div>
+				<div class="wrap-input1 validate-input">
+					<input class="input1" type="text" name="subject" placeholder="Subject" required>
+					<span class="shadow-input1"></span>
+				</div>
+				<div class="wrap-input1 validate-input">
+					<textarea class="input1" name="message" placeholder="Message" required></textarea>
+					<span class="shadow-input1"></span>
+				</div>
+				<div class="container-contact1-form-btn">
+					<button class="contact1-form-btn">
+						<span style="margin-bottom: 5px;">
+							Submit
+							<i class="fa fa-long-arrow-right" aria-hidden="true"></i>
+						</span>
+					</button>
+				</div>
+			</form>
+		</div>
+  </div>
+ 
+
+        </div>
+
+      </div>
+
+    </div>
+ </div> 
+ <!-- faculty feedback -->
+ <div class = "panel panel-primary" style="margin-left: 1%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+        <th>sub1</th>
+        <th>sub2</th>
+        <th>sub3</th>
+        <th>sub4</th>
+        <th>sub5</th>
+        <th>sub6</th>
+        <th>lab1</th>
+        <th>lab2</th>
+       </tr>
+        {% for result in results %}
+       <tr>
+        <td>{{i.sub1}}</td>
+        <td>{{i.sub2}}</td>
+        <td>{{i.sub3}}</td>
+        <td>{{i.sub4}}</td>
+        <td>{{i.sub5}}</td>
+        <td>{{i.sub6}}</td>
+        <td>{{i.lab1}}</td>
+        <td>{{i.lab2}}</td>
+       </tr>
+       {% endfor %}
+    </table>
+ </div> 
+    </body>
+    

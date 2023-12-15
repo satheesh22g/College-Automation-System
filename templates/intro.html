@@ -1,0 +1,153 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+        <title>Chatbot</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+
+  <style>
+/* Login Button */
+.open-button {
+      background-color: #555;
+      color: white;
+      opacity: 0.8;
+      position: fixed;
+      top: 20%;
+      left:30%;
+      border-radius: 6px;
+      background-color:rgb(9, 70, 161);
+      border: none;
+      color: #FFFFFF;
+      text-align: center;
+      font-size: 24px;
+      width: min-content;
+      transition: all 0.5s;
+      cursor: pointer;
+      margin-top: 25%;
+      margin-left: 17%;
+    }
+    .open-button span {
+      cursor: pointer;
+      display: inline-block;
+      position: relative;
+      transition: 0.5s;
+}
+
+.open-button span:after {
+      content: '\00bb';
+      position: absolute;
+      opacity: 0;
+      top: 0;
+      right: -20px;
+      transition: 0.5s;
+}
+
+.open-button:hover span {
+  padding-right: 25px;
+}
+
+.open-button:hover span:after {
+  opacity: 1;
+  right: 0;
+}
+
+   /*Side Nav */
+    .message
+{
+      height:100px;
+      width:100%;
+      margin-bottom:50px;
+}
+.sidenav {
+      margin-top: 50px;
+      width: 130px;
+      position: fixed;
+      z-index: 1;
+      top: 20px;
+      left: 10px;
+      overflow-x: hidden;
+      padding: 8px 0;
+}
+
+.sidenav a {
+  padding: 6px 8px 6px 16px;
+  text-decoration: none;
+  font-size: 25px;
+  color: #2196F3;
+  display: block;
+}
+
+.sidenav a:hover {
+  color: #064579;
+}
+
+.main {
+  margin-left: 140px; /* Same width as the sidebar + left position in px */
+  font-size: 28px; /* Increased text to enable scrolling */
+  padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+  .sidenav {padding-top: 15px;}
+  .sidenav a {font-size: 18px;}
+}
+    </style>
+
+   
+  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    </head>
+
+
+    <body style="background-image:url('/static/intro.jpg');">
+      <img src="/static/srit.jpeg" style="  display: block;
+      margin-left: auto;
+      margin-right: auto;
+      width: 50%;margin-top: 3%;">
+      <h1 style="color: white;">
+
+      </h1>
+
+<div >
+  
+  <div class="animate seven" >
+    <h1 style="margin-top:4%;margin-left: 0%;display: block;">
+      <span style="color:white ;">W</span>
+      <span style="color: white;">E</span>
+      <span style="color:white ;">L</span>
+      <span style="color: white;">C</span>
+    <span style="color:white ;">O</span>
+    <span style="color: white;">M</span>
+    <span style="color:white ;">E</span><br>
+    <span style="color:white ;margin-top: 2%;">T</span>
+    <span style="color:white ;margin-top: 2%;">O</span>
+  </br>
+    <span style="color:white ;margin-top: 2%;">Student</span>
+    <span style="color:white ;margin-top: 2%;">Informative</span>
+    <span style="color:white ;margin-top: 2%;">Chatbot</span>
+  </h1>
+
+
+</div>
+<!-- <audio loop="loop" id="my_audio" src="static/audio.mp3">
+ 
+</audio> -->
+      <a class="open-button btn btn-primary" href="{{ url_for('login') }}"><span>Login</span></a>
+      
+  
+</div>
+
+<!-- <script type="text/javascript">
+  window.onload=function(){
+    document.getElementById("my_audio").play();
+  }
+</script> -->
+
+
+        </body>
+
+</html>

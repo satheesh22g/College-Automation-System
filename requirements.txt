@@ -1,0 +1,21 @@
+# pip install -m requirements.txt
+Flask
+Flask-Bcrypt
+Flask-Session
+idna
+itsdangerous
+Jinja2
+kiwisolver
+MarkupSafe
+matplotlib
+numpy
+pycparser
+pyparsing
+python-dateutil
+requests
+six
+SQLAlchemy
+urllib3
+Werkzeug
+autocorrect
+docx2txt
