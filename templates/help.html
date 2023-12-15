@@ -1,0 +1,219 @@
+{% include "nav.html" %}
+<html>
+    <head>
+        <style>
+            @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
+
+body {
+  font-family: "Lato", sans-serif;
+  font-size: 18px;
+  background: #fff;
+  line-height:26px;
+}
+
+h1 {
+ font-family: cursive;
+font-weight: 700;
+font-style: normal;
+color: #FF0000;
+  font-size: 32px;
+  
+}
+
+.heading
+{
+    font-family: cursive;
+font-weight: 700;
+    color: White;
+    font-size: 24px;
+}
+
+.content {
+  width: 80%;
+  padding: 20px;
+  margin: 0 auto;
+  padding: 0 60px 0 0;
+}
+
+.centerplease {
+  margin: 0 auto;
+  max-width: 270px;
+  font-size: 40px;
+}
+
+.question {
+  color: #fff;
+  position: relative;
+  background: #296be6;
+  margin: 0;
+  padding: 10px 10px 10px 50px;
+  display: block;
+  width:100%;
+  cursor: pointer;
+}
+
+.answers {
+  font-weight:300;
+  background: #f2f2f2;
+  padding: 0px 15px;
+  margin: 0px 0;
+  height: 0;
+  overflow: hidden;
+  z-index: -1;
+  position: relative;
+  opacity: 0;
+  -webkit-transition: .7s ease;
+  -moz-transition: .7s ease;
+  -o-transition: .7s ease;
+  transition: .7s ease;
+}
+
+.questions:checked ~ .answers{
+  height: auto;
+  opacity: 1;
+  padding: 15px;
+}
+
+.plus {
+  color:#fff;
+  position: absolute;
+  margin-left: 10px;
+  margin-top: 5px;
+  z-index: 5;
+  font-size: 2em;
+  line-height: 100%;
+  -webkit-user-select: none;    
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-transition: .3s ease;
+  -moz-transition: .3s ease;
+  -o-transition: .3s ease;
+  transition: .3s ease;
+}
+
+.questions:checked ~ .plus {
+  -webkit-transform: rotate(45deg);
+  -moz-transform: rotate(45deg);
+  -o-transform: rotate(45deg);
+  transform: rotate(45deg);
+}
+
+.questions {
+  display: none;
+}
+        </style>
+    </head>
+    <body style="background-image:url('/static/faq.png');">
+        
+
+<div class="content" style="margin-top: 5%;">
+    <h1>FAQs</h1> <a style="float: right;padding-left: 18px;padding-right: 18px;" class="btn btn-default" href="{{ url_for('dashboard') }}">Back</a>
+      
+    <!-- __________________________ SECTIONS ___________________________ --> 
+    
+    <h3 class="heading">FOR COUNSELOR</h3>
+   
+    <div>
+      <input type="checkbox" id="question1" name="q"  class="questions">
+      <div class="plus">+</div>
+      <label for="question1" class="question">
+       Attendance
+      </label>
+      <div class="answers">
+        <ul>
+       <li>attendance of counseling students</li>
+      <li>  attendance greater than (any number eg: 75)</li>
+        <li>attendance less than (any number eg: 75)</li>
+       <li>attendance of (specific roll number eg:164g1a0593)</li>
+       <li>show my councel students</li>
+        </ul>
+      </div>
+    </div>
+    <!-- _____________________________________________________ --> 
+    <div>
+      <input type="checkbox" id="question2" name="q" class="questions">
+      <div class="plus">+</div>
+      <label for="question2" class="question">
+    Marks
+      </label>
+      <div class="answers">
+        <li>marks of students with less than/&lt; (any number eg: 60) percentage</li>
+        <li>marks of students with greater than/> (any number eg: 60) percentage</li>
+        <li>marks of counseling students</li>
+        <li>marks of (Roll Number eq: 164g1a0593)</li>
+        <li>how many failed students</li>
+        <li>how many all clear students in my counseling or how many all clear students</li>
+      </div>
+    </div>
+     <!-- _____________________________________________________ -->  
+    <div>
+      <input type="checkbox" id="question3" name="q" class="questions">
+      <div class="plus">+</div>
+      <label for="question3" class="question">
+        Profile
+    </label>
+      <div class="answers">
+       <li> Profile of (Roll Number eq: 164g1a0593)</li>
+        <li>Profile of counseling students</li>
+        
+      </div>
+    </div>
+
+    
+    <!-- __________________________ SECTIONS ___________________________ --> 
+    
+    <h3 class="heading">FOR HOD</h3>
+    
+    <div>
+      <input type="checkbox" id="question11" name="q"  class="questions">
+      <div class="plus">+</div>
+      <label for="question11" class="question">
+       Attendance
+      </label>
+      <div class="answers">
+ <ul>
+   <li>attendance less than 75 of year 2</li>
+   <li>attendance greater than 75 of year 3</li>
+   <li>attendance of 164g1a0593</li>
+   <li>attendance of 2 year students</li>
+ </ul>
+        
+      </div>
+    </div>
+    <!-- _____________________________________________________ --> 
+    <div>
+      <input type="checkbox" id="question12" name="q" class="questions">
+      <div class="plus">+</div>
+      <label for="question12" class="question">
+    Marks
+      </label>
+      <div class="answers">
+       <li>marks with less than 60 percentage of 3 year</li>
+       <li>marks with greater than 60 percentage of 3 year</li>
+       <li>marks of 2 year </li>
+       <li>marks of 164g1a0593</li>
+       <li>how many failed students in 2nd year</li>
+       
+    
+      </div>
+    </div>
+     <!-- _____________________________________________________ -->  
+    <div>
+      <input type="checkbox" id="question13" name="q" class="questions">
+      <div class="plus">+</div>
+      <label for="question13" class="question">
+ Profile
+      </label>
+
+      <div class="answers">
+        <li>profile of 164g1a0593</li>
+        <li></li>
+      </div>
+    </div>
+    
+    
+    </div>
+    </body>
+</html>

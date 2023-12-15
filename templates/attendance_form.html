@@ -1,0 +1,92 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+       
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg2.png');">
+<div style="margin-top: 10%;margin-left: 25%; color:aliceblue;">
+<input type="radio" class ="radios" name="type" id='monthly'> Monthly
+<input type="radio" class ="radios" name="type" id='period'> Period
+<input type="radio" class ="radios" name="type" value="tillnow" id='tillnow'> Till Now
+<br/>
+<form action="#" method="POST">
+<select class="monthly" name="type" hidden="true" style="color: black;">
+<option value="January">January</option>
+<option value="Febuary">Febuary</option>
+<option value="March">March</option>
+<option value="April">April</option>
+<option value="May">May</option>
+<option value="June">June</option>
+<option value="July">July</option>
+<option value="August">August</option>
+<option value="September">September</option>
+<option value="October">October</option>
+<option value="November">November</option>
+<option value="December">December</option>
+</select>
+ <input type="date" value=getDate() name="from" min="2020-01-01" max="2021-12-31" style="color: black;margin-left: 6.9%;" class='period' hidden="true"/> <br/>
+<br/>
+<input type="date" value=getDate() name="to" min="2020-01-01" max="2021-12-31" style="color: black;margin-left: 6.9%;" class='period' hidden="true"/> <br/>
+<input type="submit" value="show" class="btn btn-primary">
+</form>
+</div>
+  <div class = "panel panel-primary" style="width: 60%;margin-top: 1%;margin-left: 7%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Attendance</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>Roll Number</th>
+          <th>Name</th>
+          <th>Attendance</th>
+       </tr>
+       <!-- {% for result in results %}
+       <tr>
+           <td>{{ result.sid }}</td>
+     <td>{{ result.name }}</td>
+     <td>{{ result.attend }}</td>
+       </tr>
+       {% endfor %} -->
+    </table>
+ </div>
+ <script>
+    $(function() {
+         $('#period').click(function() {
+             $('.monthly').attr('hidden',true);
+             $('.period').attr('hidden',false);
+            
+         });  
+                
+         $('#monthly').click(function() {
+            $('.period').attr('hidden',true);
+             $('.monthly').attr('hidden',false);
+         });
+         $('#tillnow').click(function() {
+             $('.monthly').attr('hidden',true);
+             $('.period').attr('hidden',true);
+         });
+     });
+ </script>
+ <script type="text/javascript">
+function getDate(){
+    var today = new Date();
+
+document.getElementById("date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
+
+
+}</script>
+</body>
+    </html>

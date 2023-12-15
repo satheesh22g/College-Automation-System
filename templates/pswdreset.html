@@ -1,0 +1,44 @@
+<head>
+    <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script type = "text/javascript" 
+  src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
+  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+
+<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+ <a href="{{ url_for('dashboard') }}"><img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
+<div class="d-flex justify-content-center h-100">
+ <div class="card">
+     <div class="card-header">
+         <h3>Reset Password</h3>
+        
+     </div>
+     <div class="card-body">
+          <form action="{{ url_for('reset') }}" method="POST">
+            <div class="input-group form-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+                </div>
+                 <input class="form-control" name="rollno" type="text" placeholder="Roll Number" required maxlength="30">
+
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Reset" class="btn float-right login_btn">
+            </div>
+           
+         </form>
+         <p style="color: red;">{{m}}</p>
+     </div>
+
+ </div>
+</div>
+</div>
+
+</body>

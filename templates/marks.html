@@ -1,0 +1,57 @@
+{% include "nav.html" %}
+{% include "chatbox.html" %}
+
+<html>
+    <head>
+      <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+        <style>
+         
+            </style> 
+            
+    </head>
+<body style="background-image:url('/static/bg2.png');">
+  <div class = "panel panel-primary" style="width: 80%;margin-top: 5%;margin-left: 1.2%;">
+    <div class = "panel-heading col-md-12">
+       <h3 class = "panel-title col-md-6">Marks</h3>
+       <span class="col-md-4"></span>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+    </div>
+   
+    <table class = "table">
+       <tr style="background-color: beige;">
+          <th>SEM</th>
+          <th>Roll Number</th>
+          <th>Name</th>
+          {%for i in sub%}
+          <th>{{i.name}}</th>
+          {% endfor %}
+          <th>total</th>
+          <th>Percentage</th>
+       </tr>
+       {% for res in results%}
+       <tr>
+        
+            <td>1</td>
+            <td>{{res.student_id}}</td>
+            <td>{{res.name}}</td>
+            <td>{{res.sub1}}</td>
+            <td>{{res.sub2}}</td>
+            <td>{{res.sub3}}</td>
+            <td>{{res.sub4}}</td>
+            <td>{{res.sub5}}</td>
+            <td>{{res.sub6}}</td>
+            <td>{{res.sub7}}</td>
+            <td>{{res.sub8}}</td>
+            <th>{{res.total}}</th>
+            <th>({{'%0.2f' % res.average}}%)</th>
+       </tr>
+       {% endfor %}
+    </table>
+ </div>
+    
+</body>
+    </html>
