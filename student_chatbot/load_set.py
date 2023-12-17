@@ -13,24 +13,34 @@ Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 bcrypt = Bcrypt(app)
 
-def department():
-    db.execute("INSERT INTO departments(did,name) VALUES(1,'Civil Engineering')")
-    db.execute("INSERT INTO departments(did,name) VALUES(2,'Electrical Engineering')")
-    db.execute("INSERT INTO departments(did,name) VALUES(3,'Mechanical Engineering')")
-    db.execute("INSERT INTO departments(did,name) VALUES(4,'Electronics and Communication Engineering')")
-    db.execute("INSERT INTO departments(did,name) VALUES(5,'Computer Science and Engineering')")
-    db.commit()
-    print("department Completed ................................ ")
-def Student():
-    f = open('students.csv')
-    reader = csv.reader(f)
-    header = next(reader)
-    print("Running script ... ")
-    for sid, sname, dept_id in reader:
-        db.execute("INSERT INTO students(sid, sname, dept_id) VALUES(:s, :n, :d)", {"s":sid, "n":sname, "d":dept_id })
-    db.commit()
-    print("students Completed .................................... ")
+def department(session):
+    departments_data = [
+        {'did': 1, 'name': 'Civil Engineering'},
+        {'did': 2, 'name': 'Electrical Engineering'},
+        {'did': 3, 'name': 'Mechanical Engineering'},
+        {'did': 4, 'name': 'Electronics and Communication Engineering'},
+        {'did': 5, 'name': 'Computer Science and Engineering'}
+    ]
 
+    for data in departments_data:
+        new_department = Departments(did=data['did'], name=data['name'])
+        session.add(new_department)
+
+    session.commit()
+    print("Department insertion completed.")
+
+def Student(session, filename='students.csv'):
+    with open(filename, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip header
+        print("Running script...")
+        for row in reader:
+            sid, sname, dept_id = row
+            new_student = Students(sid=sid, sname=sname, dept_id=dept_id)
+            session.add(new_student)
+
+        session.commit()
+        print("Student insertion completed.")
 def Faculty():
     f = open('faculty.csv')
     reader = csv.reader(f)
@@ -195,12 +205,14 @@ def dummy():
     db.execute("delete from accounts")
     db.commit()
 if __name__ == "__main__":
-    dummy()
+    department(db)
+    Student(db,)
+    #dummy()
     # department()
     # Faculty()
     # faculty_profile()
     admin()
-    cse_faculty_accounts()
+    #cse_faculty_accounts()
     # cse_student_profile()
     # eee_student_profile()
     # ce_student_profile()
@@ -211,5 +223,5 @@ if __name__ == "__main__":
     # cse2marks()
     #cse3marks()
     # cse4marks()
-    cse_clerk()
+    #cse_clerk()
     # cse_subjects()

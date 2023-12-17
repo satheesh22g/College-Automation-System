@@ -1,10 +1,11 @@
 import os
 import sys
+from database import Base, Attendance, Marks, Accounts, Student_Profile,Feedback,Faculty_Feedback,Departments,Faculty,Faculty_Profile
 from flask import send_file
 from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Students,Departments,Faculty,Faculty_Profile, Faculty_Feedback
+from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Departments,Faculty,Faculty_Profile, Faculty_Feedback
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.utils import secure_filename
@@ -16,24 +17,38 @@ import re
 import time
 import pandas as pd
 import matplotlib.pyplot as plt
-import datetime
 import matplotlib
+from sqlalchemy import create_engine, event
+from datetime import datetime, timedelta
+from sqlalchemy.exc import IntegrityError
 matplotlib.use('Agg')
 from matplotlib import pyplot as plt
+from sqlalchemy import text
+
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
 app.secret_key = os.urandom(24)
 
-currentTime = datetime.datetime.now()
+currentTime = datetime.now()
 # Configure session to use filesystem
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
+engine = create_engine('sqlite:///database1.db', connect_args={'check_same_thread': False}, echo=True)
 Base.metadata.bind = engine
-db = scoped_session(sessionmaker(bind=engine))
+DBSession = sessionmaker(bind=engine)
+db = DBSession()
+
+# Define a function to disable bound value tracking
+def disable_bound_value_tracking(dbapi_con, con_record):
+    dbapi_con.execute('PRAGMA track_bound_values = OFF')
+
+# Register the event to disable bound value tracking
+event.listen(engine, 'connect', disable_bound_value_tracking)
+
+
 # For autocorrect the input
 spell = Speller(lang='en')
 def str_to_class(str):
@@ -409,16 +424,22 @@ def council_students(sid):
 @app.route("/profile")
 def profile():
     if session['usert']=="Student":
-        res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
-        attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":session['user']}).fetchall()
-        marks=db.execute("SELECT * from marks where student_id = :s;",{"s":session['user']}).fetchall()
+        #res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
+        res = db.query(Student_Profile).filter_by(sid=session['user']).all()
+        #attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":session['user']}).fetchall()
+        attend = db.query(Attendance).filter_by(student_id=session['user']).all()
+        marks = db.query(Marks).filter_by(student_id=session['user']).all()
+        #marks=db.execute("SELECT * from marks where student_id = :s;",{"s":session['user']}).fetchall()
         return render_template("student_profile.html",results=res,marks=marks,attend=attend)
     else:
-        res=db.execute("SELECT * FROM Faculty_Profile WHERE id = :u", {"u": session['user']}).fetchall()
+        user_id = session['user']
+        res=db.query(Faculty_Profile).filter_by(id=user_id).all()
         return render_template("faculty_profile.html",results=res)
 @app.route("/attendance")
 def attendance():
-    result=db.execute("SELECT * FROM attendance WHERE student_id = :u", {"u": session['user']}).fetchall()
+    #result=db.execute("SELECT * FROM attendance WHERE student_id = :u", {"u": session['user']}).fetchall()
+    user_id = session['user']  # Assuming session['user'] holds the value for student_id
+    result = db.query(Attendance).filter_by(student_id=user_id).all()
     return render_template("attendance.html",results=result)
 
 @app.route("/help")
@@ -427,40 +448,50 @@ def help():
 
 @app.route("/marks")
 def marks():
-    result=db.execute("SELECT * FROM marks WHERE student_id = :u", {"u": session['user']}).fetchall()
+    user_id = session['user'] 
+    result = db.query(Marks).filter_by(student_id=user_id).all()
     return render_template("marks.html",results=result)
 @app.route("/attendance_display")
 def attendance_update():
     return render_template("attendance_form.html")
+
 @app.route("/suggestions", methods=["GET", "POST"])
 def Suggestions():
-    too_old = datetime.datetime.today() - datetime.timedelta(days=1)
-    db.execute("delete from faculty_feedback where date<=:i",{"i":too_old})
-    db.commit()
-    msg1=msg2=""
+    # today_date = datetime.today()  # Calculate today's date outside the lambda
+
+    # too_old = today_date - timedelta(days=1)
+    # print('too_old',too_old)
+    # # Delete older feedback entries
+    # db.query(Faculty_Feedback).filter(Faculty_Feedback.date <= too_old).delete()
+
+    msg1 = msg2 = ""
     try:
         if request.method == "POST":
-            sid = request.form.get("sid")
             name = request.form.get("name")
             subject = request.form.get("subject")
             message = request.form.get("message")
-            result = db.execute("INSERT INTO feedback (name,subject,message,user_id) VALUES (:n,:s,:m,:u)", {"n":name,"s":subject ,"m": message,"u":session['user']})
+
+            # Insert new feedback using parameterized query
+            new_feedback = Feedback(name=name, subject=subject, message=message, user_id=session['user'])
+            db.add(new_feedback)
             db.commit()
-            msg1= "Submitted!"
-            msg2 = "Thank You for your Feedback"
-    except exc.IntegrityError:
-            message = "Roll Number already exists."
-            db.execute("ROLLBACK")
-            db.commit()
-    return render_template("feedback.html",msg1=msg1,msg2=msg2)
+            msg1 = "Submitted!"
+            msg2 = "Thank you for your feedback"
+
+    except IntegrityError:
+        message = "Roll Number already exists."
+        # Perform rollback if an IntegrityError occurs
+        db.rollback()
+
+    return render_template("feedback.html", msg1=msg1, msg2=msg2)
+
 # Faculty Feedback
 @app.route("/Faculty-Feedback", methods=["GET", "POST"])
 def Faculty_Feedback():
-    
-    too_old = datetime.datetime.today() - datetime.timedelta(days=1)
-    db.execute("delete from faculty_feedback where date<=:i",{"i":too_old})
+    too_old = datetime.today() - timedelta(days=1)
+    db.query(Faculty_Feedback).filter(Faculty_Feedback.date <= too_old).delete()
     db.commit()
-    msg1=msg2=""
+    msg1 = msg2 = ""
     try:
         if request.method == "POST":
             sub1 = request.form.get("sub1")
@@ -471,24 +502,43 @@ def Faculty_Feedback():
             sub6 = request.form.get("sub6")
             lab1 = request.form.get("lab1")
             lab2 = request.form.get("lab2")
-            result1 = db.execute("INSERT INTO faculty_feedback (sub1,sub2,sub3,sub4,sub5,sub6,lab1,lab2,date,student_id) VALUES (:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:lab1,:lab2,:date,:s)", {"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"lab1":lab1,"lab2":lab2,"date":datetime.datetime.today(),"s":session['user']})
+            result1 = db.execute("INSERT INTO faculty_feedback (sub1, sub2, sub3, sub4, sub5, sub6, lab1, lab2, date, student_id) VALUES (:sub1, :sub2, :sub3, :sub4, :sub5, :sub6, :lab1, :lab2, :date, :s)", {"sub1": sub1, "sub2": sub2, "sub3": sub3, "sub4": sub4, "sub5": sub5, "sub6": sub6, "lab1": lab1, "lab2": lab2, "date": datetime.datetime.today(), "s": session['user']})
             db.commit()
-            msg1= "Submitted!"
+            new_feedback = Faculty_Feedback(
+                sub1=sub1,
+                sub2=sub2,
+                sub3=sub3,
+                sub4=sub4,
+                sub5=sub5,
+                sub6=sub6,
+                lab1=lab1,
+                lab2=lab2,
+                date=datetime.today(),
+                student_id=session['user']
+            )
+
+            # Add the new_feedback object to the session
+            db.add(new_feedback)
+
+            # Commit the changes
+            db.commit()
+            msg1 = "Submitted!"
             msg2 = "Thank You for your Feedback"
     except exc.IntegrityError:
-            msg1 = "Already Submitted."
-            db.execute("ROLLBACK")
-            db.commit()
-    return render_template("feedback.html",msg1=msg1,msg2=msg2)
+        msg1 = "Already Submitted."
+        db.rollback()
+        db.commit()
+    return render_template("feedback.html", msg1=msg1, msg2=msg2)
+
 # To display all the complaints to the admin
 @app.route("/adminfeedbacks")
 def adminfeedbacks():
-    result=db.execute("SELECT * FROM feedback").fetchall()
+    result=db.query(Feedback).all()
     return render_template('feedback.html',result=result)
 @app.route("/feedbacks")
 def show_feedback():
     # display FeedBack  To HOD
-    result = db.execute("select * from faculty_feedback").fetchall()
+    result = db.query(Faculty_Feedback).all()
     return render_template('show_feedback.html',res=result)
 @app.route('/<data>/download')
 def download_file(data):
@@ -620,9 +670,10 @@ def register():
             usert = request.form.get("usertyp")
             passw = request.form.get("password")
             passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
-            result = db.execute("INSERT INTO accounts (id,name,user_type,password) VALUES (:u,:n,:t,:p)", {"u": usern,"n":name,"t":usert ,"p": passw_hash})
+            result = Accounts(id=usern, name=name, user_type=usert, password=passw_hash)
+            db.add(result)
             db.commit()
-            if result.rowcount > 0:
+            if result is not None:
                 session['user'] = usern
                 session['namet'] = name
                 session['usert'] = usert
@@ -630,7 +681,7 @@ def register():
                 return redirect(url_for('dashboard'))
         except exc.IntegrityError:
             message = "Roll Number already exists."
-            db.execute("ROLLBACK")
+            db.rollback()
             db.commit()
     return render_template("registration.html", message=message)
 
@@ -687,10 +738,9 @@ def login():
     if request.method == "POST":
         usern = request.form.get("username").upper()
         passw = request.form.get("password").encode('utf-8')
-        result = db.execute("SELECT * FROM accounts WHERE id = :u", {"u": usern}).fetchone()
+        result = db.query(Accounts).filter_by(id=usern).first()
         if result is not None:
-            print(result['password'])
-            if bcrypt.check_password_hash(result['password'], passw) is True:
+            if bcrypt.check_password_hash(result.password, passw) is True:
                 session['user'] = usern
                 session['namet'] = result.name
                 session['usert'] = result.user_type
@@ -703,4 +753,4 @@ def login():
 if __name__ == '__main__':
     app.secret_key = 'super_secret_key'
     app.debug = True
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=8008)

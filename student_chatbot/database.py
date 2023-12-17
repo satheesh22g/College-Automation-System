@@ -1,9 +1,8 @@
 import os
 import sys
 from sqlalchemy import Column, ForeignKey, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import DateTime
-from sqlalchemy.orm import relationship
+from sqlalchemy.orm import relationship,declarative_base
 from sqlalchemy import create_engine
 Base = declarative_base()
 
@@ -21,7 +20,7 @@ class CSE_Subjects():
     sub_id = Column(Integer, primary_key=True)
     sub_name = Column(Integer)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
     year = Column(Integer)
     sem = Column(Integer)
 class Students(Base):
@@ -29,13 +28,13 @@ class Students(Base):
     sid = Column(String, primary_key=True)
     sname = Column(String(30),nullable=False)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
 class Faculty(Base):
     __tablename__ = 'faculty'
     id = Column(String, primary_key=True)
     name = Column(String(30),nullable=False)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
 class Student_Profile(Base):
     __tablename__ = 'student_profile'
     sid = Column(String, primary_key=True)
@@ -47,9 +46,10 @@ class Student_Profile(Base):
     entrance_type = Column(String(30))
     HorD = Column(String)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
     faculty_id = Column(String, ForeignKey('faculty.id'))
-    faculty = relationship(Faculty)
+    faculty = relationship("Faculty", foreign_keys=[faculty_id])
+    
 class Faculty_Profile(Base):
     __tablename__ = 'faculty_profile'
     id = Column(String, primary_key=True)
@@ -59,13 +59,14 @@ class Faculty_Profile(Base):
     dob = Column(DateTime)
     phone = Column(Integer)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
+    
 class Marks(Base):
     __tablename__ = 'marks'
     id = Column(Integer, primary_key=True)
     student_id = Column(String(30),ForeignKey('student_profile.sid'))
     name = Column(String(30))
-    student_profile = relationship(Student_Profile) 
+    student_profile = relationship("Student_Profile", foreign_keys=[student_id])
     sub1 = Column(Integer)
     sub2 = Column(Integer)
     sub3 = Column(Integer)
@@ -79,11 +80,12 @@ class Marks(Base):
     total = Column(Integer)
     average = Column(Integer)
     dept_id = Column(Integer, ForeignKey('departments.did'))
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
     year = Column(Integer)
     faculty_id = Column(String, ForeignKey('faculty.id'))
     councelor_id = Column(String, ForeignKey('faculty.id'))
-    faculty = relationship(Faculty)
+    faculty = relationship("Faculty", foreign_keys=[faculty_id])
+    councelor = relationship("Faculty", foreign_keys=[councelor_id])
     sem = Column(Integer)
 class Subjects(Base):
     __tablename__ = 'subjects'
@@ -91,13 +93,14 @@ class Subjects(Base):
     name = Column(String)
     sem = Column(String)
     dept_id = Column(Integer, ForeignKey('departments.did'))
+    departments = relationship("Departments", foreign_keys=[dept_id])
     year = Column(Integer)
 class Attendance(Base):
     __tablename__ = 'attendance'
     sid = Column(Integer, primary_key=True)
     #total_days = Column(Integer)
     student_id = Column(String, ForeignKey('student_profile.sid'))
-    student_profile = relationship(Student_Profile) 
+    student_profile = relationship("Student_Profile", foreign_keys=[student_id]) 
     student_name = Column(String)
     sub1 = Column(Integer)
     sub2 = Column(Integer)
@@ -117,10 +120,11 @@ class Attendance(Base):
     attend_perc = Column(Integer)
     dept_id = Column(Integer, ForeignKey('departments.did'))
     year = Column(Integer)
-    departments = relationship(Departments)
+    departments = relationship("Departments", foreign_keys=[dept_id])
     faculty_id = Column(String, ForeignKey('faculty.id'))
     councelor_id = Column(String, ForeignKey('faculty.id'))
-    faculty = relationship(Faculty)
+    faculty = relationship("Faculty", foreign_keys=[faculty_id])
+    councelor = relationship("Faculty", foreign_keys=[councelor_id])
     sem = Column(Integer)
     
 class Faculty_Feedback(Base):
@@ -136,9 +140,9 @@ class Faculty_Feedback(Base):
     lab2 = Column(Integer)
     date = Column(DateTime)
     faculty_id = Column(String, ForeignKey('faculty.id'))
-    faculty = relationship(Faculty)
+    faculty = relationship("Faculty", foreign_keys=[faculty_id])
     student_id = Column(String, ForeignKey('student_profile.sid'),unique=True)
-    student_profile = relationship(Student_Profile) 
+    student_profile = relationship("Student_Profile", foreign_keys=[student_id])
 class Feedback(Base):
     __tablename__ = 'feedback'
     sid = Column(Integer, primary_key=True)
@@ -146,6 +150,8 @@ class Feedback(Base):
     subject = Column(String(30),nullable=False)
     message = Column(String(300),nullable=False)
     user_id = Column(String(30), ForeignKey('accounts.id'))
+    accounts = relationship("Accounts", foreign_keys=[user_id])
+    
 
 engine = create_engine('sqlite:///database.db')
 Base.metadata.create_all(engine)
