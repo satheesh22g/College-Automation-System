@@ -33,12 +33,9 @@ $ pip install -r requirements.txt
 ```
 $ Python database_setup.py
 ```
-8. Populate the database with some initial data
-```
-$ Python input_data.py
-```
-9. Launch application
+
+6. Launch application
 ```
 $ Python app.py
 ```
-10. Open the browser and go to [http://localhost:5000](http://localhost:5000)
+7. Open the browser and go to [http://localhost:5000](http://localhost:8008)
