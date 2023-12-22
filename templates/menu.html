@@ -1,311 +1,173 @@
 {% include "nav.html" %}
-{% include "chatbox.html" %}
 
-<html>
-    <head>
-        <title>{{session['usert']}}</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRIT Campus Hub</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+    <style>
+        .error-message {
+                animation: fadeOut 2s forwards;
+                animation-delay: 5s;
+                color: rgb(241, 7, 7);
+                padding: 10px;
+                text-align: center;
+            }
 
-  <style>
-    body
-    {
-      position: fixed;
-    }
-    a
-    {
-      font-size: 2px;
-    }
-/* Login Button */
-.open-button {
-      background-color: #555;
-      color: white;
-      opacity: 0.8;
-      position: fixed;
-      top: 20%;
-      left:30%;
-      border-radius: 6px;
-      background-color:rgb(9, 70, 161);
-      border: none;
-      color: #FFFFFF;
-      text-align: center;
-      font-size: 24px;
-      width: min-content;
-      transition: all 0.5s;
-      cursor: pointer;
-      margin-top: 25%;
-      margin-left: 17%;
-    }
-    .open-button span {
-      cursor: pointer;
-      display: inline-block;
-      position: relative;
-      transition: 0.5s;
-}
-
-.open-button span:after {
-      content: '\00bb';
-      position: absolute;
-      opacity: 0;
-      top: 0;
-      right: -20px;
-      transition: 0.5s;
-}
-
-.open-button:hover span {
-  padding-right: 25px;
-}
-
-.open-button:hover span:after {
-  opacity: 1;
-  right: 0;
-}
-
-   /*Side Nav */
-    .message
-{
-      height:100px;
-      width:100%;
-      margin-bottom:50px;
-}
-.sidenav {
-      margin-top: 50px;
-      width: 14%;
-      position: fixed;
-      z-index: 1;
-      top: 20px;
-      left: 10px;
-      overflow-x: hidden;
-      padding: 8px 0;
-      
-}
-
-.sidenav a {
-  padding: 6px 8px 6px 16px;
-  text-decoration: none;
-  font-size: 150%;
-  color: #2196F3;
-  display: block;
-}
-
-.sidenav a:hover {
-  color: #064579;
-}
-
-.main {
-  margin-left: 140px; /* Same width as the sidebar + left position in px */
-  font-size: 28px; /* Increased text to enable scrolling */
-  padding: 0px 10px;
-}
-
-@media screen and (max-height: 450px) {
-  .sidenav {padding-top: 15px;}
-  .sidenav a {font-size: 18px;}
-}
-/* intro text style */
-
-.Iam {
-
-  font: normal 24px/50px Montserrat;
-  color: white;
-  margin-top: 7%;
-  margin-left: 40%;
-  font-family: cursive;
-}
-.Iam p {
-  height: 50px;
-  float: left;
-  margin-right: 0.5em;
-}
-.Iam b {
-  float: left;
-  overflow: hidden;
-  position: relative;
-  height: 50px;
-  
-}
-.Iam .innerIam {
-  display: inline-block;
-  color: #e74c3c;
-  position: relative;
-  white-space: nowrap;
-  font-family: cursive;
- 
-
-
-/*animation*/
--webkit-animation:move 5s;
-   -moz-animation:move 5s;
-    -ms-animation:move 5s;
-     -o-animation:move 5s;
-        animation:move 5s;
-/*animation-iteration-count*/
--webkit-animation-iteration-count:infinite;
-   -moz-animation-iteration-count:infinite;
-    -ms-animation-iteration-count:infinite;
-     -o-animation-iteration-count:infinite;
-        animation-iteration-count:infinite;
-/*animation-delay*/
--webkit-animation-delay:1s;
-   -moz-animation-delay:1s;
-    -ms-animation-delay:1s;
-     -o-animation-delay:1s;
-        animation-delay:1s;
-}
-@keyframes move{
-0%  { top: 0px; }
-20% { top: -50px; }
-40% { top: -100px; }
-60% { top: -150px; }
-80% { top: -200px; }
-}
-
-@-webkit-keyframes move {
-    0%  { top: 0px; }
-    20% { top: -50px; }
-    40% { top: -100px; }
-    60% { top: -150px; }
-    80% { top: -200px; }
-}
-@-moz-keyframes move {
-    0%  { top: 0px; }
-    20% { top: -50px; }
-    40% { top: -100px; }
-    60% { top: -150px; }
-    80% { top: -200px; }
-}
-@-o-keyframes move {
-    0%  { top: 0px; }
-    20% { top: -50px; }
-    40% { top: -100px; }
-    60% { top: -150px; }
-    80% { top: -200px; }
-}
-@keyframes move {
-    0%  { top: 0px; }
-    20% { top: -50px; }
-    40% { top: -100px; }
-    60% { top: -150px; }
-    80% { top: -200px; }
-}
+            @keyframes fadeOut {
+                from {opacity: 1;}
+                to {opacity: 0;}
+            }
     </style>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-         <script>
-            $(document).ready(function(){
-             
-                
-                $("#div3").fadeOut(5000);
-              });
-            
-            </script>
-    </head>
+</head>
+<body style="background-image: url('static/bg.jpg');background-size: cover;">
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+        </div>
+        <button type="button" id="sidebarCollapseBtn" class="btn btn-dark">
+          <i class="fas fa-arrow-left"></i>
+      </button>
 
+        <ul class="list-unstyled components">
+            <!-- Sidebar links -->
+            <!-- Replace these with your links -->
+            <p>
+              {% if "admin" in session['usert'] %}
+              <ul>
+                  <li><a href="{{ url_for('reset') }}">Reset Password</a></li>
+                  <li><a href="{{ url_for('admin_update') }}">Updations</a></li>
+                  <li><a href="{{ url_for('load_data') }}">Load Data</a></li>
+                  <li><a href="{{ url_for('adminfeedbacks') }}">Feedbacks</a></li>
+                </ul>
+              {% elif "Student" in session['usert'] %}
+                  <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('attendance') }}">Attendance</a></li>
+                  <li><a href="{{ url_for('marks') }}">Marks</a></li>
+                 <li> <a href="{{ url_for('Suggestions') }}">Feedback</a></li>
+                 <li> <a href="{{ url_for('help') }}">Help</a></li>
+                  </ul>
+              {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
+                <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('show_feedback') }}">Feedback</a></li>
+                  <li><a href="{{ url_for('help') }}">Help</a></li>
+                </ul>
+              {% else %}
+                 <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('Suggestions') }}">Feedback</a></li>
+                  <li><a href="{{ url_for('help') }}">Help</a></li>
+                 </ul>
+              {% endif %}
+          </p>
+        </ul>
+    </nav>
 
-    <body style="background-image:url('static/bg.png');" onload="myFunction()">
-      
-      
-     {% if 'user' in session %}
-               <div class="sidenav">
-                <p>
-                {% if "admin" in session['usert'] %}
-                <a href="{{url_for('reset')}}">Reset Password</a>
-                <a href="{{url_for('admin_update')}}">Updations</a>
-                <a href="{{url_for('load_data')}}">Load Data</a>
-                <a href="{{url_for('adminfeedbacks')}}">Feedbacks</a>
-                
-                {%elif "Student" in session['usert'] %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('attendance')}}">Attendance</a>
-  <a href="{{url_for('marks')}}">Marks</a>
-  <a href="{{url_for('Suggestions')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('show_feedback')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% else %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('Suggestions')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% endif %}
-</div>
-           
-
-{% endif %}
-
-<div class="Iam">
-
-  <p>Welcome to</p>
-  <b>
-    <div class="innerIam">
-      <br /> 
-      Student<br />
-     informative<br />
-      chatbot<br />
-      system
-      </div>
-  </b>
   
-  </div>
-<div>
-{% with messages = get_flashed_messages(category_filter=["greet"]) %}
-               {% if messages %}
-         
-               <div class="alert">
-                 {% for message in messages %}
-                    <h4 style="color: red;margin-top: 19%;margin-left: 35%;font-size: 27px;" id="div3"><strong> {{ message }} </strong>  </h4>
-                 {% endfor %}
-                
-               </div>
-               
-                 {% endif %}
-             {% endwith %}
-
 </div>
-<script>
-  
-  (function (global) { 
+        <div class="text-center" style="padding-top: 4%;padding-bottom: 7%;">
+          <h4>Welcome to SRIT Campus Hub</h4>
+          <button type="button" id="sidebarCollapse" class="btn btn-dark">
+            Menu
+        </button>
+        </div>
+        <div>
+            {% with messages = get_flashed_messages(category_filter=["greet"]) %}
+                {% if messages %}
+                    <div class="alert text-center error-message">
+                        {% for message in messages %}
+                            <h4><strong>{{ message }}</strong></h4>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["alert"]) %}
+            {% if messages %}
+                <div class="alert text-center error-message">
+                    {% for message in messages %}
+                        <p><strong>{{ message }}</strong></p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        </div>
+       
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner1.jpg') }}" class="d-block" alt="News Image 1">
+                        <div class="text-below">
+                          <h2>Admissions Now Open!</h2>
+                          <p>Join Us for an Exciting Academic Journey.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner2.jpg') }}" class="d-block" alt="News Image 2">
+                        <div class="text-below">
+                          <h2>Explore Your Future:</h2>
+                          <p>Enroll Today for Cutting-Edge Courses.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner3.jpg') }}" class="d-block" alt="News Image 3">
+                        <div class="text-below">
+                          <h2>Scholarship Opportunities Available:</h2>
+                          <p>Pursue Your Dream Degree.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Add more carousel items as needed -->
+                  </div>
+                  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" style="z-index: 0;">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        
 
-if(typeof (global) === "undefined") {
-    throw new Error("window is undefined");
-}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Script to handle sidebar toggle
+      $(document).ready(function () {
+          $('#sidebarCollapse').on('click', function () {
+              $('#sidebar').toggleClass('active');
+          });
+          $('#sidebarCollapseBtn').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+      });
+  </script>
 
-var _hash = "!";
-var noBackPlease = function () {
-    global.location.href += "#";
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
-    // making sure we have the fruit available for juice (^__^)
-    global.setTimeout(function () {
-        global.location.href += "!";
-    }, 50);
-};
-
-global.onhashchange = function () {
-    if (global.location.hash !== _hash) {
-        global.location.hash = _hash;
-    }
-};
-
-global.onload = function () {            
-    noBackPlease();
-
-    // disables backspace on page except on input fields and textarea..
-    document.body.onkeydown = function (e) {
-        var elm = e.target.nodeName.toLowerCase();
-        if (e.which === 8 && (elm !== 'input' && elm  !== 'textarea')) {
-            e.preventDefault();
-        }
-        // stopping event bubbling up the DOM tree..
-        e.stopPropagation();
-    };          
-}
-
-})(window);
-</script>
-
-        </body>
-
+</body>
 </html>
