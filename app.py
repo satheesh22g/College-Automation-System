@@ -386,9 +386,9 @@ def query_set():
             # <----------------Queries for Profile----------------------->
             if (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
                 flash("Showing Result...", "error")
-                result=db.execute("SELECT * from student_profile where sid = :s;",{"s":ss.split()[-1].upper()}).fetchall()
-                attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
-                marks=db.execute("SELECT * from marks where student_id = :s;",{"s":ss.split()[-1].upper()}).fetchall()
+                result=db.execute(text("SELECT * from student_profile where sid = :s;"),{"s":ss.split()[-1].upper()}).fetchall()
+                attend=db.execute(text("SELECT * from attendance where student_id = :s;"),{"s":ss.split()[-1].upper()}).fetchall()
+                marks=db.execute(text("SELECT * from marks where student_id = :s;"),{"s":ss.split()[-1].upper()}).fetchall()
                 if result[0].year==4:
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":4}).fetchall()
                 if result[0].year==3:

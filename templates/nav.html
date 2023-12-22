@@ -35,14 +35,15 @@
       <li class="nav-item">
          <a class="nav-link" href="{{url_for('changepass')}}">Change Password <span class="sr-only">(current)</span></a>
        </li>
-      <li class="nav-item">
-        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
-      </li>
-      {% if 'Student' not in session.usert %}
+       {% if 'Student' not in session.usert %}
       <li class="nav-item">
         <a class="nav-link" href="{{ url_for('help') }}">Help</a>
       </li>
       {% endif %}
+      <li class="nav-item">
+        <a class="nav-link" href="{{ url_for('logout') }}">Logout</a>
+      </li>
+      
       {% endif %}
     </ul>
   </div>
