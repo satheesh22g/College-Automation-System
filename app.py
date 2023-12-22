@@ -36,7 +36,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine('sqlite:///database1.db', connect_args={'check_same_thread': False}, echo=True)
+engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False}, echo=True)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db = DBSession()
