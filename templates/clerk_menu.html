@@ -1,5 +1,4 @@
 {% include "nav.html" %}
-{% include "chatbox.html" %}
 
 <html>
     <head>
@@ -209,28 +208,11 @@
       
      {% if 'user' in session %}
                <div class="sidenav">
-                <p>
-                {% if "admin" in session['usert'] %}
-                <a href="{{url_for('reset')}}">Reset Password</a>
+            
                 <a href="{{url_for('admin_update')}}">Updations</a>
                 <a href="{{url_for('load_data')}}">Load Data</a>
                 <a href="{{url_for('adminfeedbacks')}}">Feedbacks</a>
-                
-                {%elif "Student" in session['usert'] %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('attendance')}}">Attendance</a>
-  <a href="{{url_for('marks')}}">Marks</a>
-  <a href="{{url_for('Suggestions')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('show_feedback')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% else %}
-  <a href="{{url_for('profile')}}">Profile</a>
-  <a href="{{url_for('Suggestions')}}">Feedback</a></p>
-  <a href="{{url_for('help')}}">Help</a></p>
-  {% endif %}
+        
 </div>
            
 
@@ -251,12 +233,15 @@
   
   </div>
 <div>
-{% with messages = get_flashed_messages(category_filter=["greet"]) %}
+{% with messages = get_flashed_messages() %}
                {% if messages %}
          
                <div class="alert">
+                  
+                   
+                 
                  {% for message in messages %}
-                    <h4 style="color: red;margin-top: 19%;margin-left: 35%;font-size: 27px;" id="div3"><strong> {{ message }} </strong>  </h4>
+                    <h4 style="color: red;margin-top: 19%;margin-left: 43%;font-size: 27px;" id="div3"><strong> {{ message }} </strong>  </h4>
                  {% endfor %}
                 
                </div>

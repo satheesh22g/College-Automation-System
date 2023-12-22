@@ -1,0 +1,173 @@
+{% include "nav.html" %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SRIT Campus Hub</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+    <style>
+        .error-message {
+                animation: fadeOut 2s forwards;
+                animation-delay: 5s;
+                color: rgb(241, 7, 7);
+                padding: 10px;
+                text-align: center;
+            }
+
+            @keyframes fadeOut {
+                from {opacity: 1;}
+                to {opacity: 0;}
+            }
+    </style>
+</head>
+<body style="background-image: url('static/bg.jpg');background-size: cover;">
+  <div class="wrapper">
+    <!-- Sidebar -->
+    <nav id="sidebar">
+        <div class="sidebar-header">
+            <h3>Menu</h3>
+        </div>
+        <button type="button" id="sidebarCollapseBtn" class="btn btn-dark">
+          <i class="fas fa-arrow-left"></i>
+      </button>
+
+        <ul class="list-unstyled components">
+            <!-- Sidebar links -->
+            <!-- Replace these with your links -->
+            <p>
+              {% if "admin" in session['usert'] %}
+              <ul>
+                  <li><a href="{{ url_for('reset') }}">Reset Password</a></li>
+                  <li><a href="{{ url_for('admin_update') }}">Updations</a></li>
+                  <li><a href="{{ url_for('load_data') }}">Load Data</a></li>
+                  <li><a href="{{ url_for('adminfeedbacks') }}">Feedbacks</a></li>
+                </ul>
+              {% elif "Student" in session['usert'] %}
+                  <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('attendance') }}">Attendance</a></li>
+                  <li><a href="{{ url_for('marks') }}">Marks</a></li>
+                 <li> <a href="{{ url_for('Suggestions') }}">Feedback</a></li>
+                 <li> <a href="{{ url_for('help') }}">Help</a></li>
+                  </ul>
+              {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
+                <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('show_feedback') }}">Feedback</a></li>
+                  <li><a href="{{ url_for('help') }}">Help</a></li>
+                </ul>
+              {% else %}
+                 <ul>
+                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
+                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
+                  <li><a href="{{ url_for('Suggestions') }}">Feedback</a></li>
+                  <li><a href="{{ url_for('help') }}">Help</a></li>
+                 </ul>
+              {% endif %}
+          </p>
+        </ul>
+    </nav>
+
+  
+</div>
+        <div class="text-center" style="padding-top: 4%;padding-bottom: 7%;">
+          <h4>Welcome to SRIT Campus Hub</h4>
+          <button type="button" id="sidebarCollapse" class="btn btn-dark">
+            Menu
+        </button>
+        </div>
+        <div>
+            {% with messages = get_flashed_messages(category_filter=["greet"]) %}
+                {% if messages %}
+                    <div class="alert text-center error-message">
+                        {% for message in messages %}
+                            <h4><strong>{{ message }}</strong></h4>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            {% with messages = get_flashed_messages(category_filter=["alert"]) %}
+            {% if messages %}
+                <div class="alert text-center error-message">
+                    {% for message in messages %}
+                        <p><strong>{{ message }}</strong></p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+        </div>
+       
+          <div class="container">
+            <div class="row">
+              <div class="col">
+                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
+                  <div class="carousel-inner">
+                    <div class="carousel-item active">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner1.jpg') }}" class="d-block" alt="News Image 1">
+                        <div class="text-below">
+                          <h2>Admissions Now Open!</h2>
+                          <p>Join Us for an Exciting Academic Journey.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner2.jpg') }}" class="d-block" alt="News Image 2">
+                        <div class="text-below">
+                          <h2>Explore Your Future:</h2>
+                          <p>Enroll Today for Cutting-Edge Courses.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="carousel-item">
+                      <div class="news-ticker">
+                        <img src="{{ url_for('static', filename='banner3.jpg') }}" class="d-block" alt="News Image 3">
+                        <div class="text-below">
+                          <h2>Scholarship Opportunities Available:</h2>
+                          <p>Pursue Your Dream Degree.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Add more carousel items as needed -->
+                  </div>
+                  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" style="z-index: 0;">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                  </a>
+                  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+      // Script to handle sidebar toggle
+      $(document).ready(function () {
+          $('#sidebarCollapse').on('click', function () {
+              $('#sidebar').toggleClass('active');
+          });
+          $('#sidebarCollapseBtn').on('click', function () {
+                $('#sidebar').toggleClass('active');
+            });
+      });
+  </script>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+</body>
+</html>
