@@ -36,7 +36,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine('sqlite:///database1.db', connect_args={'check_same_thread': False}, echo=True)
+engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False}, echo=True)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db = DBSession()
@@ -412,19 +412,16 @@ def query_set():
     return redirect(url_for('dashboard'))  
 @app.route("/<sid>/Council-Students")
 def council_students(sid):
-    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": sid}).fetchall()
-    attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":sid}).fetchall()
-    marks=db.execute("SELECT * from marks where student_id = :s;",{"s":sid}).fetchall()
+    res=db.execute(text("SELECT * FROM student_profile WHERE sid = :u"), {"u": sid}).fetchall()
+    attend=db.execute(text("SELECT * from attendance where student_id = :s;"),{"s":sid}).fetchall()
+    marks=db.execute(text("SELECT * from marks where student_id = :s;"),{"s":sid}).fetchall()
     return render_template("student_profile.html",results=res,marks=marks,attend=attend)
 @app.route("/profile")
 def profile():
     if session['usert']=="Student":
-        #res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": session['user']}).fetchall()
         res = db.query(Student_Profile).filter_by(sid=session['user']).all()
-        #attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":session['user']}).fetchall()
         attend = db.query(Attendance).filter_by(student_id=session['user']).all()
         marks = db.query(Marks).filter_by(student_id=session['user']).all()
-        #marks=db.execute("SELECT * from marks where student_id = :s;",{"s":session['user']}).fetchall()
         return render_template("student_profile.html",results=res,marks=marks,attend=attend)
     else:
         user_id = session['user']
@@ -432,7 +429,6 @@ def profile():
         return render_template("faculty_profile.html",results=res)
 @app.route("/attendance")
 def attendance():
-    #result=db.execute("SELECT * FROM attendance WHERE student_id = :u", {"u": session['user']}).fetchall()
     user_id = session['user']  # Assuming session['user'] holds the value for student_id
     result = db.query(Attendance).filter_by(student_id=user_id).all()
     return render_template("attendance.html",results=result)
@@ -497,7 +493,7 @@ def Faculty_Feedback():
             sub6 = request.form.get("sub6")
             lab1 = request.form.get("lab1")
             lab2 = request.form.get("lab2")
-            result1 = db.execute("INSERT INTO faculty_feedback (sub1, sub2, sub3, sub4, sub5, sub6, lab1, lab2, date, student_id) VALUES (:sub1, :sub2, :sub3, :sub4, :sub5, :sub6, :lab1, :lab2, :date, :s)", {"sub1": sub1, "sub2": sub2, "sub3": sub3, "sub4": sub4, "sub5": sub5, "sub6": sub6, "lab1": lab1, "lab2": lab2, "date": datetime.datetime.today(), "s": session['user']})
+            result1 = db.execute(text("INSERT INTO faculty_feedback (sub1, sub2, sub3, sub4, sub5, sub6, lab1, lab2, date, student_id) VALUES (:sub1, :sub2, :sub3, :sub4, :sub5, :sub6, :lab1, :lab2, :date, :s)"), {"sub1": sub1, "sub2": sub2, "sub3": sub3, "sub4": sub4, "sub5": sub5, "sub6": sub6, "lab1": lab1, "lab2": lab2, "date": datetime.datetime.today(), "s": session['user']})
             db.commit()
             new_feedback = Faculty_Feedback(
                 sub1=sub1,
@@ -569,20 +565,20 @@ def admin_update():
             try:
                 if table=="Attendance":
                     for attend, dept_id,year,student_id in reader:
-                        db.execute("INSERT INTO attendance(attend,dept_id,year,student_id) VALUES(:a, :d, :y, :s)", { "a": attend, "d":dept_id, "y":year, "s":student_id })
+                        db.execute(text("INSERT INTO attendance(attend,dept_id,year,student_id) VALUES(:a, :d, :y, :s)"), { "a": attend, "d":dept_id, "y":year, "s":student_id })
                     db.commit()
                     return redirect(url_for('dashboard'))
                 elif table=="Marks":
                     for id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year in reader:
-                        db.execute("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)", {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
+                        db.execute(text("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)"), {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
                     db.commit()
                 elif table=="Profile":
                     for sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,fact_id in reader:
-                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
+                        db.execute(text("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)"), {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
                     db.commit()
                 elif table=="Faculty":
                     for id, name, dept_id in reader:
-                        db.execute("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)", {"s":id, "n":name, "d":dept_id })
+                        db.execute(text("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)"), {"s":id, "n":name, "d":dept_id })
                     db.commit()
             except:
                 message = "columns must be in correct order {}".format(str_to_class-olumns.keys())
@@ -594,7 +590,7 @@ def admin_update():
     return render_template("admin_updates.html",flist=faculty_list)
 @app.route("/load-data", methods=["GET", "POST"])
 def load_data():
-    faculty_list=db.execute('select * from faculty').fetchall()
+    faculty_list=db.execute(text('select * from faculty')).fetchall()
     if request.method == "POST":
         dept_id = request.form.get('dept_id')
         faculty_id = request.form.get('faculty')
@@ -619,28 +615,28 @@ def load_data():
                 if table=="Attendance":
                     if year=="4":
                         for student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc in reader:
-                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                            db.execute(text("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:attend, :attend_perc,:dept_id,:year,:faculty_id)"), {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
                         db.commit()
                         return redirect(url_for('dashboard'))
                     elif year=="3":
                         for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc in reader:
-                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:sub10,:sub11,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"sub10":sub10,"sub11":sub11,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                            db.execute(text("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,sub10,sub11,attend, attend_perc,dept_id,year,faculty_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:sub10,:sub11,:attend, :attend_perc,:dept_id,:year,:faculty_id)"), {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"sub10":sub10,"sub11":sub11,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
                         db.commit()
                     elif year=="2":
                         for student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,faculty_id in reader:
-                            db.execute("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:attend, :attend_perc,:dept_id,:year,:faculty_id)", {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
+                            db.execute(("INSERT INTO attendance(student_id,student_name,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,sub9,attend, attend_perc,dept_id,year,councelor_id) VALUES(:student_id,:student_name,:sub1,:sub2,:sub3,:sub4,:sub5,:sub6,:sub7,:sub8,:sub9,:attend, :attend_perc,:dept_id,:year,:faculty_id)"), {"student_id":student_id,"student_name":student_name,"sub1":sub1,"sub2":sub2,"sub3":sub3,"sub4":sub4,"sub5":sub5,"sub6":sub6,"sub7":sub7,"sub8":sub8,"sub9":sub9,"attend":attend, "attend_perc":attend_perc,"dept_id":dept_id,"year":year,"faculty_id":faculty_id})
                             db.commit()
                 elif table=="Marks":
                     for id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year in reader:
-                        db.execute("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)", {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
+                        db.execute(("INSERT INTO marks(id,sub1,sub2,sub3,sub4,sub5,sub6,sub7,sub8,dept_id,student_id,year) VALUES(:i,:s1,:s2,:s3,:s4,:s5,:s6,:s7,:s8,:d,:s,:y)"), {"i":id,"s1": sub1, "s2": sub2, "s3": sub3, "s4":sub4, "s5":sub5, "s6":sub6, "s7":sub7, "s8":sub8,"d":dept_id, "s":student_id, "y":year})
                     db.commit()
                 elif table=="Profile":
                     for sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,fact_id in reader:
-                        db.execute("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)", {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
+                        db.execute(text("INSERT INTO student_profile(sid,name,branch,year,gender,dob,entrance_type,HorD,dept_id,faculty_id) VALUES(:a, :b, :c,:d,:e,:f,:h,:i,:k,:l)"), {"a":sid,"b": name,"c": branch,"d": year,"e": gender,"f": dob,"h": entrance_type,"i":HorD,"k":dept_id,"l":fact_id})
                     db.commit()
                 elif table=="Faculty":
                     for id, name, dept_id in reader:
-                        db.execute("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)", {"s":id, "n":name, "d":dept_id })
+                        db.execute(text("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)"), {"s":id, "n":name, "d":dept_id })
                     db.commit()
             except:
                 message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
