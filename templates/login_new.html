@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block title %}Login - College Automation System{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-5">
+            <!-- Login Card -->
+            <div class="card shadow-md mt-5">
+                <div class="card-header text-center">
+                    <h3 class="mb-0">
+                        <i class="fas fa-sign-in-alt"></i> Sign In
+                    </h3>
+                </div>
+                <div class="card-body">
+                    {% if message %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <i class="fas fa-exclamation-circle"></i> {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endif %}
+
+                    <form method="POST" action="{{ url_for('login') }}">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">
+                                <i class="fas fa-user"></i> Username
+                            </label>
+                            <input type="text" class="form-control form-control-lg" id="username" 
+                                   name="username" placeholder="Enter your username" required>
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="password" class="form-label">
+                                <i class="fas fa-lock"></i> Password
+                            </label>
+                            <input type="password" class="form-control form-control-lg" id="password" 
+                                   name="password" placeholder="Enter your password" required>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-sign-in-alt"></i> Sign In
+                            </button>
+                        </div>
+                    </form>
+
+                    <hr class="my-4">
+
+                    <div class="text-center">
+                        <p class="text-muted">Don't have an account?</p>
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-primary">
+                            <i class="fas fa-user-plus"></i> Create Account
+                        </a>
+                    </div>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ url_for('index') }}" class="text-decoration-none">
+                            <i class="fas fa-home"></i> Back to Home
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Info Box -->
+            <div class="alert alert-info mt-3">
+                <h6 class="alert-heading">
+                    <i class="fas fa-info-circle"></i> Demo Credentials
+                </h6>
+                <small>
+                    Contact your administrator for login credentials.
+                </small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+    
+    .card {
+        border-radius: 15px;
+        border: none;
+    }
+    
+    .form-control-lg {
+        padding: 0.75rem 1.25rem;
+        font-size: 1rem;
+    }
+</style>
+{% endblock %}

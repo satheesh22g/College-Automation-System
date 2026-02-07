@@ -1,11 +1,10 @@
 import os
 import sys
-from database import Base, Attendance, Marks, Accounts, Student_Profile,Feedback,Faculty_Feedback,Departments,Faculty,Faculty_Profile
-from flask import send_file
-from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify
+from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, send_file
 from flask_bcrypt import Bcrypt
 from flask_session import Session
-from database import Base, Attendance, Marks,Accounts, Student_Profile, Feedback,Departments,Faculty,Faculty_Profile, Faculty_Feedback
+from database import (Base, Attendance, Marks, Accounts, Student_Profile, 
+                      Feedback, Faculty_Feedback, Departments, Faculty, Faculty_Profile)
 from sqlalchemy import create_engine, exc
 from sqlalchemy.orm import scoped_session, sessionmaker
 from werkzeug.utils import secure_filename
@@ -36,7 +35,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Set up database
-engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False}, echo=True)
+engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False}, echo=False)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 db = DBSession()
@@ -51,8 +50,9 @@ event.listen(engine, 'connect', disable_bound_value_tracking)
 
 # For autocorrect the input
 spell = Speller(lang='en')
-def str_to_class(str):
-    return getattr(sys.modules[__name__], str)
+def str_to_class(str_name):
+    """Convert string to class name"""
+    return getattr(sys.modules[__name__], str_name)
 
 @app.route("/")
 def index():
@@ -72,13 +72,19 @@ def dashboard():
             return render_template("menu.html")
 @app.route("/query", methods=["GET","POST"])
 def query_set():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
     flash(session['namet'],"name")
     if request.method == 'GET':
         return render_template('query_set.html')
     try:
         if request.method == 'POST':
-            msg=request.form.get("query").lower()
-            ss=spell(msg)
+            msg = request.form.get("query", "").lower().strip()
+            if not msg:
+                flash("Please enter a query", "error")
+                return redirect(url_for('query_set'))
+            ss = spell(msg)
             profile=db.execute(text("select sid from student_profile")).fetchall()
             profile_result=list([profile[i][0] for i in range(len(profile))])
             roll_flag = re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss)
@@ -92,8 +98,7 @@ def query_set():
                 flash("Showing Result...", "error")
                 return redirect(url_for('marks'))
             else:
-                flash("Wrong! Try Again","error")
-                print("error 1")
+                flash("Invalid query for student role", "error")
                 return redirect(url_for('dashboard'))
         else:
             if (ss.split()[-1].upper() in profile_result) and re.search('profile', ss):
@@ -399,39 +404,64 @@ def query_set():
                 return render_template("student_profile.html", results=result,marks=marks,attend=attend,sub=sub)
                 
             else:
-                print("error 6",ss,session['usert'])
-                flash("Wrong! Try Again","error")
+                flash("Query not recognized", "error")
                 return redirect(url_for('query_set'))
-    except:
-        flash("Input out of range","error")
-        print(ss)
-        print("error 7")
-        return redirect(url_for('query_set')) 
-    print(999) 
-    flash("I'm not Understanding🤔! Try Again","error")
-    return redirect(url_for('dashboard'))  
+    except ValueError as e:
+        flash("Invalid input format", "error")
+        return redirect(url_for('query_set'))
+    except Exception as e:
+        flash("An error occurred while processing your query", "error")
+        return redirect(url_for('query_set'))
+    
+    flash("Query not understood. Please try again.", "error")
+    return redirect(url_for('dashboard'))
 @app.route("/<sid>/Council-Students")
 def council_students(sid):
-    res=db.execute(text("SELECT * FROM student_profile WHERE sid = :u"), {"u": sid}).fetchall()
-    attend=db.execute(text("SELECT * from attendance where student_id = :s;"),{"s":sid}).fetchall()
-    marks=db.execute(text("SELECT * from marks where student_id = :s;"),{"s":sid}).fetchall()
-    return render_template("student_profile.html",results=res,marks=marks,attend=attend)
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        res = db.query(Student_Profile).filter_by(sid=sid).all()
+        if not res:
+            flash("Student not found", "error")
+            return redirect(url_for('dashboard'))
+        
+        attend = db.query(Attendance).filter_by(student_id=sid).all()
+        marks = db.query(Marks).filter_by(student_id=sid).all()
+        return render_template("student_profile.html", results=res, marks=marks, attend=attend)
+    except Exception as e:
+        flash("Error retrieving student information", "error")
+        return redirect(url_for('dashboard'))
 @app.route("/profile")
 def profile():
-    if session['usert']=="Student":
-        res = db.query(Student_Profile).filter_by(sid=session['user']).all()
-        attend = db.query(Attendance).filter_by(student_id=session['user']).all()
-        marks = db.query(Marks).filter_by(student_id=session['user']).all()
-        return render_template("student_profile.html",results=res,marks=marks,attend=attend)
-    else:
-        user_id = session['user']
-        res=db.query(Faculty_Profile).filter_by(id=user_id).all()
-        return render_template("faculty_profile.html",results=res)
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        if session['usert'] == "Student":
+            res = db.query(Student_Profile).filter_by(sid=session['user']).all()
+            attend = db.query(Attendance).filter_by(student_id=session['user']).all()
+            marks = db.query(Marks).filter_by(student_id=session['user']).all()
+            return render_template("student_profile.html", results=res, marks=marks, attend=attend)
+        else:
+            user_id = session['user']
+            res = db.query(Faculty_Profile).filter_by(id=user_id).all()
+            return render_template("faculty_profile.html", results=res)
+    except Exception as e:
+        flash("Error retrieving profile", "error")
+        return redirect(url_for('dashboard'))
 @app.route("/attendance")
 def attendance():
-    user_id = session['user']  # Assuming session['user'] holds the value for student_id
-    result = db.query(Attendance).filter_by(student_id=user_id).all()
-    return render_template("attendance.html",results=result)
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        user_id = session['user']
+        result = db.query(Attendance).filter_by(student_id=user_id).all()
+        return render_template("attendance.html", results=result)
+    except Exception as e:
+        flash("Error retrieving attendance", "error")
+        return redirect(url_for('dashboard'))
 
 @app.route("/help")
 def help():
@@ -439,51 +469,65 @@ def help():
 
 @app.route("/marks")
 def marks():
-    user_id = session['user'] 
-    result = db.query(Marks).filter_by(student_id=user_id).all()
-    return render_template("marks.html",results=result)
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        user_id = session['user']
+        result = db.query(Marks).filter_by(student_id=user_id).all()
+        return render_template("marks.html", results=result)
+    except Exception as e:
+        flash("Error retrieving marks", "error")
+        return redirect(url_for('dashboard'))
 @app.route("/attendance_display")
 def attendance_update():
     return render_template("attendance_form.html")
 
 @app.route("/suggestions", methods=["GET", "POST"])
 def Suggestions():
-    # today_date = datetime.today()  # Calculate today's date outside the lambda
-
-    # too_old = today_date - timedelta(days=1)
-    # print('too_old',too_old)
-    # # Delete older feedback entries
-    # db.query(Faculty_Feedback).filter(Faculty_Feedback.date <= too_old).delete()
-
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
     msg1 = msg2 = ""
     try:
         if request.method == "POST":
-            name = request.form.get("name")
-            subject = request.form.get("subject")
-            message = request.form.get("message")
-
-            # Insert new feedback using parameterized query
-            new_feedback = Feedback(name=name, subject=subject, message=message, user_id=session['user'])
-            db.add(new_feedback)
-            db.commit()
-            msg1 = "Submitted!"
-            msg2 = "Thank you for your feedback"
-
+            name = request.form.get("name", "").strip()
+            subject = request.form.get("subject", "").strip()
+            message = request.form.get("message", "").strip()
+            
+            if not all([name, subject, message]):
+                msg1 = "Error"
+                msg2 = "All fields are required"
+            else:
+                new_feedback = Feedback(name=name, subject=subject, message=message, user_id=session['user'])
+                db.add(new_feedback)
+                db.commit()
+                msg1 = "Submitted!"
+                msg2 = "Thank you for your feedback"
     except IntegrityError:
-        message = "Roll Number already exists."
-        # Perform rollback if an IntegrityError occurs
         db.rollback()
-
+        msg1 = "Error"
+        msg2 = "An error occurred while submitting feedback"
+    except Exception as e:
+        db.rollback()
+        msg1 = "Error"
+        msg2 = "An unexpected error occurred"
+    
     return render_template("feedback.html", msg1=msg1, msg2=msg2)
 
 # Faculty Feedback
 @app.route("/Faculty-Feedback", methods=["GET", "POST"])
-def Faculty_Feedback():
-    too_old = datetime.today() - timedelta(days=1)
-    db.query(Faculty_Feedback).filter(Faculty_Feedback.date <= too_old).delete()
-    db.commit()
+def faculty_feedback_route():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
     msg1 = msg2 = ""
     try:
+        # Clean old feedback (older than 1 day)
+        too_old = datetime.today() - timedelta(days=1)
+        db.query(Faculty_Feedback).filter(Faculty_Feedback.date <= too_old).delete()
+        db.commit()
+        
         if request.method == "POST":
             sub1 = request.form.get("sub1")
             sub2 = request.form.get("sub2")
@@ -493,52 +537,67 @@ def Faculty_Feedback():
             sub6 = request.form.get("sub6")
             lab1 = request.form.get("lab1")
             lab2 = request.form.get("lab2")
-            result1 = db.execute(text("INSERT INTO faculty_feedback (sub1, sub2, sub3, sub4, sub5, sub6, lab1, lab2, date, student_id) VALUES (:sub1, :sub2, :sub3, :sub4, :sub5, :sub6, :lab1, :lab2, :date, :s)"), {"sub1": sub1, "sub2": sub2, "sub3": sub3, "sub4": sub4, "sub5": sub5, "sub6": sub6, "lab1": lab1, "lab2": lab2, "date": datetime.datetime.today(), "s": session['user']})
-            db.commit()
+            
             new_feedback = Faculty_Feedback(
-                sub1=sub1,
-                sub2=sub2,
-                sub3=sub3,
-                sub4=sub4,
-                sub5=sub5,
-                sub6=sub6,
-                lab1=lab1,
-                lab2=lab2,
+                sub1=sub1, sub2=sub2, sub3=sub3, sub4=sub4, 
+                sub5=sub5, sub6=sub6, lab1=lab1, lab2=lab2,
                 date=datetime.today(),
                 student_id=session['user']
             )
-
-            # Add the new_feedback object to the session
             db.add(new_feedback)
-
-            # Commit the changes
             db.commit()
             msg1 = "Submitted!"
-            msg2 = "Thank You for your Feedback"
+            msg2 = "Thank you for your feedback"
     except exc.IntegrityError:
-        msg1 = "Already Submitted."
         db.rollback()
-        db.commit()
+        msg1 = "Already Submitted"
+        msg2 = "You have already submitted feedback"
+    except Exception as e:
+        db.rollback()
+        msg1 = "Error"
+        msg2 = "An error occurred while submitting feedback"
+    
     return render_template("feedback.html", msg1=msg1, msg2=msg2)
 
 # To display all the complaints to the admin
 @app.route("/adminfeedbacks")
 def adminfeedbacks():
-    result=db.query(Feedback).all()
-    return render_template('feedback.html',result=result)
+    if 'user' not in session or session['usert'] != 'admin':
+        return redirect(url_for('login'))
+    
+    try:
+        result = db.query(Feedback).all()
+        return render_template('feedback.html', result=result)
+    except Exception as e:
+        flash("Error retrieving feedbacks", "error")
+        return redirect(url_for('dashboard'))
+
 @app.route("/feedbacks")
 def show_feedback():
-    # display FeedBack  To HOD
-    result = db.query(Faculty_Feedback).all()
-    return render_template('show_feedback.html',res=result)
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        result = db.query(Faculty_Feedback).all()
+        return render_template('show_feedback.html', res=result)
+    except Exception as e:
+        flash("Error retrieving feedbacks", "error")
+        return redirect(url_for('dashboard'))
 @app.route('/<data>/download')
 def download_file(data):
-    s=db.execute(data).fetchall()
-    df = pd.DataFrame(list(s))
-    writer = pd.ExcelWriter('outputt.xlsx')
-    df.to_excel(writer,sheet_name="lkjhgf")
-    x=writer.save()
-    return send_file('outputt.xlsx', as_attachment=True,mimetype='.xlsx')
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    
+    try:
+        s = db.execute(text(data)).fetchall()
+        df = pd.DataFrame(list(s))
+        writer = pd.ExcelWriter('output.xlsx')
+        df.to_excel(writer, sheet_name="Data")
+        writer.close()
+        return send_file('output.xlsx', as_attachment=True, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    except Exception as e:
+        flash("Error downloading file", "error")
+        return redirect(url_for('dashboard'))
 
 @app.route("/admin-updates", methods=["GET", "POST"])
 def admin_update():
@@ -655,73 +714,104 @@ def register():
     message = ""
 
     if request.method == "POST":
-        try: 
-            usern = request.form.get("username").upper()
-            name = request.form.get("name")
-            usert = request.form.get("usertyp")
-            passw = request.form.get("password")
-            passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
-            result = Accounts(id=usern, name=name, user_type=usert, password=passw_hash)
-            db.add(result)
-            db.commit()
-            if result is not None:
+        try:
+            usern = request.form.get("username", "").upper().strip()
+            name = request.form.get("name", "").strip()
+            usert = request.form.get("usertyp", "").strip()
+            passw = request.form.get("password", "").strip()
+            
+            if not all([usern, name, usert, passw]):
+                message = "All fields are required"
+            elif len(passw) < 6:
+                message = "Password must be at least 6 characters"
+            else:
+                passw_hash = bcrypt.generate_password_hash(passw).decode('utf-8')
+                result = Accounts(id=usern, name=name, user_type=usert, password=passw_hash)
+                db.add(result)
+                db.commit()
                 session['user'] = usern
                 session['namet'] = name
                 session['usert'] = usert
-                flash("Your successfully Registrated",'alert')
+                flash("Successfully registered!", 'alert')
                 return redirect(url_for('dashboard'))
         except exc.IntegrityError:
-            message = "Roll Number already exists."
             db.rollback()
-            db.commit()
+            message = "Username already exists"
+        except Exception as e:
+            db.rollback()
+            message = "An error occurred during registration"
+    
     return render_template("registration.html", message=message)
 
-# Change Pasword
+# Change Password
 @app.route("/change-password", methods=["GET", "POST"])
 def changepass():
     if 'user' not in session:
         return redirect(url_for('login'))
-    msg=""
+    msg = ""
     if request.method == "POST":
         try:
-            epswd = request.form.get("epassword")
-            cpswd = request.form.get("cpassword")
-            passw_hash = bcrypt.generate_password_hash(cpswd).decode('utf-8')
-            exist = db.query(Accounts).filter_by(id = session['user']).first()
-            if bcrypt.check_password_hash(exist.password, epswd) is True:
-                exist.password = passw_hash
-                db.commit()
-                flash("Password Changed Successfully","alert")
-                return redirect(url_for('dashboard'))
-        except exc.IntegrityError:
-            msg = "Unable to process try again"
-        msg="Existing Not matching"
-    return render_template("change_password.html",m=msg)
+            epswd = request.form.get("epassword", "").strip()
+            cpswd = request.form.get("cpassword", "").strip()
+            cpswd_confirm = request.form.get("cpassword_confirm", "").strip()
+            
+            if not all([epswd, cpswd, cpswd_confirm]):
+                msg = "All fields are required"
+            elif cpswd != cpswd_confirm:
+                msg = "New password confirmation does not match"
+            elif len(cpswd) < 6:
+                msg = "New password must be at least 6 characters"
+            else:
+                exist = db.query(Accounts).filter_by(id=session['user']).first()
+                if exist and bcrypt.check_password_hash(exist.password, epswd.encode('utf-8')):
+                    exist.password = bcrypt.generate_password_hash(cpswd).decode('utf-8')
+                    db.commit()
+                    flash("Password changed successfully", "alert")
+                    return redirect(url_for('dashboard'))
+                else:
+                    msg = "Current password is incorrect"
+        except Exception as e:
+            db.rollback()
+            msg = "An error occurred"
+    
+    return render_template("change_password.html", m=msg)
 
-# Reset
+# Reset Password (Admin only)
 @app.route("/reset", methods=["GET", "POST"])
 def reset():
-    msg=""
-    if session['usert']=="admin":
-        
-        if request.method == "POST":
-            rollno = request.form.get("rollno")
-            passw_hash = bcrypt.generate_password_hash("srit").decode('utf-8')
-            res = db.query(Accounts).filter_by(id=rollno).first()
-            res.password = passw_hash
-            db.commit()
-            if res is not None:
-                flash("Password Reset Successfully","alert")
-                return redirect(url_for('dashboard'))
-        msg=""
-        return render_template("pswdreset.html",m=msg)
-    else:
+    if 'user' not in session or session['usert'] != "admin":
         return redirect(url_for('dashboard'))
+    
+    msg = ""
+    if request.method == "POST":
+        try:
+            rollno = request.form.get("rollno", "").upper().strip()
+            if not rollno:
+                msg = "Please enter a username"
+            else:
+                res = db.query(Accounts).filter_by(id=rollno).first()
+                if res:
+                    default_password = "defaultpass123"
+                    passw_hash = bcrypt.generate_password_hash(default_password).decode('utf-8')
+                    res.password = passw_hash
+                    db.commit()
+                    flash(f"Password for {rollno} has been reset", "alert")
+                    return redirect(url_for('dashboard'))
+                else:
+                    msg = "User not found"
+        except Exception as e:
+            db.rollback()
+            msg = "An error occurred"
+    
+    return render_template("pswdreset.html", m=msg)
 # LOGOUT
 @app.route("/logout")
 def logout():
     session.pop('user', None)
-    return redirect(url_for('dashboard'))
+    session.pop('namet', None)
+    session.pop('usert', None)
+    flash("You have been logged out", "info")
+    return redirect(url_for('index'))
 # LOGIN
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -729,21 +819,28 @@ def login():
         return redirect(url_for('dashboard'))
     message = ""
     if request.method == "POST":
-        usern = request.form.get("username").upper()
-        passw = request.form.get("password").encode('utf-8')
-        result = db.query(Accounts).filter_by(id=usern).first()
-        if result is not None:
-            if bcrypt.check_password_hash(result.password, passw) is True:
-                session['user'] = usern
-                session['namet'] = result.name
-                session['usert'] = result.user_type
-                flash("Hello  "+result.name+" !","greet")
-                return redirect(url_for('dashboard'))
-        message = "Username or password is incorrect."
+        try:
+            usern = request.form.get("username", "").upper().strip()
+            passw = request.form.get("password", "").encode('utf-8')
+            
+            if not usern or not passw:
+                message = "Please enter both username and password"
+            else:
+                result = db.query(Accounts).filter_by(id=usern).first()
+                if result is not None:
+                    if bcrypt.check_password_hash(result.password, passw):
+                        session['user'] = usern
+                        session['namet'] = result.name
+                        session['usert'] = result.user_type
+                        flash(f"Welcome {result.name}!", "greet")
+                        return redirect(url_for('dashboard'))
+                message = "Invalid username or password"
+        except Exception as e:
+            message = "An error occurred during login"
+    
     return render_template("login.html", message=message)
 
 # Main
 if __name__ == '__main__':
-    app.secret_key = 'super_secret_key'
-    app.debug = True
-    app.run(host='0.0.0.0', port=8008)
+    app.debug = False  # Set to False in production
+    app.run(host='127.0.0.1', port=8008, use_reloader=False)

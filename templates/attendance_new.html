@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance - College Automation System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient">
+                <div class="card-body">
+                    <h2 class="mb-0">
+                        <i class="fas fa-calendar-check"></i> Attendance Records
+                    </h2>
+                    <p class="text-white-50 mb-0">Your attendance status and history</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if results %}
+                <!-- Summary Stats -->
+                <div class="dashboard-grid mb-4">
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: #10b981;">
+                            <i class="fas fa-check-circle"></i>
+                        </div>
+                        <div class="stat-card-value">{{ results[0].attend if results[0].attend else 'N/A' }}</div>
+                        <div class="stat-card-label">Sessions Attended</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: #f59e0b;">
+                            <i class="fas fa-percentage"></i>
+                        </div>
+                        <div class="stat-card-value">
+                            {% if results[0].attend_perc %}
+                                {{ results[0].attend_perc }}%
+                            {% else %}
+                                N/A
+                            {% endif %}
+                        </div>
+                        <div class="stat-card-label">Attendance %</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: {% if results[0].attend_perc >= 75 %}#10b981{% else %}#ef4444{% endif %};">
+                            <i class="fas fa-flag-checkered"></i>
+                        </div>
+                        <div class="stat-card-value">
+                            <span class="badge {% if results[0].attend_perc >= 75 %}badge-success{% else %}badge-danger{% endif %}">
+                                {% if results[0].attend_perc >= 75 %}Good{% else %}Low{% endif %}
+                            </span>
+                        </div>
+                        <div class="stat-card-label">Status</div>
+                    </div>
+                </div>
+
+                <!-- Attendance Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> Attendance Details
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-id-badge"></i> Student ID</th>
+                                        <th><i class="fas fa-user"></i> Name</th>
+                                        <th><i class="fas fa-graduation-cap"></i> Year</th>
+                                        <th><i class="fas fa-book"></i> Department</th>
+                                        <th><i class="fas fa-check-circle"></i> Sessions</th>
+                                        <th><i class="fas fa-percentage"></i> Percentage</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in results %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-primary">{{ record.student_id }}</span>
+                                            </td>
+                                            <td>{{ record.student_name or 'N/A' }}</td>
+                                            <td>{{ record.year or 'N/A' }}</td>
+                                            <td>{{ record.departments.name if record.departments else 'N/A' }}</td>
+                                            <td>{{ record.attend or 'N/A' }}</td>
+                                            <td>
+                                                <strong>
+                                                    {% if record.attend_perc %}
+                                                        {% if record.attend_perc >= 75 %}
+                                                            <span class="text-success">{{ record.attend_perc }}%</span>
+                                                        {% else %}
+                                                            <span class="text-danger">{{ record.attend_perc }}%</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                {% if record.attend_perc and record.attend_perc >= 75 %}
+                                                    <span class="badge bg-success">
+                                                        <i class="fas fa-thumbs-up"></i> Good
+                                                    </span>
+                                                {% elif record.attend_perc %}
+                                                    <span class="badge bg-warning">
+                                                        <i class="fas fa-exclamation-triangle"></i> Low
+                                                    </span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">N/A</span>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="alert alert-info mt-3">
+                    <h6 class="alert-heading">
+                        <i class="fas fa-info-circle"></i> Important Information
+                    </h6>
+                    <ul class="mb-0 ps-3">
+                        <li>Minimum 75% attendance is required to appear for exams</li>
+                        <li>Make sure to get your absences regularized in time</li>
+                        <li>Contact your faculty coordinator for any discrepancies</li>
+                    </ul>
+                </div>
+            {% else %}
+                <!-- No Data Message -->
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i class="fas fa-inbox" style="font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;"></i>
+                        <h5 class="text-muted">No Attendance Records Found</h5>
+                        <p class="text-muted mb-3">Your attendance data will appear here once it's uploaded by the administration.</p>
+                        <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                            <i class="fas fa-home"></i> Back to Dashboard
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+    
+    .table-hover tbody tr:hover {
+        background-color: #f0f9ff;
+    }
+    
+    .badge {
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+</style>
+{% endblock %}

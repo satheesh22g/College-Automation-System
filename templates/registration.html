@@ -1,53 +1,203 @@
+{% extends "layout.html" %}
 
+{% block title %}Register - College Automation System{% endblock %}
 
-<html>
-    <head>
-        <title>Register</title>
-                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <script type = "text/javascript" 
-         src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
-         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    </head>
-   
-    <body>
+    .register-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
+    }
 
-        
-         <div class="container">
-          <a href="{{ url_for('dashboard') }}">
-            <img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
-    <div class="d-flex justify-content-center h-100">
-        <div class="card">
-            <div class="card-header">
-                <h3>Sign Up</h3>
-               
-            </div>
-            <div class="card-body">
-                  <form action="{{ url_for('register') }}" method="post">
-                    <div class="input-group form-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    </div>
-                    <select name="usertyp" required maxlength="30">
-                      <option value="Student">Student</option>
-                      <option value="Faculty">Faculty</option>
-                      <option value="HOD">HOD</option>
-                      <option value="counselor">counselor</option>
+    .register-card {
+        width: 100%;
+        max-width: 500px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .register-header {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .register-header h2 {
+        margin: 0;
+        color: white;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control, .form-select {
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
+    }
+
+    .register-body {
+        padding: 2rem;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-register:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .register-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+    }
+
+    .register-footer p {
+        color: white;
+        margin: 0.5rem 0;
+    }
+
+    .register-footer a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .register-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .error-message {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .help-text {
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+        display: block;
+        margin-top: 0.25rem;
+    }
+
+    .navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-container">
+    <div class="card register-card">
+        <div class="card-header register-header">
+            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+            <p class="text-white-50 mb-0">Register for College Management System</p>
+        </div>
+
+        <div class="register-body">
+            {% if message %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('register') }}">
+                <div class="form-group">
+                    <label for="usertype" class="form-label">
+                        <i class="fas fa-briefcase"></i> Account Type <span class="text-danger">*</span>
+                    </label>
+                    <select id="usertype" class="form-select" name="usertyp" required>
+                        <option value="">Select your role</option>
+                        <option value="Student">Student</option>
+                        <option value="Faculty">Faculty Member</option>
+                        <option value="HOD">Head of Department (HOD)</option>
+                        <option value="counselor">Counselor</option>
+                        <option value="clerk">Clerk</option>
                     </select>
-                    </div>
-                    <div class="input-group form-group">
-                     
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        
-                      <input class="form-control" name="name" type="text" placeholder="Your Name" required>
-                        
-                    </div>
+                    <span class="help-text">Choose the role that matches your position</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-id-card"></i> Username <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="username" class="form-control" name="username"
+                           placeholder="Enter username/roll number" required maxlength="30" autofocus>
+                    <span class="help-text">Unique identifier for your account</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        <i class="fas fa-user"></i> Full Name <span class="text-danger">*</span>
+                    </label>
+                    <input type="text" id="name" class="form-control" name="name"
+                           placeholder="Enter your full name" required maxlength="100">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Password <span class="text-danger">*</span>
+                    </label>
+                    <input type="password" id="password" class="form-control" name="password"
+                           placeholder="Minimum 6 characters" required maxlength="50">
+                    <span class="help-text">Use a strong password with numbers and special characters</span>
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="register-footer card-footer">
+            <p>Already have an account?</p>
+            <a href="{{ url_for('login') }}">
+                <i class="fas fa-sign-in-alt"></i> Sign In Here
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
                     <div class="input-group form-group">
                      
                       <div class="input-group-prepend">

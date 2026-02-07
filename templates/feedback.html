@@ -1,26 +1,468 @@
-{% include "nav.html" %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "layout.html" %}
 
-	<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='feedback.css') }}">
-  <script>
-    $(document).ready(function(){
-     
-        
-        $("#div3").fadeOut(5000);
-        $("#div4").fadeOut(5000);
-      });
-    
-    </script>
+{% block title %}Feedback & Suggestions - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-header {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #667eea 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .feedback-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .feedback-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .feedback-card {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .feedback-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .feedback-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .feedback-card h4 {
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: #1f2937;
+    }
+
+    .feedback-card p {
+        color: #6b7280;
+        font-size: 0.95rem;
+        margin-bottom: 1rem;
+    }
+
+    .feedback-btn {
+        width: 100%;
+        padding: 0.7rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .feedback-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .form-section h4 {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 1.5rem;
+        border-bottom: 2px solid var(--primary-color);
+        padding-bottom: 1rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+    }
+
+    .form-control.textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .rating-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 1rem 0;
+    }
+
+    .rating-table th,
+    .rating-table td {
+        padding: 1rem;
+        border: 1px solid #e5e7eb;
+        text-align: center;
+    }
+
+    .rating-table th {
+        background: #f3f4f6;
+        font-weight: 700;
+        color: #333;
+    }
+
+    .rating-table tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .rating-table .label-cell {
+        text-align: left;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .rating-radio {
+        cursor: pointer;
+        width: 20px;
+        height: 20px;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.9rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        animation: slideDown 0.3s ease;
+    }
+
+    .message.success {
+        background: #ecfdf5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+
+    .message.error {
+        background: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="feedback-page">
+    <!-- Header -->
+    <div class="feedback-header">
+        <h2><i class="fas fa-comments"></i> Feedback & Suggestions</h2>
+        <p class="mb-0">Share your thoughts, suggestions, and feedback to help us improve</p>
+    </div>
+
+    <!-- Messages -->
+    {% if msg1 %}
+        <div class="message success">
+            <i class="fas fa-check-circle"></i> {{ msg1 }}
+        </div>
+    {% endif %}
+
+    {% if msg2 %}
+        <div class="message error">
+            <i class="fas fa-exclamation-circle"></i> {{ msg2 }}
+        </div>
+    {% endif %}
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5><i class="fas fa-lightbulb"></i> About This Page</h5>
+        <p>
+            We value your feedback! You can use this page to submit suggestions, complaints, or report issues you've encountered 
+            while using the College Automation System.
+        </p>
+    </div>
+
+    <!-- Student Feedback Options -->
+    {% if 'Student' in session['usert'] %}
+    <div class="feedback-container">
+        <div class="feedback-card">
+            <div class="feedback-icon">
+                <i class="fas fa-comment-dots"></i>
+            </div>
+            <h4>General Feedback</h4>
+            <p>Submit your suggestions, complaints, or feedback about the system.</p>
+            <button class="feedback-btn" onclick="openModal('feedbackModal')">
+                <i class="fas fa-pencil-alt"></i> Submit Feedback
+            </button>
+        </div>
+
+        <div class="feedback-card">
+            <div class="feedback-icon">
+                <i class="fas fa-star"></i>
+            </div>
+            <h4>Faculty Rating</h4>
+            <p>Rate your faculty members and provide feedback on their teaching.</p>
+            <button class="feedback-btn" onclick="openModal('facultyModal')">
+                <i class="fas fa-star-half-alt"></i> Rate Faculty
+            </button>
+        </div>
+    </div>
+
+    <!-- General Feedback Form Modal -->
+    <div id="feedbackModal" class="modal-overlay">
+        <div class="form-section" style="width: 90%; max-width: 600px; margin: 2rem;">
+            <button onclick="closeModal('feedbackModal')" style="float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            <h4>Submit Your Feedback</h4>
+            <form method="POST" action="{{ url_for('Suggestions') }}">
+                <div class="form-group">
+                    <label class="form-label">Name (Optional)</label>
+                    <input type="text" name="name" class="form-control" placeholder="Your name (if you want to be contacted)">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject <span style="color: red;">*</span></label>
+                    <input type="text" name="subject" class="form-control" placeholder="Brief subject of your feedback" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message <span style="color: red;">*</span></label>
+                    <textarea name="message" class="form-control textarea" placeholder="Your detailed feedback or suggestion..." required></textarea>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Faculty Feedback Form Modal -->
+    <div id="facultyModal" class="modal-overlay">
+        <div class="form-section" style="width: 95%; max-width: 900px; max-height: 90vh; overflow-y: auto; margin: 2rem;">
+            <button onclick="closeModal('facultyModal')" style="float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer; position: sticky; top: 0;">×</button>
+            <h4>Faculty Feedback Form</h4>
+            <p style="color: #666; margin-bottom: 1.5rem;">Rate your faculty members on the following criteria. Select the rating that best describes your experience.</p>
+            
+            <form method="POST" action="{{ url_for('Faculty_Feedback') }}">
+                <table class="rating-table">
+                    <thead>
+                        <tr>
+                            <th>Subject/Course</th>
+                            <th><i class="fas fa-star" style="color: #f59e0b;"></i> Excellent</th>
+                            <th><i class="fas fa-star-half-alt" style="color: #f59e0b;"></i> Very Good</th>
+                            <th><i class="fas fa-star"></i> Good</th>
+                            <th>Fair</th>
+                            <th>Poor</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="label-cell">Subject 1</td>
+                            <td><input type="radio" name="sub1" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub1" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub1" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub1" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub1" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Subject 2</td>
+                            <td><input type="radio" name="sub2" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub2" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub2" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub2" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub2" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Subject 3</td>
+                            <td><input type="radio" name="sub3" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub3" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub3" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub3" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub3" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Subject 4</td>
+                            <td><input type="radio" name="sub4" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub4" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub4" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub4" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub4" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Subject 5</td>
+                            <td><input type="radio" name="sub5" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub5" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub5" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub5" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub5" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Subject 6</td>
+                            <td><input type="radio" name="sub6" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="sub6" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub6" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="sub6" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="sub6" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Lab 1</td>
+                            <td><input type="radio" name="lab1" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="lab1" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="lab1" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="lab1" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="lab1" value="0" class="rating-radio"></td>
+                        </tr>
+                        <tr>
+                            <td class="label-cell">Lab 2</td>
+                            <td><input type="radio" name="lab2" value="2" class="rating-radio" required></td>
+                            <td><input type="radio" name="lab2" value="1.5" class="rating-radio"></td>
+                            <td><input type="radio" name="lab2" value="1" class="rating-radio"></td>
+                            <td><input type="radio" name="lab2" value="0.5" class="rating-radio"></td>
+                            <td><input type="radio" name="lab2" value="0" class="rating-radio"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-check-circle"></i> Submit Faculty Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% elif 'Faculty' in session['usert'] or 'counselor' in session['usert'] %}
+    <!-- Faculty/Counselor Feedback Form -->
+    <div class="form-section">
+        <h4><i class="fas fa-comment-dots"></i> Submit Feedback</h4>
+        <form method="POST" action="{{ url_for('Suggestions') }}">
+            <div class="form-group">
+                <label class="form-label">Name (Optional)</label>
+                <input type="text" name="name" class="form-control" placeholder="Your name (if you want to be contacted)">
+            </div>
+            <div class="form-group">
+                <label class="form-label">Subject <span style="color: red;">*</span></label>
+                <input type="text" name="subject" class="form-control" placeholder="Brief subject of your feedback" required>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Message <span style="color: red;">*</span></label>
+                <textarea name="message" class="form-control textarea" placeholder="Your detailed feedback, suggestion, or concern..." required></textarea>
+            </div>
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Submit Feedback
+            </button>
+        </form>
+    </div>
+
+    {% elif "admin" in session['usert'] %}
+    <!-- Admin View -->
+    <div class="form-section">
+        <h4><i class="fas fa-comments"></i> User Feedback</h4>
+        <p style="color: #666;">Go to the Admin Dashboard to view and manage all user feedback.</p>
+        <a href="{{ url_for('adminfeedbacks') }}" style="display: inline-block; padding: 0.7rem 1.5rem; background: var(--primary-color); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
+            <i class="fas fa-chart-bar"></i> View All Feedback
+        </a>
+    </div>
+    {% endif %}
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('active');
+        }
+    }
+
+    // Auto-hide messages after 5 seconds
+    document.querySelectorAll('.message').forEach(msg => {
+        setTimeout(() => {
+            msg.style.display = 'none';
+        }, 5000);
+    });
+</script>
+{% endblock %}
 <style>
 .bs-example {
    margin-top: 10%;

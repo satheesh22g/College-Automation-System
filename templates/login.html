@@ -1,53 +1,227 @@
-<head>
-           <link rel="stylesheet" href="style.css">
-      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <script type = "text/javascript" 
-         src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
-         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+{% extends "layout.html" %}
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
-    
-    <div class="container">
-        <a href="{{ url_for('dashboard') }}"><img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
-    <div class="d-flex justify-content-center h-100">
-        <div class="card">
-            <div class="card-header">
-                <h3>Sign In</h3>
-               
-            </div>
-            <div class="card-body">
-                 <form action="{{ url_for('login') }}" method="post">
-                    <div class="input-group form-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                       <input class="form-control" name="username" type="text" placeholder="username" required maxlength="30">
-                        
-                    </div>
-                    <div class="input-group form-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        </div>
-                         <input class="form-control" name="password" type="password" placeholder="password" required maxlength="30" id="myInput">
+{% block title %}Login - College Automation System{% endblock %}
 
-                    </div>
-                    <div style="padding-left: 15px;color: white;">
-                      <input type="checkbox" onclick="myFunction()">Show Password
-                    </div>
-                   
-                    <div class="form-group">
-                        <input type="submit" value="Login" class="btn float-right login_btn">
-                    </div>
-                </form>
-            <p style="color: red;">{{message}}</p>
+{% block extra_css %}
+<style>
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+    }
+
+    .login-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: calc(100vh - 120px);
+    }
+
+    .login-card {
+        width: 100%;
+        max-width: 450px;
+        border-radius: 15px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-header {
+        text-align: center;
+        padding: 2rem;
+    }
+
+    .login-header h2 {
+        margin: 0;
+        color: white;
+        font-weight: 700;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: white;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        border: none;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        border-color: #3b82f6;
+    }
+
+    .login-body {
+        padding: 2rem;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1.5rem;
+        color: white;
+    }
+
+    .checkbox-group input {
+        cursor: pointer;
+    }
+
+    .error-message {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+    }
+
+    .btn-login {
+        width: 100%;
+        padding: 0.8rem;
+        font-size: 1.1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-login:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .login-footer {
+        padding: 1.5rem 2rem;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+    }
+
+    .login-footer p {
+        color: white;
+        margin: 0.5rem 0;
+    }
+
+    .login-footer a {
+        color: #3b82f6;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+
+    .help-section {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-left: 4px solid #3b82f6;
+        color: white;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        font-size: 0.9rem;
+    }
+
+    .help-section strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #fbbf24;
+    }
+
+    .navbar {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="login-container">
+    <div class="card login-card">
+        <div class="card-header login-header">
+            <h2><i class="fas fa-sign-in-alt"></i> Sign In</h2>
+            <p class="text-white-50 mb-0">Access your College Account</p>
+        </div>
+
+        <div class="login-body">
+            {% if message %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('login') }}">
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-user"></i> Username
+                    </label>
+                    <input type="text" id="username" class="form-control" name="username" 
+                           placeholder="Enter your username/roll number" required maxlength="30" autofocus>
+                    <small class="text-white-50">Your unique college ID or username</small>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" class="form-control" name="password" 
+                           placeholder="Enter your password" required maxlength="30">
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showPassword" onclick="togglePassword()">
+                    <label for="showPassword" style="margin: 0; cursor: pointer;">Show Password</label>
+                </div>
+
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <div class="help-section">
+                <strong><i class="fas fa-lightbulb"></i> Need Help?</strong>
+                If you forgot your password, contact your administrator. 
+                New users should register first.
             </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-center links">
+        </div>
+
+        <div class="login-footer card-footer">
+            <p>Don't have an account?</p>
+            <a href="{{ url_for('register') }}">
+                <i class="fas fa-user-plus"></i> Create New Account
+            </a>
+            <br><br>
+            <a href="{{ url_for('index') }}" class="text-white-50">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword() {
+        const passwordInput = document.getElementById('password');
+        const checkbox = document.getElementById('showPassword');
+        if (checkbox.checked) {
+            passwordInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+        }
+    }
+</script>
+{% endblock %}
                     Don't have an account?<a href="{{ url_for('register') }}">Sign Up</a>
                 </div>
                

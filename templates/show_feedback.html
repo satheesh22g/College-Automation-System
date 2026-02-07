@@ -1,25 +1,408 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
+{% extends "layout.html" %}
 
-	<meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-	<link rel="icon" type="image/png" href="images/icons/favicon.ico"/>
-	<link rel="stylesheet" type="text/css" href="vendor/bootstrap/css/bootstrap.min.css">
-	<link rel="stylesheet" type="text/css" href="fonts/font-awesome-4.7.0/css/font-awesome.min.css">
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='feedback.css') }}">
-  <script>
-    $(document).ready(function(){
-     
-        
-        $("#div3").fadeOut(5000);
-        $("#div4").fadeOut(5000);
-      });
-    
-    </script>
+{% block title %}Faculty Feedback - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .feedback-header {
+        background: linear-gradient(135deg, var(--secondary-color) 0%, #667eea 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .feedback-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .feedback-table-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .table {
+        margin: 0;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 700;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        padding: 0.8rem 1rem;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .rating-badge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-weight: 600;
+        display: inline-block;
+        color: white;
+    }
+
+    .rating-excellent {
+        background-color: #10b981;
+    }
+
+    .rating-very-good {
+        background-color: #3b82f6;
+    }
+
+    .rating-good {
+        background-color: #f59e0b;
+    }
+
+    .rating-fair {
+        background-color: #ef4444;
+    }
+
+    .rating-poor {
+        background-color: #6b7280;
+    }
+
+    .submit-feedback-btn {
+        padding: 0.7rem 1.5rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-feedback-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .help-section strong {
+        color: var(--primary-color);
+    }
+
+    .back-link {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: var(--primary-dark);
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .modal-overlay.active {
+        display: flex;
+    }
+
+    .form-section {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+    }
+
+    .form-control.textarea {
+        min-height: 120px;
+        resize: vertical;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="feedback-page">
+    <!-- Header -->
+    <div class="feedback-header">
+        <div>
+            <h2><i class="fas fa-star"></i> Faculty Feedback Records</h2>
+            <p class="mb-0">View all submitted faculty ratings and feedback</p>
+        </div>
+        <a href="{{ url_for('dashboard') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5><i class="fas fa-lightbulb"></i> About Faculty Feedback</h5>
+        <p>
+            This page displays all faculty feedback and ratings that have been submitted by students. 
+            The ratings help in evaluating faculty performance and identifying areas for improvement.
+        </p>
+        <p class="mb-0">
+            <strong>Rating Scale:</strong>
+            <span class="rating-badge rating-excellent">2.0: Excellent</span>
+            <span class="rating-badge rating-very-good">1.5: Very Good</span>
+            <span class="rating-badge rating-good">1.0: Good</span>
+            <span class="rating-badge rating-fair">0.5: Fair</span>
+            <span class="rating-badge rating-poor">0.0: Poor</span>
+        </p>
+    </div>
+
+    <!-- Submit Feedback Button -->
+    <div style="margin-bottom: 2rem;">
+        <button class="submit-feedback-btn" onclick="openModal('feedbackModal')">
+            <i class="fas fa-comment-dots"></i> Add Your Feedback
+        </button>
+    </div>
+
+    <!-- Feedback Table -->
+    {% if results %}
+    <div class="feedback-table-container">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th><i class="fas fa-book"></i> Subject 1</th>
+                    <th><i class="fas fa-book"></i> Subject 2</th>
+                    <th><i class="fas fa-book"></i> Subject 3</th>
+                    <th><i class="fas fa-book"></i> Subject 4</th>
+                    <th><i class="fas fa-book"></i> Subject 5</th>
+                    <th><i class="fas fa-book"></i> Subject 6</th>
+                    <th><i class="fas fa-flask"></i> Lab 1</th>
+                    <th><i class="fas fa-flask"></i> Lab 2</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for result in results %}
+                <tr>
+                    <td>
+                        {% if result.sub1 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub1 }}</span>
+                        {% elif result.sub1 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub1 }}</span>
+                        {% elif result.sub1 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub1 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub1 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.sub2 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub2 }}</span>
+                        {% elif result.sub2 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub2 }}</span>
+                        {% elif result.sub2 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub2 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub2 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.sub3 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub3 }}</span>
+                        {% elif result.sub3 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub3 }}</span>
+                        {% elif result.sub3 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub3 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub3 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.sub4 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub4 }}</span>
+                        {% elif result.sub4 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub4 }}</span>
+                        {% elif result.sub4 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub4 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub4 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.sub5 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub5 }}</span>
+                        {% elif result.sub5 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub5 }}</span>
+                        {% elif result.sub5 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub5 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub5 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.sub6 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.sub6 }}</span>
+                        {% elif result.sub6 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.sub6 }}</span>
+                        {% elif result.sub6 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.sub6 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.sub6 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.lab1 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.lab1 }}</span>
+                        {% elif result.lab1 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.lab1 }}</span>
+                        {% elif result.lab1 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.lab1 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.lab1 }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if result.lab2 >= 1.5 %}
+                            <span class="rating-badge rating-excellent">{{ result.lab2 }}</span>
+                        {% elif result.lab2 >= 1 %}
+                            <span class="rating-badge rating-good">{{ result.lab2 }}</span>
+                        {% elif result.lab2 > 0 %}
+                            <span class="rating-badge rating-fair">{{ result.lab2 }}</span>
+                        {% else %}
+                            <span class="rating-badge rating-poor">{{ result.lab2 }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="feedback-table-container">
+        <div class="empty-state">
+            <div class="empty-state-icon">
+                <i class="fas fa-inbox"></i>
+            </div>
+            <h4>No Feedback Data Found</h4>
+            <p class="text-muted">No faculty feedback records have been submitted yet.</p>
+            <button class="submit-feedback-btn" onclick="openModal('feedbackModal')" style="margin-top: 1rem;">
+                <i class="fas fa-comment-dots"></i> Submit Feedback
+            </button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Feedback Modal -->
+    <div id="feedbackModal" class="modal-overlay">
+        <div class="form-section" style="width: 90%; max-width: 600px; margin: 2rem;">
+            <button onclick="closeModal('feedbackModal')" style="float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
+            <h4 style="color: var(--secondary-color); margin-bottom: 1.5rem;">
+                <i class="fas fa-star"></i> Submit Your Feedback
+            </h4>
+            <form method="POST" action="{{ url_for('Suggestions') }}">
+                <div class="form-group">
+                    <label class="form-label">Name (Optional)</label>
+                    <input type="text" name="name" class="form-control" placeholder="Your name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Subject <span style="color: red;">*</span></label>
+                    <input type="text" name="subject" class="form-control" placeholder="Subject of your feedback" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Message <span style="color: red;">*</span></label>
+                    <textarea name="message" class="form-control textarea" placeholder="Your feedback..." required></textarea>
+                </div>
+                <button type="submit" class="submit-feedback-btn" style="width: 100%;">
+                    <i class="fas fa-paper-plane"></i> Submit Feedback
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openModal(modalId) {
+        document.getElementById(modalId).classList.add('active');
+    }
+
+    function closeModal(modalId) {
+        document.getElementById(modalId).classList.remove('active');
+    }
+
+    // Close modal when clicking outside
+    window.onclick = function(event) {
+        if (event.target.classList.contains('modal-overlay')) {
+            event.target.classList.remove('active');
+        }
+    }
+</script>
+{% endblock %}
 <style>
 
   body{

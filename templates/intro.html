@@ -1,58 +1,250 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<html>
-    <head>
-        <title>Chatbot</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+{% block title %}Welcome - College Automation System{% endblock %}
 
-  <style>
-/* Login Button */
-.open-button {
-      background-color: #555;
-      color: white;
-      opacity: 0.8;
-      position: fixed;
-      top: 20%;
-      left:30%;
-      border-radius: 6px;
-      background-color:rgb(9, 70, 161);
-      border: none;
-      color: #FFFFFF;
-      text-align: center;
-      font-size: 24px;
-      width: min-content;
-      transition: all 0.5s;
-      cursor: pointer;
-      margin-top: 25%;
-      margin-left: 17%;
+{% block extra_css %}
+<style>
+    .hero-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+        min-height: 80vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 3rem 2rem;
+        color: white;
+        text-align: center;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
     }
-    .open-button span {
-      cursor: pointer;
-      display: inline-block;
-      position: relative;
-      transition: 0.5s;
-}
 
-.open-button span:after {
-      content: '\00bb';
-      position: absolute;
-      opacity: 0;
-      top: 0;
-      right: -20px;
-      transition: 0.5s;
-}
+    .logo-section {
+        margin-bottom: 2rem;
+    }
 
-.open-button:hover span {
-  padding-right: 25px;
-}
+    .logo-image {
+        max-width: 200px;
+        height: auto;
+        margin-bottom: 2rem;
+        filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.1));
+    }
 
-.open-button:hover span:after {
-  opacity: 1;
-  right: 0;
-}
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 700;
+        line-height: 1.2;
+        margin-bottom: 1rem;
+    }
+
+    .hero-title span {
+        display: inline-block;
+        animation: fadeInUp 0.6s ease-out forwards;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .hero-title span:nth-child(1) { animation-delay: 0.1s; }
+    .hero-title span:nth-child(2) { animation-delay: 0.2s; }
+    .hero-title span:nth-child(3) { animation-delay: 0.3s; }
+    .hero-title span:nth-child(4) { animation-delay: 0.4s; }
+    .hero-title span:nth-child(5) { animation-delay: 0.5s; }
+    .hero-title span:nth-child(6) { animation-delay: 0.6s; }
+    .hero-title span:nth-child(7) { animation-delay: 0.7s; }
+    .hero-title span:nth-child(8) { animation-delay: 0.8s; }
+
+    .hero-subtitle {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        font-weight: 300;
+    }
+
+    .login-button {
+        display: inline-block;
+        padding: 1rem 3rem;
+        background: white;
+        color: var(--primary-color);
+        text-decoration: none;
+        border-radius: 10px;
+        font-weight: 700;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .login-button:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        text-decoration: none;
+        color: var(--primary-color);
+    }
+
+    .features-section {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        margin-top: 3rem;
+    }
+
+    .feature-card {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .feature-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .feature-card h4 {
+        color: #1f2937;
+        margin-bottom: 0.5rem;
+        font-weight: 700;
+    }
+
+    .feature-card p {
+        color: #6b7280;
+        margin: 0;
+        font-size: 0.95rem;
+    }
+
+    .intro-container {
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="intro-container">
+    <!-- Hero Section -->
+    <div class="hero-section">
+        <!-- Logo -->
+        {% if false %}
+        <div class="logo-section">
+            <img src="{{ url_for('static', filename='srit.jpeg') }}" alt="College Logo" class="logo-image">
+        </div>
+        {% endif %}
+
+        <!-- Welcome Title -->
+        <div class="hero-title">
+            <span>W</span><span>E</span><span>L</span><span>C</span><span>O</span><span>M</span><span>E</span>
+            <br>
+            <span style="margin-top: 0.5rem; display: block;">TO CAMPUS HUB</span>
+        </div>
+
+        <!-- Subtitle -->
+        <p class="hero-subtitle">
+            College Automation System - Manage academics seamlessly
+        </p>
+
+        <!-- Login Button -->
+        <a href="{{ url_for('login') }}" class="login-button">
+            <i class="fas fa-sign-in-alt"></i> Login to System
+        </a>
+
+        <!-- CTA Text -->
+        <p style="margin-top: 2rem; opacity: 0.85; font-size: 0.95rem;">
+            Enter your credentials to access the College Management System
+        </p>
+    </div>
+
+    <!-- Features Section -->
+    <div style="margin-top: 3rem;">
+        <h2 style="text-align: center; color: var(--primary-color); margin-bottom: 2rem; font-weight: 700;">
+            <i class="fas fa-star"></i> Key Features
+        </h2>
+        <div class="features-section">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-calendar-check"></i>
+                </div>
+                <h4>Attendance Tracking</h4>
+                <p>Monitor and manage student attendance records with detailed statistics and percentage calculations.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-bar"></i>
+                </div>
+                <h4>Marks Management</h4>
+                <p>View and analyze academic performance data with grade visualization and class statistics.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <h4>Student Profiles</h4>
+                <p>Comprehensive student information management with personal details and academic records.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-comments"></i>
+                </div>
+                <h4>Feedback System</h4>
+                <p>Collect and manage student feedback for continuous improvement of academic services.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-search"></i>
+                </div>
+                <h4>Smart Search</h4>
+                <p>Search student data using natural language queries - find attendance, marks, and profiles easily.</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-lock"></i>
+                </div>
+                <h4>Secure Access</h4>
+                <p>Role-based access control ensures that only authorized users can view and modify system data.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Info Section -->
+    <div style="background: #f0f4ff; border-left: 4px solid var(--primary-color); padding: 2rem; border-radius: 8px; margin-top: 3rem; margin-bottom: 2rem;">
+        <h4 style="color: var(--primary-color); margin-bottom: 1rem;">
+            <i class="fas fa-info-circle"></i> Getting Started
+        </h4>
+        <p style="margin: 0.5rem 0;">
+            If you're a first-time user, please register using the registration link on the login page. 
+            Currently, we support the following user roles:
+        </p>
+        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+            <li><strong>Students:</strong> View your attendance, marks, and academic records</li>
+            <li><strong>Faculty:</strong> Query student data and submit feedback</li>
+            <li><strong>HOD/Counselor:</strong> Manage department level academic data</li>
+            <li><strong>Administrators:</strong> Load data, manage users, and configure system settings</li>
+        </ul>
+        <p style="margin: 0.5rem 0;">
+            For technical support or account issues, please contact your college IT department.
+        </p>
+    </div>
+</div>
+{% endblock %}
 
    /*Side Nav */
     .message

@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Marks - College Automation System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient">
+                <div class="card-body">
+                    <h2 class="mb-0">
+                        <i class="fas fa-chart-line"></i> Academic Marks
+                    </h2>
+                    <p class="text-white-50 mb-0">Your semester marks and performance</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            {% if results %}
+                <!-- Performance Summary -->
+                {% set avg_marks = (results[0].average if results[0].average else 0) %}
+                <div class="dashboard-grid mb-4">
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: #3b82f6;">
+                            <i class="fas fa-award"></i>
+                        </div>
+                        <div class="stat-card-value">{{ avg_marks }}</div>
+                        <div class="stat-card-label">Average Score</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: #10b981;">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <div class="stat-card-value">
+                            {% if avg_marks >= 75 %}A{% elif avg_marks >= 60 %}B{% elif avg_marks >= 50 %}C{% else %}D{% endif %}
+                        </div>
+                        <div class="stat-card-label">Grade</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-card-icon" style="color: #f59e0b;">
+                            <i class="fas fa-book"></i>
+                        </div>
+                        <div class="stat-card-value">{{ results | length }}</div>
+                        <div class="stat-card-label">Semesters</div>
+                    </div>
+                </div>
+
+                <!-- Marks Table -->
+                <div class="card">
+                    <div class="card-header">
+                        <i class="fas fa-table"></i> Detailed Marks
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th><i class="fas fa-id-badge"></i> Student ID</th>
+                                        <th><i class="fas fa-graduation-cap"></i> Year</th>
+                                        <th><i class="fas fa-layer-group"></i> Semester</th>
+                                        {% if sub %}
+                                            {% for subject in sub %}
+                                                <th title="{{ subject.name }}">{{ subject.name[:15] }}</th>
+                                            {% endfor %}
+                                        {% endif %}
+                                        <th><i class="fas fa-sum"></i> Total</th>
+                                        <th><i class="fas fa-percentage"></i> Average</th>
+                                        <th>Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for record in results %}
+                                        <tr>
+                                            <td>
+                                                <span class="badge badge-primary">{{ record.student_id }}</span>
+                                            </td>
+                                            <td>{{ record.year or 'N/A' }}</td>
+                                            <td>
+                                                <span class="badge bg-info">Sem {{ record.sem or 'N/A' }}</span>
+                                            </td>
+                                            <!-- Subject Marks -->
+                                            {% if record.sub1 %}<td>{{ record.sub1 }}</td>{% endif %}
+                                            {% if record.sub2 %}<td>{{ record.sub2 }}</td>{% endif %}
+                                            {% if record.sub3 %}<td>{{ record.sub3 }}</td>{% endif %}
+                                            {% if record.sub4 %}<td>{{ record.sub4 }}</td>{% endif %}
+                                            {% if record.sub5 %}<td>{{ record.sub5 }}</td>{% endif %}
+                                            {% if record.sub6 %}<td>{{ record.sub6 }}</td>{% endif %}
+                                            {% if record.sub7 %}<td>{{ record.sub7 }}</td>{% endif %}
+                                            {% if record.sub8 %}<td>{{ record.sub8 }}</td>{% endif %}
+                                            
+                                            <td>
+                                                <strong>{{ record.total or 'N/A' }}</strong>
+                                            </td>
+                                            <td>
+                                                <strong>
+                                                    {% if record.average %}
+                                                        {% if record.average >= 75 %}
+                                                            <span class="text-success">{{ record.average }}</span>
+                                                        {% elif record.average >= 60 %}
+                                                            <span class="text-warning">{{ record.average }}</span>
+                                                        {% else %}
+                                                            <span class="text-danger">{{ record.average }}</span>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        N/A
+                                                    {% endif %}
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                {% if record.average %}
+                                                    {% if record.average >= 75 %}
+                                                        <span class="badge bg-success">
+                                                            <i class="fas fa-star"></i> A
+                                                        </span>
+                                                    {% elif record.average >= 60 %}
+                                                        <span class="badge bg-info">
+                                                            <i class="fas fa-star"></i> B
+                                                        </span>
+                                                    {% elif record.average >= 50 %}
+                                                        <span class="badge bg-warning">
+                                                            <i class="fas fa-star"></i> C\n    {% else %}\n        <span class="badge bg-danger">\n        <i class="fas fa-star"></i> D\n                        </span>\n                                                    {% endif %}\n                                                {% else %}\n                                                    <span class=\"badge bg-secondary\">N/A</span>\n                                                {% endif %}\n                                            </td>\n                                        </tr>\n                                    {% endfor %}\n                                </tbody>\n                            </table>\n                        </div>\n                    </div>\n                </div>\n\n                <!-- Grade Scale Info -->\n                <div class=\"alert alert-info mt-3\">\n                    <h6 class=\"alert-heading\">\n                        <i class=\"fas fa-graduation-cap\"></i> Grade Scale\n                    </h6>\n                    <div class=\"row\">\n                        <div class=\"col-md-6\">\n                            <ul class=\"mb-0 ps-3\">\n                                <li><strong>A:</strong> 75% and above</li>\n                                <li><strong>B:</strong> 60% - 74%</li>\n                            </ul>\n                        </div>\n                        <div class=\"col-md-6\">\n                            <ul class=\"mb-0 ps-3\">\n                                <li><strong>C:</strong> 50% - 59%</li>\n                                <li><strong>D:</strong> Below 50%</li>\n                            </ul>\n                        </div>\n                    </div>\n                </div>\n            {% else %}\n                <!-- No Data Message -->\n                <div class=\"card\">\n                    <div class=\"card-body text-center py-5\">\n                        <i class=\"fas fa-inbox\" style=\"font-size: 3rem; color: #d1d5db; margin-bottom: 1rem;\"></i>\n                        <h5 class=\"text-muted\">No Marks Records Found</h5>\n                        <p class=\"text-muted mb-3\">Your marks data will appear here once it's uploaded by the administration.</p>\n                        <a href=\"{{ url_for('dashboard') }}\" class=\"btn btn-primary\">\n                            <i class=\"fas fa-home\"></i> Back to Dashboard\n                        </a>\n                    </div>\n                </div>\n            {% endif %}\n        </div>\n    </div>\n</div>\n\n<style>\n    .bg-gradient {\n        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n        color: white;\n        border: none;\n    }\n    \n    .table-hover tbody tr:hover {\n        background-color: #f0f9ff;\n    }\n    \n    .badge {\n        font-size: 0.85rem;\n        padding: 0.5rem 0.75rem;\n    }\n    \n    .text-success {\n        font-weight: 600;\n    }\n    \n    .text-danger {\n        font-weight: 600;\n    }\n    \n    .text-warning {\n        font-weight: 600;\n    }\n</style>\n{% endblock %}\n", "oldString": "", "newString": ""}}

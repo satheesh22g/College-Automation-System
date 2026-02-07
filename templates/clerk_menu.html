@@ -1,12 +1,181 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<html>
-    <head>
-        <title>{{session['usert']}}</title>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
+{% block title %}Clerk Dashboard - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 2rem 0;
+    }
+
+    .welcome-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.2);
+    }
+
+    .welcome-section h1 {
+        font-weight: 700;
+        margin: 0;
+        font-size: 2rem;
+    }
+
+    .welcome-section .subtitle {
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: var(--primary-color);
+    }
+
+    .dashboard-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .dashboard-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+
+    .help-section strong {
+        color: var(--primary-color);
+    }
+
+    .alert {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h1>
+            <i class="fas fa-user-shield"></i> Clerk Dashboard
+        </h1>
+        <p class="subtitle">College Automation System - Administrative Access</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i>
+                <strong>{{ message }}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Clerk Administrative Options -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-lg-4 mb-3">
+            <a href="{{ url_for('load_data') }}" class="dashboard-link">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-upload"></i>
+                        </div>
+                        <h5 class="card-title">Load Data</h5>
+                        <p class="card-text text-muted">Import student and course data from Excel files</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-3">
+            <a href="{{ url_for('admin_update') }}" class="dashboard-link">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h5 class="card-title">System Updates</h5>
+                        <p class="card-text text-muted">Manage system settings and configurations</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4 mb-3">
+            <a href="{{ url_for('adminfeedbacks') }}" class="dashboard-link">
+                <div class="card dashboard-card">
+                    <div class="card-body text-center">
+                        <div class="card-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <h5 class="card-title">User Feedback</h5>
+                        <p class="card-text text-muted">Review feedback from students and faculty</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5><i class="fas fa-lightbulb"></i> Clerk Role Information</h5>
+        <p>
+            As a clerk, you have access to administrative tools for managing system data and configurations:
+        </p>
+        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+            <li><strong>Load Data:</strong> Import student attendance, marks, and profile information from Excel spreadsheets</li>
+            <li><strong>System Updates:</strong> Modify system settings, manage departments, and configure academic data</li>
+            <li><strong>User Feedback:</strong> View and manage feedback submitted by students and faculty members</li>
+        </ul>
+        <p class="mb-0">
+            All data modifications are logged for audit purposes. Please ensure data accuracy before importing.
+        </p>
+    </div>
+</div>
+{% endblock %}
 
   <style>
     body

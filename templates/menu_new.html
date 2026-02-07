@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - College Automation System{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-4">
+    <!-- Welcome Section -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card bg-gradient">
+                <div class="card-body">
+                    <h2 class="mb-0">
+                        <i class="fas fa-wave-hand"></i> Welcome, {{ session['namet'] }}!
+                    </h2>
+                    <p class="text-muted mb-0">{{ session['usert'] }} | {{ now.strftime('%B %d, %Y') }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Sidebar Navigation -->
+        <div class="col-lg-3 mb-4">
+            <div class="sidebar">
+                <div class="sidebar-title">
+                    <i class="fas fa-bars"></i> Quick Menu
+                </div>
+                
+                {% if "Student" in session['usert'] %}
+                    <ul>
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-id-card"></i> My Profile</a></li>
+                        <li><a href="{{ url_for('attendance') }}"><i class="fas fa-calendar-check"></i> Attendance</a></li>
+                        <li><a href="{{ url_for('marks') }}"><i class="fas fa-chart-line"></i> My Marks</a></li>
+                        <li><a href="{{ url_for('Suggestions') }}"><i class="fas fa-comments"></i> Give Feedback</a></li>
+                        <li><a href="{{ url_for('query_set') }}"><i class="fas fa-search"></i> Query System</a></li>
+                        <li><a href="{{ url_for('help') }}"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                
+                {% elif "admin" in session['usert'] %}
+                    <ul>
+                        <li><a href="{{ url_for('admin_update') }}"><i class="fas fa-database"></i> Data Management</a></li>
+                        <li><a href="{{ url_for('load_data') }}"><i class="fas fa-upload"></i> Load Data</a></li>
+                        <li><a href="{{ url_for('adminfeedbacks') }}"><i class="fas fa-inbox"></i> Feedbacks</a></li>
+                        <li><a href="{{ url_for('reset') }}"><i class="fas fa-key"></i> Reset Password</a></li>
+                        <li><a href="{{ url_for('help') }}"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                
+                {% elif "Faculty" in session['usert'] or "counselor" in session['usert'] %}
+                    <ul>
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user-tie"></i> My Profile</a></li>
+                        <li><a href="{{ url_for('query_set') }}"><i class="fas fa-search"></i> Query System</a></li>
+                        <li><a href="{{ url_for('faculty_feedback_route') }}"><i class="fas fa-star"></i> Rate Subjects</a></li>
+                        <li><a href="{{ url_for('show_feedback') }}"><i class="fas fa-inbox"></i> Feedbacks</a></li>
+                        <li><a href="{{ url_for('help') }}"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                
+                {% elif "HOD" in session['usert'] %}
+                    <ul>
+                        <li><a href="{{ url_for('profile') }}"><i class="fas fa-user-tie"></i> My Profile</a></li>
+                        <li><a href="{{ url_for('query_set') }}"><i class="fas fa-search"></i> Query System</a></li>
+                        <li><a href="{{ url_for('show_feedback') }}"><i class="fas fa-inbox"></i> Feedbacks</a></li>
+                        <li><a href="{{ url_for('help') }}"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                
+                {% elif "clerk" in session['usert'] %}
+                    <ul>
+                        <li><a href="{{ url_for('load_data') }}"><i class="fas fa-upload"></i> Load Data</a></li>
+                        <li><a href="{{ url_for('admin_update') }}"><i class="fas fa-database"></i> Update Records</a></li>
+                        <li><a href="{{ url_for('help') }}"><i class="fas fa-question-circle"></i> Help</a></li>
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Account Settings Card -->
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-cog"></i> Account
+                </div>
+                <div class="card-body">
+                    <a href="{{ url_for('changepass') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
+                        <i class="fas fa-key"></i> Change Password
+                    </a>
+                    <a href="{{ url_for('logout') }}" class="btn btn-sm btn-danger w-100">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="col-lg-9">
+            <!-- Statistics Cards -->
+            <div class="dashboard-grid">
+                <div class="stat-card">
+                    <div class="stat-card-icon" style="color: #3b82f6;">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                    <div class="stat-card-value">
+                        {% if "Student" in session['usert'] %}
+                            {{ results | length if results else 0 }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                    <div class="stat-card-label">Academic Year</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-icon" style="color: #10b981;">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <div class="stat-card-value">
+                        {% if "Student" in session['usert'] %}
+                            {{ marks | length if marks else 0 }}
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                    <div class="stat-card-label">Semesters</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-card-icon" style="color: #f59e0b;">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                    <div class="stat-card-value">
+                        {% if "Student" in session['usert'] %}
+                            {{ attend | length if attend else 0 }}%
+                        {% else %}
+                            N/A
+                        {% endif %}
+                    </div>
+                    <div class="stat-card-label">Attendance</div>
+                </div>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="card mt-4">
+                <div class="card-header">
+                    <i class="fas fa-star"></i> Quick Actions
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        {% if "Student" in session['usert'] %}
+                            <div class="col-sm-6 col-md-4 mb-2">
+                                <a href="{{ url_for('attendance') }}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-calendar-check"></i> View Attendance
+                                </a>
+                            </div>
+                            <div class="col-sm-6 col-md-4 mb-2">
+                                <a href="{{ url_for('marks') }}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-chart-line"></i> View Marks
+                                </a>
+                            </div>
+                            <div class="col-sm-6 col-md-4 mb-2">
+                                <a href="{{ url_for('profile') }}" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-id-card"></i> My Profile
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+
+            <!-- Important Notice -->
+            <div class="alert alert-info mt-4">
+                <h6 class="alert-heading">
+                    <i class="fas fa-bell"></i> Important Notice
+                </h6>
+                <p>
+                    Keep your information updated and check this dashboard regularly for important announcements 
+                    and updates from your institution.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .bg-gradient {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+    }
+    
+    .stat-card {
+        transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    .btn-outline-primary {
+        border: 2px solid #3b82f6;
+    }
+</style>
+
+<script>
+    // Set current date
+    document.addEventListener('DOMContentLoaded', function() {
+        // Add any dashboard-specific functionality here
+    });
+</script>
+{% endblock %}

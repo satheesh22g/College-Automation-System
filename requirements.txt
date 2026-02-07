@@ -19,3 +19,4 @@ urllib3
 Werkzeug
 autocorrect
 docx2txt
+pandas
