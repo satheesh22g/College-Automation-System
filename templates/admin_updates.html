@@ -1,200 +1,452 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Update</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <style>
-      html, body {
-      min-height: 100%;
-      }
-      body, div, form, input, select, textarea, p { 
-      padding: 0;
-      margin: 0;
-      outline: none;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 14px;
-      color: #666;
-      line-height: 22px;
-      }
-      h1 {
-      margin: 15px 0;
-      font-weight: 400;
-      }
-      .testbox {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: inherit;
-      padding: 3px;
-      }
-      form {
-      width: 100%;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 2px 5px #ccc; 
-      }
-      input, select, textarea {
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      }
-      input:hover, select:hover, textarea:hover {
-      outline: none;
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      input {
-      width: calc(100% - 10px);
-      padding: 5px;
-      }
-      select {
-      width: 100%;
-      padding: 7px 0;
-      background: transparent;
-      }
-      textarea {
-      width: calc(100% - 2px);
-      padding: 5px;
-      }
-      .item {
-      position: relative;
-      margin: 10px 0;
-      }
-      .item:hover p, .item:hover i {
-      color: #095484;
-      }
-      input:hover, select:hover, textarea:hover {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status:hover input {
-      box-shadow: none;
-      }
-      .status label:hover input {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status-item input, .status-item span {
-      width: auto;
-      vertical-align: middle;
-      }
-      .status-item input {
-      margin: 0;
-      }
-      .status-item span {
-      margin: 0 20px 0 5px;
-      }
-      input[type="date"]::-webkit-inner-spin-button {
-      display: none;
-      }
-      input[type="time"]::-webkit-inner-spin-button {
-      margin: 2px 22px 0 0;
-      }
-      .item i, input[type="date"]::-webkit-calendar-picker-indicator {
-      position: absolute;
-      font-size: 20px;
-      color: #a9a9a9;
-      }
-      .item i {
-      right: 1%;
-      top: 30px;
-      z-index: 1;
-      }
-      [type="date"]::-webkit-calendar-picker-indicator {
-      right: 0;
-      z-index: 2;
-      opacity: 0;
-      cursor: pointer;
-      }
-      .btn-block {
-      margin-top: 20px;
-      text-align: center;
-      }
-      button {
-      width: auto;
-      padding: 10px;
-      border: none;
-      -webkit-border-radius: 5px; 
-      -moz-border-radius: 5px; 
-      border-radius: 5px; 
-      background-color: #095484;
-      font-size: 16px;
-      color: #fff;
-      cursor: pointer;
-      }
-      button:hover {
-      background-color: #0666a3;
-      }
-      @media (min-width: 568px) {
-      .name-item {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: space-between;
-      }
-      .name-item input {
-      width: calc(50% - 20px);
-      }
-      }
-    </style>
-  </head>
-  <body>
-    <h1>IN Progress</h1>
-    <div class="testbox">
-      <form action="{{ url_for('admin_update') }}"  method = "POST" enctype = "multipart/form-data">
-     
-       
-        <div class="item">
-          <p><strong>Department:</strong></p>
-          <select name="dept_id" required>
-            <option value="">*Please select*</option>
-            <option value="1">Civil Engineering</option>
-            <option value="2">Electrical Engineering</option>
-            <option value="3">Mechanical Engineering</option>
-            <option value="4">Electronics and Communication Engineering</option>
-            <option value="5">Computer Science and Engineering</option>
-          </select>
+{% extends "layout.html" %}
+
+{% block title %}System Updates - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-page {
+        background: #f3f4f6;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    .admin-container {
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .admin-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+        margin-bottom: 2rem;
+    }
+
+    .admin-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 2rem;
+        font-weight: 700;
+    }
+
+    .admin-header p {
+        margin: 0;
+        opacity: 0.9;
+        font-size: 0.95rem;
+    }
+
+    .admin-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .admin-body {
+        padding: 2rem;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1e40af;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid #e5e7eb;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+        font-size: 0.95rem;
+    }
+
+    .form-label i {
+        margin-right: 0.5rem;
+        color: #1e40af;
+    }
+
+    .form-control,
+    .form-select {
+        width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+        background: #f9fafb;
+    }
+
+    .form-control:focus,
+    .form-select:focus {
+        outline: none;
+        border-color: #1e40af;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .help-text {
+        display: block;
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin-top: 0.3rem;
+    }
+
+    .radio-group {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 1rem;
+        margin-top: 0.5rem;
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+    }
+
+    .radio-item input[type="radio"] {
+        cursor: pointer;
+        width: 1.1rem;
+        height: 1.1rem;
+        accent-color: #1e40af;
+    }
+
+    .radio-item label {
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+        flex: 1;
+    }
+
+    .radio-item:has(input:checked) {
+        border-color: #1e40af;
+        background-color: #f0f9ff;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+        display: inline-block;
+        width: 100%;
+    }
+
+    .file-input-label {
+        display: block;
+        padding: 2rem;
+        border: 2px dashed #1e40af;
+        border-radius: 8px;
+        text-align: center;
+        background: #f0f9ff;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .file-input-label:hover {
+        background: #e0f2fe;
+        border-color: #7c3aed;
+    }
+
+    .file-input-label i {
+        font-size: 2.5rem;
+        color: #1e40af;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .file-input-wrapper input[type="file"] {
+        display: none;
+    }
+
+    .file-name {
+        font-size: 0.9rem;
+        color: #666;
+        margin-top: 0.5rem;
+    }
+
+    .output-message {
+        background-color: #dcfce7;
+        color: #166534;
+        border-left: 4px solid #22c55e;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        font-size: 0.95rem;
+    }
+
+    .output-message.error {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left-color: #ef4444;
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn-submit:active {
+        transform: translateY(0);
+    }
+
+    .btn-submit i {
+        margin-right: 0.5rem;
+    }
+
+    .help-section {
+        background-color: #eff6ff;
+        border-left: 4px solid #1e40af;
+        color: #1e3a8a;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+        font-size: 0.9rem;
+    }
+
+    .help-section strong {
+        display: block;
+        margin-bottom: 0.5rem;
+        color: #1e40af;
+        font-weight: 700;
+    }
+
+    .help-section i {
+        margin-right: 0.5rem;
+    }
+
+    @media (max-width: 576px) {
+        .admin-page {
+            padding: 1rem;
+        }
+
+        .admin-header {
+            padding: 1.5rem;
+        }
+
+        .admin-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .radio-group {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-page">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2><i class="fas fa-cogs"></i> System Updates</h2>
+            <p>Update faculty information and manage academic data</p>
         </div>
-        <div class="item">
-          <p><strong>Faculty Name:</strong></p>
-          <select name= "faculty">
-            <option value= "" SELECTED>*Please select*</option>
-            {% for f in flist %}
-            <option value= "{{f.id}}">{{f.name}}</option>
-            {% endfor %}
-        </select>
-        
-        
+
+        <div class="admin-card">
+            <div class="admin-body">
+                {% if output %}
+                    <div class="output-message {% if 'error' in output.lower() or 'failed' in output.lower() %}error{% endif %}">
+                        <i class="fas {% if 'error' in output.lower() or 'failed' in output.lower() %}fa-exclamation-circle{% else %}fa-check-circle{% endif %}"></i> 
+                        {{ output }}
+                    </div>
+                {% endif %}
+
+                <form method="POST" action="{{ url_for('admin_update') }}" enctype="multipart/form-data">
+                    <!-- Department Selection -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-building"></i> Department Information
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="dept_id" class="form-label">
+                                <i class="fas fa-list"></i> Select Department
+                            </label>
+                            <select name="dept_id" id="dept_id" class="form-select" required>
+                                <option value="">-- Select Department --</option>
+                                <option value="1">Civil Engineering</option>
+                                <option value="2">Electrical Engineering</option>
+                                <option value="3">Mechanical Engineering</option>
+                                <option value="4">Electronics and Communication Engineering</option>
+                                <option value="5">Computer Science and Engineering</option>
+                            </select>
+                            <span class="help-text"><i class="fas fa-info-circle"></i> Choose the department for which you want to update data</span>
+                        </div>
+                    </div>
+
+                    <!-- Faculty Selection -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-user-tie"></i> Faculty Details
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="faculty" class="form-label">
+                                <i class="fas fa-person-chalkboard"></i> Select Faculty
+                            </label>
+                            <select name="faculty" id="faculty" class="form-select">
+                                <option value="">-- Select Faculty (Optional) --</option>
+                                {% for f in flist %}
+                                    <option value="{{ f.id }}">{{ f.name }}</option>
+                                {% endfor %}
+                            </select>
+                            <span class="help-text"><i class="fas fa-info-circle"></i> Optional: Filter by specific faculty member</span>
+                        </div>
+                    </div>
+
+                    <!-- Year Selection -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-calendar"></i> Academic Year
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="year" class="form-label">
+                                <i class="fas fa-graduation-cap"></i> Select Year
+                            </label>
+                            <select name="year" id="year" class="form-select" required>
+                                <option value="">-- Select Year --</option>
+                                <option value="1">Year 1</option>
+                                <option value="2">Year 2</option>
+                                <option value="3">Year 3</option>
+                                <option value="4">Year 4</option>
+                            </select>
+                            <span class="help-text"><i class="fas fa-info-circle"></i> Choose the academic year for the data</span>
+                        </div>
+                    </div>
+
+                    <!-- Data Type Selection -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-database"></i> Data Type
+                        </div>
+                        
+                        <div class="form-label">
+                            <i class="fas fa-check-square"></i> What type of data do you want to update?
+                        </div>
+                        <div class="radio-group">
+                            <div class="radio-item">
+                                <input type="radio" id="att" name="name" value="Attendance" required>
+                                <label for="att"><i class="fas fa-clipboard-list"></i> Attendance</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="marks" name="name" value="Marks">
+                                <label for="marks"><i class="fas fa-chart-bar"></i> Marks</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="profile" name="name" value="Profile">
+                                <label for="profile"><i class="fas fa-address-card"></i> Profile</label>
+                            </div>
+                            <div class="radio-item">
+                                <input type="radio" id="fac" name="name" value="Faculty">
+                                <label for="fac"><i class="fas fa-user-check"></i> Faculty</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- File Upload -->
+                    <div class="form-section">
+                        <div class="form-section-title">
+                            <i class="fas fa-file-upload"></i> Upload Data File
+                        </div>
+                        
+                        <div class="form-group">
+                            <div class="file-input-wrapper">
+                                <label for="file_input" class="file-input-label">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p><strong>Click to select or drag Excel file here</strong></p>
+                                    <span style="font-size: 0.85rem; color: #6b7280;">Accepted format: .xlsx, .xls</span>
+                                </label>
+                                <input type="file" id="file_input" name="file" accept=".xlsx,.xls" required onchange="displayFileName(this)">
+                                <div id="file-name" class="file-name"></div>
+                            </div>
+                            <span class="help-text"><i class="fas fa-info-circle"></i> Upload an Excel spreadsheet with the data to be imported</span>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-arrow-right"></i> Process Update
+                    </button>
+                </form>
+
+                <div class="help-section">
+                    <strong><i class="fas fa-lightbulb"></i> How to Update Data</strong>
+                    <ol style="margin: 0.5rem 0 0 1.5rem; padding: 0;">
+                        <li>Select the department and academic year</li>
+                        <li>Choose which type of data you're updating (Attendance/Marks/Profile/Faculty)</li>
+                        <li>Upload the corresponding Excel file with the data</li>
+                        <li>Click "Process Update" to import the data into the system</li>
+                    </ol>
+                </div>
+            </div>
         </div>
-        <div class="item">
-          <p><strong>Year:</strong></p>
-          <select name= "year" required>
-            <option value="">*Please select*</option>
-            <option value= "1" >year 1</option>
-            <option value= "2" >year 2</option>
-            <option value= "3" >year 3</option>
-            <option value= "4" >year 4</option>
-        </select>
-        </div>
-        <div class="item status">
-          <p><strong>Choose any one:</strong></p>
-          <div class="status-item">
-            <label><input type="radio" name="name" value= "Attendance"> <span>Attendance</span></label>
-            <label><input type="radio" name="name" value="Marks"> <span>Marks</span></label>
-            <label><input type="radio" name="name" value="Profile"> <span>Profile</span></label>
-            <label><input type="radio" name="name" value="Faculty"> <span>Faculty</span></label>
-          </div>
-        </div>
-        <div class="item">
-          <p><strong>Choose XL sheet</strong></p>
-          <input type = "file" name = "file" required />
-        </div>
-        <div class="item">
-          <p><h3>{{output}}</h3></p>
-        </div>
-        
-        <div class="btn-block">
-          <button type="submit" href="/">Update</button>
-        </div>
-      </form>
     </div>
-    
-  </body>
-</html>
+</div>
+
+<script>
+    function displayFileName(input) {
+        const fileNameDiv = document.getElementById('file-name');
+        if (input.files && input.files[0]) {
+            fileNameDiv.textContent = 'Selected: ' + input.files[0].name;
+        } else {
+            fileNameDiv.textContent = '';
+        }
+    }
+
+    // Drag and drop functionality
+    const fileLabel = document.querySelector('.file-input-label');
+    const fileInput = document.getElementById('file_input');
+
+    if (fileLabel) {
+        fileLabel.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileLabel.style.background = '#e0f2fe';
+            fileLabel.style.borderColor = '#7c3aed';
+        });
+
+        fileLabel.addEventListener('dragleave', () => {
+            fileLabel.style.background = '#f0f9ff';
+            fileLabel.style.borderColor = '#1e40af';
+        });
+
+        fileLabel.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileInput.files = e.dataTransfer.files;
+            displayFileName(fileInput);
+            fileLabel.style.background = '#f0f9ff';
+            fileLabel.style.borderColor = '#1e40af';
+        });
+    }
+</script>
+{% endblock %}

@@ -1,91 +1,147 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<html>
-    <head>
-      <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <style>
-       
-            </style> 
-            
-    </head>
-<body style="background-image:url('/static/bg2.png');">
-<div style="margin-top: 10%;margin-left: 25%; color:aliceblue;">
-<input type="radio" class ="radios" name="type" id='monthly'> Monthly
-<input type="radio" class ="radios" name="type" id='period'> Period
-<input type="radio" class ="radios" name="type" value="tillnow" id='tillnow'> Till Now
-<br/>
-<form action="#" method="POST">
-<select class="monthly" name="type" hidden="true" style="color: black;">
-<option value="January">January</option>
-<option value="Febuary">Febuary</option>
-<option value="March">March</option>
-<option value="April">April</option>
-<option value="May">May</option>
-<option value="June">June</option>
-<option value="July">July</option>
-<option value="August">August</option>
-<option value="September">September</option>
-<option value="October">October</option>
-<option value="November">November</option>
-<option value="December">December</option>
-</select>
- <input type="date" value=getDate() name="from" min="2020-01-01" max="2021-12-31" style="color: black;margin-left: 6.9%;" class='period' hidden="true"/> <br/>
-<br/>
-<input type="date" value=getDate() name="to" min="2020-01-01" max="2021-12-31" style="color: black;margin-left: 6.9%;" class='period' hidden="true"/> <br/>
-<input type="submit" value="show" class="btn btn-primary">
-</form>
-</div>
-  <div class = "panel panel-primary" style="width: 60%;margin-top: 1%;margin-left: 7%;">
-    <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Attendance</h3>
-       <span class="col-md-4"></span>
-       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+{% block title %}Update Attendance - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .form-page {
+        background: #f3f4f6;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    .form-container {
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .form-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .form-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .form-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
+
+    .form-body {
+        padding: 2rem;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+
+    .form-control {
+        width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #1e40af;
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+
+    .btn-submit {
+        width: 100%;
+        padding: 0.9rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+        border-radius: 8px;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 64, 175, 0.4);
+    }
+
+    .help-section {
+        background: #eff6ff;
+        border-left: 4px solid #1e40af;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        color: #1e3a8a;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-page">
+    <div class="form-container">
+        <div class="form-card">
+            <div class="form-header">
+                <h2><i class="fas fa-clipboard-list"></i> Update Attendance</h2>
+                <p>Record student attendance</p>
+            </div>
+
+            <div class="form-body">
+                <form method="POST" action="{{ url_for('attendance') }}">
+                    <div class="form-group">
+                        <label for="roll_no" class="form-label">
+                            <i class="fas fa-user"></i> Roll Number
+                        </label>
+                        <input type="text" id="roll_no" name="roll_no" class="form-control" placeholder="Enter roll number" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="subject" class="form-label">
+                            <i class="fas fa-book"></i> Subject
+                        </label>
+                        <input type="text" id="subject" name="subject" class="form-control" placeholder="Enter subject name" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status" class="form-label">
+                            <i class="fas fa-check"></i> Status
+                        </label>
+                        <select id="status" name="status" class="form-control" required>
+                            <option value="">-- Select Status --</option>
+                            <option value="P">Present</option>
+                            <option value="A">Absent</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn-submit">
+                        <i class="fas fa-save"></i> Update Attendance
+                    </button>
+                </form>
+
+                <div class="help-section">
+                    <strong><i class="fas fa-lightbulb"></i> Help</strong>
+                    <p style="margin: 0.5rem 0 0 0;">Enter the student's roll number, the subject, and whether they were present or absent.</p>
+                </div>
+            </div>
+        </div>
     </div>
-   
-    <table class = "table">
-       <tr style="background-color: beige;">
-          <th>Roll Number</th>
-          <th>Name</th>
-          <th>Attendance</th>
-       </tr>
-       <!-- {% for result in results %}
-       <tr>
-           <td>{{ result.sid }}</td>
-     <td>{{ result.name }}</td>
-     <td>{{ result.attend }}</td>
-       </tr>
-       {% endfor %} -->
-    </table>
- </div>
- <script>
-    $(function() {
-         $('#period').click(function() {
-             $('.monthly').attr('hidden',true);
-             $('.period').attr('hidden',false);
-            
-         });  
-                
-         $('#monthly').click(function() {
-            $('.period').attr('hidden',true);
-             $('.monthly').attr('hidden',false);
-         });
-         $('#tillnow').click(function() {
-             $('.monthly').attr('hidden',true);
-             $('.period').attr('hidden',true);
-         });
-     });
- </script>
- <script type="text/javascript">
-function getDate(){
-    var today = new Date();
-
-document.getElementById("date").value = today.getFullYear() + '-' + ('0' + (today.getMonth() + 1)).slice(-2) + '-' + ('0' + today.getDate()).slice(-2);
-
-
-}</script>
-</body>
-    </html>
+</div>
+{% endblock %}

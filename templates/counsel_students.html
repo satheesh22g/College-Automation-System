@@ -1,58 +1,142 @@
-{% include "nav.html" %}
-<html>
-    <head>
-      <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <style>
-         
-            </style> 
-            
-    </head>
-<body style="background-image:url('/static/bg2.png');">
-  <div class = "panel panel-primary" style="width: fit-content;margin-top: 9%;margin-left: 4%;">
-    <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Attendance</h3>
-       <span class="col-md-4"></span>
-       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
-    </div>
-   
-    <table class = "table">
-       <tr style="background-color: beige;">
-          <th>Roll Number</th>
-          <th>Name</th>
-          <th>Attendance</th>
-          <th>Marks</th>
-       </tr>
-      
-        {% for i in students %}
-       <tr>
-        
-     <td><a href = "{{url_for('council_students', sid = i[0][0])}}">{{ i[0][0] }}</td>
-     <td><a href = "{{url_for('council_students', sid = i[0][0])}}">{{ i[0][1] }}</a></td>
-     <td>{{ i[1][1]}}</td>
-     <td>({{'%0.2f' % i[2][0]}}%)</td>
-    </tr>
-     {% endfor %}
-  
-   
-    
-      
-    </table>
- </div>    
-</body>
-    </html>
-<!-- @app.route("/<sid>/Council-Students")
-def council_students(sid):
-    res=db.execute("SELECT * FROM student_profile WHERE sid = :u", {"u": sid}).fetchall()
-    attend=db.execute("SELECT * from attendance where student_id = :s;",{"s":sid}).fetchall()
-    marks=db.execute("SELECT * from marks where student_id = :s;",{"s":sid}).fetchall()
-    return render_template("student_profile.html",results=res,marks=marks,attend=attend)
+{% extends "layout.html" %}
 
-    if re.search('council', ss):
-        students=db.execute("select sid,name from student_profile where faculty_id=:f;",{"f":int(session['user'])}).fetchall()
-        attend = db.execute("select attend,attend_perc from attendance where councelor_id=:f;",{"f":int(session['user'])}).fetchall()
-        #marks = db.execute("select average from marks where councelor_id=:f;",{"f":session['user']}).fetchall()
-        return render_template("counsel_students.html", students=zip(students, attend)) -->
+{% block title %}Counselor Students - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-page {
+        background: #f3f4f6;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    .results-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .results-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .results-body {
+        padding: 2rem;
+    }
+
+    .table-responsive {
+        overflow-x: auto;
+    }
+
+    .results-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 1rem;
+    }
+
+    .results-table th {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 1rem;
+        text-align: left;
+        font-weight: 600;
+    }
+
+    .results-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .results-table tbody tr:hover {
+        background: #f9fafb;
+    }
+
+    .badge {
+        display: inline-block;
+        padding: 0.35rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+    }
+
+    .badge-success {
+        background: #dcfce7;
+        color: #166534;
+    }
+
+    .badge-warning {
+        background: #fef3c7;
+        color: #92400e;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #1e40af;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+    }
+
+    .back-button:hover {
+        background: #7c3aed;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+    <div class="results-container">
+        <div class="results-card">
+            <div class="results-body">
+                <h2 style="color: #1e40af; margin-bottom: 1.5rem;">
+                    <i class="fas fa-graduation-cap"></i> Counselor Students
+                </h2>
+                
+                {% if students %}
+                <div class="table-responsive">
+                    <table class="results-table">
+                        <thead>
+                            <tr>
+                                <th>Student Name</th>
+                                <th>Attendance</th>
+                                <th>Marks</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student, attend, marks in students %}
+                            <tr>
+                                <td>{{ student }}</td>
+                                <td><span class="badge {% if attend >= 75 %}badge-success{% else %}badge-warning{% endif %}">{{ attend }}%</span></td>
+                                <td><span class="badge {% if marks >= 60 %}badge-success{% else %}badge-warning{% endif %}">{{ marks }}%</span></td>
+                                <td>
+                                    {% if attend >= 75 and marks >= 60 %}
+                                    <span class="badge badge-success"><i class="fas fa-check"></i> Good</span>
+                                    {% else %}
+                                    <span class="badge badge-warning"><i class="fas fa-exclamation"></i> Needs Attention</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div style="text-align: center; padding: 2rem; color: #666;">
+                    <i class="fas fa-inbox" style="font-size: 2rem; margin-bottom: 1rem; display: block;"></i>
+                    <p>No students found.</p>
+                </div>
+                {% endif %}
+
+                <a href="{{ url_for('dashboard') }}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

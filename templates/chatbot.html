@@ -1,0 +1,728 @@
+{% extends "layout.html" %}
+
+{% block title %}Chatbot Assistant - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    * {
+        --primary: #1e40af;
+        --secondary: #7c3aed;
+        --success: #10b981;
+        --danger: #ef4444;
+        --info: #3b82f6;
+    }
+
+    .chatbot-container {
+        display: flex;
+        height: calc(100vh - 100px);
+        gap: 1.5rem;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+    }
+
+    .chatbot-sidebar {
+        width: 280px;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .sidebar-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 1rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.7rem;
+    }
+
+    .sidebar-header i {
+        font-size: 1.3rem;
+    }
+
+    .sidebar-content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+    }
+
+    .query-category {
+        margin-bottom: 1.3rem;
+    }
+
+    .category-title {
+        font-size: 0.85rem;
+        font-weight: 700;
+        color: var(--primary);
+        text-transform: uppercase;
+        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+    }
+
+    .query-item {
+        background: #f3f4f6;
+        border-left: 3px solid transparent;
+        padding: 0.7rem 0.8rem;
+        margin-bottom: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-size: 0.9rem;
+        color: #374151;
+    }
+
+    .query-item:hover {
+        background: #e5e7eb;
+        border-left-color: var(--primary);
+        transform: translateX(4px);
+    }
+
+    .query-item i {
+        margin-right: 0.5rem;
+        color: var(--primary);
+    }
+
+    .chatbot-main {
+        flex: 1;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+    }
+
+    .chat-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        padding: 1.2rem 1.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .chat-header h2 {
+        margin: 0;
+        font-size: 1.4rem;
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
+    }
+
+    .chat-header-info {
+        font-size: 0.85rem;
+        opacity: 0.9;
+    }
+
+    .btn-back {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 0.85rem;
+    }
+
+    .btn-back:hover {
+        background: rgba(255, 255, 255, 0.3);
+        border-color: rgba(255, 255, 255, 0.5);
+        transform: translateX(-2px);
+    }
+
+    .btn-back i {
+        margin-right: 0.4rem;
+    }
+
+    .profile-summary {
+        background: #f0f9ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 8px;
+        padding: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .profile-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e0e7ff;
+        font-size: 0.9rem;
+    }
+
+    .profile-item:last-child {
+        border-bottom: none;
+    }
+
+    .profile-label {
+        color: #4b5563;
+        font-weight: 500;
+    }
+
+    .profile-value {
+        color: var(--primary);
+        font-weight: 700;
+    }
+
+    .quick-actions {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+        margin-top: 1rem;
+    }
+
+    .action-btn {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border: none;
+        padding: 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.3rem;
+    }
+
+    .action-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(30, 64, 175, 0.3);
+    }
+
+    .action-btn i {
+        font-size: 1.2rem;
+    }
+
+    .chat-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1.5rem;
+        background: #f9fafb;
+    }
+
+    .message {
+        display: flex;
+        margin-bottom: 1.2rem;
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .message.user {
+        justify-content: flex-end;
+    }
+
+    .message-content {
+        max-width: 70%;
+        padding: 0.9rem 1.2rem;
+        border-radius: 12px;
+    }
+
+    .message.bot .message-content {
+        background: white;
+        border-left: 4px solid var(--primary);
+        color: #1f2937;
+    }
+
+    .message.user .message-content {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+    }
+
+    .message-time {
+        font-size: 0.75rem;
+        color: #9ca3af;
+        margin-top: 0.3rem;
+        text-align: right;
+    }
+
+    .message.bot .message-time {
+        text-align: left;
+    }
+
+    .message-icon {
+        margin-right: 0.6rem;
+        color: var(--primary);
+        font-size: 1rem;
+    }
+
+    .typing-indicator {
+        display: flex;
+        gap: 0.3rem;
+        padding: 0.8rem 1rem;
+    }
+
+    .typing-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--primary);
+        animation: typing 1.4s infinite;
+    }
+
+    .typing-dot:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+
+    .typing-dot:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+        0%, 60%, 100% {
+            opacity: 0.3;
+            transform: translateY(0);
+        }
+        30% {
+            opacity: 1;
+            transform: translateY(-10px);
+        }
+    }
+
+    .suggestion-pills {
+        display: flex;
+        gap: 0.5rem;
+        flex-wrap: wrap;
+        margin-top: 0.8rem;
+    }
+
+    .suggestion-pill {
+        background: #eff6ff;
+        color: var(--primary);
+        border: 1px solid #bfdbfe;
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .suggestion-pill:hover {
+        background: var(--primary);
+        color: white;
+        border-color: var(--primary);
+    }
+
+    .chat-input-area {
+        border-top: 1px solid #e5e7eb;
+        padding: 1rem 1.5rem;
+        background: white;
+    }
+
+    .input-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .chat-input {
+        flex: 1;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        padding: 0.8rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.3s ease;
+    }
+
+    .chat-input:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+    }
+
+    .chat-input::placeholder {
+        color: #9ca3af;
+    }
+
+    .btn-send {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-send:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn-send:active {
+        transform: translateY(0);
+    }
+
+    .btn-send:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .info-banner {
+        background: #eff6ff;
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1rem;
+        font-size: 0.9rem;
+    }
+
+    .info-banner i {
+        color: var(--primary);
+        margin-right: 0.6rem;
+    }
+
+    @media (max-width: 1024px) {
+        .chatbot-sidebar {
+            width: 200px;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .chatbot-container {
+            flex-direction: column;
+            height: auto;
+        }
+
+        .chatbot-sidebar {
+            width: 100%;
+            max-height: 250px;
+        }
+
+        .message-content {
+            max-width: 90%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chatbot-container">
+    <!-- Sidebar with Query Categories -->
+    <div class="chatbot-sidebar">
+        <div class="sidebar-header">
+            <i class="fas fa-list"></i> Quick Queries
+        </div>
+        <div class="sidebar-content">
+            <!-- Student Queries -->
+            <div class="query-category">
+                <div class="category-title"><i class="fas fa-graduation-cap"></i> Student Info</div>
+                <div class="query-item" onclick="sendQuery('Show my attendance')">
+                    <i class="fas fa-clipboard-list"></i> My Attendance
+                </div>
+                <div class="query-item" onclick="sendQuery('Show my marks')">
+                    <i class="fas fa-chart-bar"></i> My Marks
+                </div>
+                <div class="query-item" onclick="sendQuery('Show my profile')">
+                    <i class="fas fa-id-card"></i> My Profile
+                </div>
+            </div>
+
+            <!-- Admin Queries -->
+            <div class="query-category">
+                <div class="category-title"><i class="fas fa-users"></i> Admin Queries</div>
+                <div class="query-item" onclick="sendQuery('How many students failed in year 1')">
+                    <i class="fas fa-search"></i> Failed Students
+                </div>
+                <div class="query-item" onclick="sendQuery('Show attendance shortage in year 2')">
+                    <i class="fas fa-exclamation-triangle"></i> Attendance Issues
+                </div>
+                <div class="query-item" onclick="sendQuery('Show all students year 1 clear')">
+                    <i class="fas fa-check-circle"></i> Passed Students
+                </div>
+            </div>
+
+            <!-- Counselor Queries -->
+            <div class="query-category">
+                <div class="category-title"><i class="fas fa-user-tie"></i> Counselor</div>
+                <div class="query-item" onclick="sendQuery('Show my counsel students')">
+                    <i class="fas fa-users"></i> My Students
+                </div>
+                <div class="query-item" onclick="sendQuery('Show counsel students marks')">
+                    <i class="fas fa-book"></i> Students Marks
+                </div>
+            </div>
+
+            <!-- Support -->
+            <div class="query-category">
+                <div class="category-title"><i class="fas fa-question-circle"></i> Help</div>
+                <div class="query-item" onclick="showHelp()">
+                    <i class="fas fa-info-circle"></i> How to Use
+                </div>
+                <div class="query-item" onclick="showFeatures()">
+                    <i class="fas fa-star"></i> Features
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Main Area -->
+    <div class="chatbot-main">
+        <div class="chat-header">
+            <div>
+                <h2><i class="fas fa-robot"></i> Smart Assistant</h2>
+                <div class="chat-header-info">Ask me anything about your academics!</div>
+            </div>
+            <button class="btn-back" onclick="goBack()">
+                <i class="fas fa-arrow-left"></i> Back
+            </button>
+        </div>
+
+        <div class="chat-messages" id="chatMessages">
+            <div class="message bot">
+                <div class="message-content">
+                    <div style="font-weight: 600; margin-bottom: 0.8rem;">
+                        <i class="message-icon fas fa-face-smile"></i> Welcome to Smart Assistant!
+                    </div>
+                    
+                    <div id="profileSection" class="profile-summary" style="display: none;">
+                        <div style="font-weight: 600; margin-bottom: 0.5rem; color: var(--primary);">
+                            <i class="fas fa-user-circle"></i> Your Profile
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Name:</span>
+                            <span class="profile-value" id="userName">—</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Role:</span>
+                            <span class="profile-value" id="userRole">—</span>
+                        </div>
+                        <div class="profile-item" id="attendanceRow" style="display: none;">
+                            <span class="profile-label">Attendance:</span>
+                            <span class="profile-value" id="userAttendance">—</span>
+                        </div>
+                        <div class="profile-item" id="marksRow" style="display: none;">
+                            <span class="profile-label">Overall Marks:</span>
+                            <span class="profile-value" id="userMarks">—</span>
+                        </div>
+                    </div>
+
+                    <div class="quick-actions" id="quickActions" style="display: none;">
+                        <button class="action-btn" onclick="sendQuery('Show my attendance')">
+                            <i class="fas fa-clipboard-list"></i>
+                            <span>Attendance</span>
+                        </button>
+                        <button class="action-btn" onclick="sendQuery('Show my marks')">
+                            <i class="fas fa-chart-bar"></i>
+                            <span>Marks</span>
+                        </button>
+                        <button class="action-btn" onclick="sendQuery('Show my profile')">
+                            <i class="fas fa-id-card"></i>
+                            <span>Profile</span>
+                        </button>
+                        <button class="action-btn" onclick="sendQuery('Help')">
+                            <i class="fas fa-question-circle"></i>
+                            <span>Help</span>
+                        </button>
+                    </div>
+
+                    <p style="margin: 0.8rem 0 0.3rem 0;">
+                        I'm here to help you with your academic information. You can:
+                    </p>
+                    <ul style="margin: 0.3rem 0; padding-left: 1.5rem; font-size: 0.9rem;">
+                        <li>Check your attendance and marks</li>
+                        <li>View your profile</li>
+                        <li>Ask about academic performance</li>
+                        <li>Get administrative insights</li>
+                    </ul>
+                    <p style="margin: 0.5rem 0 0; font-size: 0.85rem; opacity: 0.85;">
+                        💡 Try the quick action buttons above, or type your question below!
+                    </p>
+                </div>
+                <div class="message-time">Just now</div>
+            </div>
+        </div>
+
+        <div class="chat-input-area">
+            <div class="input-group">
+                <input 
+                    type="text" 
+                    id="chatInput" 
+                    class="chat-input" 
+                    placeholder="Ask me about your academics... (e.g., 'Show my attendance')"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button class="btn-send" onclick="sendMessage()" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i> Send
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const chatMessages = document.getElementById('chatMessages');
+    const chatInput = document.getElementById('chatInput');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function addMessage(text, isUser = false) {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = `message ${isUser ? 'user' : 'bot'}`;
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        
+        if (!isUser) {
+            contentDiv.innerHTML = `<i class="message-icon fas fa-lightbulb"></i> ${text}`;
+        } else {
+            contentDiv.textContent = text;
+        }
+        
+        messageDiv.appendChild(contentDiv);
+        
+        const timeDiv = document.createElement('div');
+        timeDiv.className = 'message-time';
+        const now = new Date();
+        timeDiv.textContent = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        messageDiv.appendChild(timeDiv);
+        
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showTyping() {
+        const messageDiv = document.createElement('div');
+        messageDiv.className = 'message bot';
+        messageDiv.id = 'typingMessage';
+        
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'message-content';
+        contentDiv.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
+        
+        messageDiv.appendChild(contentDiv);
+        chatMessages.appendChild(messageDiv);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function removeTyping() {
+        const typingMsg = document.getElementById('typingMessage');
+        if (typingMsg) typingMsg.remove();
+    }
+
+    function sendMessage() {
+        const message = chatInput.value.trim();
+        if (!message) return;
+
+        addMessage(message, true);
+        chatInput.value = '';
+        sendBtn.disabled = true;
+
+        showTyping();
+
+        // Send to backend API
+        fetch('{{ url_for("chat_api") }}', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ message: message })
+        })
+        .then(response => response.json())
+        .then(data => {
+            removeTyping();
+            const response = data.response || 'Unable to process your request.';
+            addMessage(response, false);
+            sendBtn.disabled = false;
+        })
+        .catch(err => {
+            removeTyping();
+            addMessage('Sorry, I encountered an error. Please try again or use the Education Search feature.', false);
+            sendBtn.disabled = false;
+        });
+    }
+
+    function sendQuery(query) {
+        chatInput.value = query;
+        sendMessage();
+    }
+
+    function handleKeyPress(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            sendMessage();
+        }
+    }
+
+    function showHelp() {
+        const helpText = `
+            <strong>How to Use This Chatbot:</strong><br>
+            <strong>For Students:</strong> Ask about your attendance, marks, or profile<br>
+            <strong>For Staff:</strong> Query student data or academic metrics<br>
+            <strong>Tips:</strong> Use natural language - "Show my marks" works great!
+        `;
+        addMessage(helpText, false);
+    }
+
+    function showFeatures() {
+        const featuresText = `
+            <strong>Available Features:</strong><br>
+            ✓ Attendance tracking<br>
+            ✓ Marks and grading<br>
+            ✓ Student profile lookup<br>
+            ✓ Performance analytics<br>
+            ✓ Counselor interactions<br>
+            ✓ Administrative queries
+        `;
+        addMessage(featuresText, false);
+    }
+
+    function goBack() {
+        window.location.href = "{{ url_for('dashboard') }}";
+    }
+
+    function loadUserProfile() {
+        // Load user data from session/page
+        const userName = "{{ session.get('name', 'Guest') }}";
+        const userRole = "{{ session.get('role', 'User') }}";
+        
+        if (userName && userName !== "Guest") {
+            document.getElementById('userName').textContent = userName;
+            document.getElementById('userRole').textContent = userRole;
+            document.getElementById('profileSection').style.display = 'block';
+            document.getElementById('quickActions').style.display = 'grid';
+            
+            // Show relevant stats based on role
+            if (userRole === 'Student') {
+                document.getElementById('attendanceRow').style.display = 'flex';
+                document.getElementById('marksRow').style.display = 'flex';
+                // Try to load actual data
+                fetch('/attendance')
+                    .then(response => {
+                        // Just fetch to check if user has data
+                        document.getElementById('userAttendance').textContent = 'Loading...';
+                    })
+                    .catch(err => {
+                        document.getElementById('userAttendance').textContent = 'Check profile';
+                    });
+            }
+        }
+    }
+
+    // Auto-focus input and load profile
+    chatInput.focus();
+    loadUserProfile();
+</script>
+{% endblock %}

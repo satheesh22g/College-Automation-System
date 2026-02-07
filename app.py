@@ -1,28 +1,24 @@
 import os
 import sys
-from flask import Flask, session, render_template, request, redirect, url_for, flash, jsonify, send_file
+from flask import Flask, session, render_template, request, redirect, url_for, flash, send_file, jsonify
 from flask_bcrypt import Bcrypt
 from flask_session import Session
 from database import (Base, Attendance, Marks, Accounts, Student_Profile, 
                       Feedback, Faculty_Feedback, Departments, Faculty, Faculty_Profile)
-from sqlalchemy import create_engine, exc
-from sqlalchemy.orm import scoped_session, sessionmaker
+from sqlalchemy import create_engine, exc, event, text
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.exc import IntegrityError
 from werkzeug.utils import secure_filename
 from autocorrect import Speller
-import docx2txt
-import requests
 import csv
 import re
 import time
 import pandas as pd
-import matplotlib.pyplot as plt
 import matplotlib
-from sqlalchemy import create_engine, event
+import matplotlib.pyplot as plt
 from datetime import datetime, timedelta
-from sqlalchemy.exc import IntegrityError
+
 matplotlib.use('Agg')
-from matplotlib import pyplot as plt
-from sqlalchemy import text
 
 app = Flask(__name__)
 bcrypt = Bcrypt(app)
@@ -70,6 +66,110 @@ def dashboard():
             return render_template("clerk_menu.html")
         else:
             return render_template("menu.html")
+
+# Chatbot Interface Route
+@app.route("/chatbot")
+def chatbot():
+    if 'user' not in session:
+        return redirect(url_for('login'))
+    return render_template("chatbot.html")
+
+# Chatbot API for intelligent responses
+@app.route("/api/chat", methods=["POST"])
+def chat_api():
+    if 'user' not in session:
+        return jsonify({'error': 'Unauthorized'}), 401
+    
+    user_query = request.json.get('message', '').lower().strip()
+    user_type = session.get('usert', 'Student')
+    user_id = session.get('user')
+    
+    if not user_query:
+        return jsonify({'error': 'Empty message'}), 400
+    
+    # Spell correction
+    corrected_query = spell(user_query)
+    
+    # Query keywords for better matching
+    has_attendance = any(word in corrected_query for word in ['attendance', 'attend', 'present'])
+    has_marks = any(word in corrected_query for word in ['marks', 'mark', 'grade', 'scores', 'performance'])
+    has_profile = any(word in corrected_query for word in ['profile', 'details', 'info', 'information'])
+    has_students = any(word in corrected_query for word in ['students', 'student', 'how many', 'count', 'failed', 'passed'])
+    has_show = any(word in corrected_query for word in ['show', 'get', 'display', 'view', 'see', 'check'])
+    
+    try:
+        # Student queries
+        if user_type == "Student":
+            if has_show and has_attendance:
+                result = db.query(Attendance).filter_by(student_id=user_id).all()
+                if result:
+                    # Safely get attendance percentages handling None values
+                    attend_percs = [a.attend_perc for a in result if a.attend_perc is not None and isinstance(a.attend_perc, (int, float))]
+                    if attend_percs:
+                        max_attend = max(attend_percs)
+                        avg_attend = sum(attend_percs) / len(attend_percs)
+                        attendance_info = f"You have {len(result)} attendance records. Average: {avg_attend:.1f}%, Highest: {max_attend}%"
+                    else:
+                        attendance_info = f"You have {len(result)} attendance records but no percentage data."
+                    return jsonify({'response': attendance_info, 'type': 'success'})
+                else:
+                    return jsonify({'response': 'No attendance records found yet.'})
+            
+            elif has_show and has_marks:
+                result = db.query(Marks).filter_by(student_id=user_id).all()
+                if result:
+                    # Safely calculate average marks handling None values
+                    mark_values = []
+                    for r in result:
+                        for i in range(1, 10):
+                            mark = getattr(r, f'sub{i}', None)
+                            if mark is not None and isinstance(mark, (int, float)):
+                                mark_values.append(mark)
+                    
+                    avg = (sum(mark_values) / len(mark_values)) if mark_values else 0
+                    marks_info = f"You have {len(result)} mark records. Average marks: {avg:.1f}%"
+                    return jsonify({'response': marks_info, 'type': 'success'})
+                else:
+                    return jsonify({'response': 'No marks records found yet.'})
+            
+            elif has_show and has_profile:
+                result = db.query(Student_Profile).filter_by(sid=user_id).first()
+                if result:
+                    profile_info = f"Name: {result.name}, Year: {result.year}, Branch: {result.branch}"
+                    return jsonify({'response': profile_info, 'type': 'success'})
+                else:
+                    return jsonify({'response': 'Profile not found.'})
+            
+            else:
+                return jsonify({'response': 'I can help you with: Check my attendance, Show my marks, or View my profile. Try one of those!'})
+        
+        # Faculty/HOD/Counselor queries
+        else:
+            if has_students and has_attendance:
+                count = db.query(Attendance).count()
+                return jsonify({'response': f'Total attendance records in system: {count}'})
+            
+            elif has_students and has_marks:
+                count = db.query(Marks).count()
+                return jsonify({'response': f'Total marks records in system: {count}'})
+            
+            elif 'failed' in corrected_query and has_students:
+                results = db.execute(text(
+                    "SELECT COUNT(*) as count FROM marks WHERE (sub1<40 OR sub2<40 OR sub3<40 OR sub4<40 OR sub5<40 OR sub6<40 OR sub7<40 OR sub8<40)"
+                )).fetchall()
+                count = results[0][0] if results else 0
+                return jsonify({'response': f'Number of students with failed subjects: {count}'})
+            
+            elif has_profile and has_students:
+                count = db.query(Student_Profile).count()
+                return jsonify({'response': f'Total students in system: {count}'})
+            
+            else:
+                return jsonify({'response': 'I can help with: Student count, Failed students, Attendance records, Marks overview. What would you like?'})
+    
+    except Exception as e:
+        return jsonify({'response': f'Error processing request: {str(e)}', 'type': 'error'})
+
 @app.route("/query", methods=["GET","POST"])
 def query_set():
     if 'user' not in session:
@@ -112,20 +212,17 @@ def query_set():
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":3}).fetchall()
                 if result[0].year==2:
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":2}).fetchall()
-                print(19)
                 return render_template("student_profile.html", results=result,marks=marks,attend=attend,sub=sub)
 
             # <----------------Queries for Count----------------------->
             if re.search('fail', ss) and re.search('how',ss) and re.search('many',ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss):
                 result=db.execute(text("SELECT count(*) ,year,departments.name FROM marks INNER JOIN departments ON departments.did=marks.dept_id and (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;"),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 flash("Showing Result...", "error")
-                print(1)
                 return render_template("count_students.html", results=result)
             #how many students have less than 75 attendance in year 2
             if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and re.search('how', ss) and re.search('many', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)) and re.search('less than',ss) or re.search('lessthan',ss) or re.search('<',ss):
                 result=db.execute(text("SELECT count(*) ,year,departments.name FROM attendance INNER JOIN departments ON departments.did=attendance.dept_id and attend_perc<:a and year=:y;"),{"a":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 flash("Showing Result...", "error")
-                print(2)
                 return render_template("count_students.html", results=result)
             # <----------------Queries for Graphs----------------------->
             if re.search('gra7ph', ss):
@@ -135,7 +232,6 @@ def query_set():
                 plt.plot(df)
                 plt.show()
                 plt.clf()
-                print(3)
                 return redirect(url_for('dashboard'))
             # show graph for marks of my counsel students
             if re.search('graph', ss) and (re.search('council', ss) or re.search('counsel', ss))and re.search('marks', ss):
@@ -146,7 +242,6 @@ def query_set():
                 plt.xlabel('Roll Numbers') 
                 plt.ylabel('Percentage') 
                 plt.savefig("static/graph")
-                print(4)
                 return render_template("graph.html")
             if re.search('compare', ss) and re.search('graph', ss) and re.search('year', ss) and re.search("(1|2|3|4)", ss) and re.search("subject", ss):
                 lst=[]
@@ -162,7 +257,6 @@ def query_set():
                 plt.ylabel('Marks') 
                 #plt.show()
                 plt.savefig("static/graph")
-                print(555)
                 return render_template("graph.html")
             if re.search('compare', ss) and re.search('graph', ss) and re.search('marks', ss) and roll_flag:
                 lst=[]
@@ -183,7 +277,6 @@ def query_set():
                 plt.xlabel('Subjects') 
                 plt.ylabel('Marks') 
                 plt.savefig("static/graph")
-                print(567)
                 return render_template("graph.html")
             
             if re.search('compare', ss) and re.search('graph', ss) and re.search('marks', ss) and re.search('year', ss) and re.search("(1|2|3|4)", ss):
@@ -201,19 +294,16 @@ def query_set():
                 plt.ylabel('Marks') 
                 #plt.show()
                 plt.savefig("static/graph")
-                print(895)
                 return render_template("graph.html")
             # <----------------Queries for Councel students----------------------->
             if (re.search('council', ss) or re.search('counsel', ss)) and re.search("student", ss) and re.search('show', ss):
                 students=db.execute(text("select sid,name from student_profile where faculty_id=:f;"),{"f":int(session['user'])}).fetchall()
                 attend = db.execute(text("select attend,attend_perc from attendance where councelor_id=:f;"),{"f":int(session['user'])}).fetchall()
                 marks = db.execute(text("select average from marks where councelor_id=:f;"),{"f":session['user']}).fetchall()
-                print(6)
                 if len(attend):
                     flash("Showing Result...", "error")
                     return render_template("counsel_students.html", students=zip(students, attend,marks))
                 else:
-                    print("error 33")
                     flash("You don't have counseling students","error")
                     return redirect(url_for('dashboard'))
             # <----------------Queries for Attendance----------------------->
@@ -224,27 +314,22 @@ def query_set():
                     result=db.execute(text("select * from attendance where attend_perc<65 and councelor_id=:i"),{"i":session['user']}).fetchall()
                 else:
                     result=db.execute(text("select * from attendance where attend_perc<65")).fetchall()
-                print(8)
                 return render_template("attendance.html",results=result)
             if session['usert']=="Faculty" or session['usert']=="counselor":
                 if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('<', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("select * from attendance where attend_perc<:i and councelor_id=:j;"),{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"j":session['user']}).fetchall()
-                    print(9)
                     return render_template("attendance.html",results=result)
                 elif (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('greater than', ss) or re.search('greaterthan', ss))) or (re.search('attendance', ss) and re.search("0*[4-9]\d", ss) and re.search('>', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("select * from attendance where attend_perc>:i and councelor_id=:j;"),{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"j":session['user']}).fetchall()
-                    print(10)
                     return render_template("attendance.html",results=result)
             if re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss) and re.search('attendance', ss):
                 flash("Showing Result...", "error")
                 attend=db.execute(text("SELECT * from attendance where student_id =  :s;"),{"s":s.upper()}).fetchall()
-                print(11)
                 if attend:
                     return render_template("attendance.html", results=attend)
                 else:
-                    print("error 3")
                     flash("student not found","error")
                     return redirect(url_for('dashboard'))
             if re.search("[1-9]{3}[a-zA-Z]{1}[0-9]{1}[a-zA-Z]{1}[0-9]{2}[0-9a-cA-C]{1}[0-9]{1}", ss) and re.search('mark', ss):
@@ -256,11 +341,9 @@ def query_set():
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":3}).fetchall()
                 if attend[0].year==2:
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":2}).fetchall()
-                print(11)
                 if attend:
                     return render_template("marks.html", results=attend,sub=sub)
                 else:
-                    print("error 3-1")
                     flash("student not found","error")
                     return redirect(url_for('dashboard'))
             if session['usert']=="HOD":
@@ -268,30 +351,24 @@ def query_set():
                     flash("Showing Result...", "error")
                     result=db.execute(text("select * from attendance where year=:i;"),{"i":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                     if result is not None:
-                        print(12)
                         return render_template("attendance.html", results=result)
                     else:
-                        print("error 3")
                         flash("Wrong! Try Again","error")
                         return redirect(url_for('dashboard'))
                 if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('less than', ss) or re.search('lessthan', ss) or re.search('<', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("select * from attendance where attend_perc<:i and year=:y;"),{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
-                    print(7)
                     return render_template("attendance.html",results=result)
                 if (re.search('attendance', ss) and re.search(r"0*[4-9]\d", ss) and (re.search('greater than', ss) or re.search('greaterthan', ss) or re.search('>', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("select * from attendance where attend_perc> :i and year=:y;"),{"i":int("".join(re.findall(r"0*[4-9]\d", ss))),"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
-                    print("7-1")
                     return render_template("attendance.html",results=result)
             if re.search('attendance', ss) and re.search('students', ss) and (re.search('council', ss) or re.search('counsel', ss)):
                 flash("Showing Result...", "error")
                 result=db.execute(text("select * from attendance where councelor_id=:j;"),{"j":session['user']}).fetchall()
                 if result is not None:
-                    print(12)
                     return render_template("attendance.html", results=result)
                 else:
-                    print("error 3")
                     flash("Wrong! Try Again","error")
                     return redirect(url_for('dashboard'))
             # <----------------Queries for Marks----------------------->
@@ -299,19 +376,16 @@ def query_set():
                 flash("Showing Result...", "error")
                 sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 result=db.execute(text("SELECT * FROM marks where (sub1>40 and sub2>40 and sub3>40 and sub4>40 and sub5>40 and sub6>40 and sub7>40 and sub8>40) and year=:y;"),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                print(13)
                 return render_template("marks.html", results=result,sub=sub)
             if re.search('fail', ss) and re.search('year',ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss):
                 flash("Showing Result...", "error")
                 result=db.execute(text("SELECT * FROM marks where (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and year=:y;"),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                 sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                print(14)
                 return render_template("marks.html", results=result,sub=sub)
             if re.search('topper', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year', ss):
                 flash("Showing Result...", "error")
                 result=db.execute(text("SELECT *, max(average) from marks where dept_id=:d and year=:y"),{"d":5,"y":int("".join(re.findall(r'(?<![1-4])[1-4](?![1-4])', ss)))}).fetchall()
                 sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
-                print(15)
                 return render_template("marks.html", results=result,sub=sub)
             elif re.search('topper', ss) and (re.search('case',ss) or re.search('cse',ss)):
                 flash("Showing Result...", "error")
@@ -322,25 +396,21 @@ def query_set():
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":3}).fetchall()
                 if result[0].year==2:
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":2}).fetchall()
-                print(18)
                 return render_template("marks.html", results=result,sub=sub)
             if session['usert']=="HOD":
                 if (re.search('marks', ss) or re.search('percentage', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('less than', ss) or re.findall('lessthan', ss) or re.findall('<', ss)):
                     flash("Showing Result...", "error")
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                     result=db.execute(text("SELECT * from marks where year=:y and average<:a;"),{"y":int("".join(re.findall(r'(?<![0-9])[0-9](?![0-9])', ss))),"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
-                    print(16)
                     return render_template("marks.html", results=result,sub=sub)
                 if (re.search('marks', ss) or re.search('percentage', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('greater than', ss) or re.findall('greaterthan', ss) or re.findall('>', ss)):
                     flash("Showing Result...", "error")
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":int("".join(re.findall("(1|2|3|4)", ss)))}).fetchall()
                     result=db.execute(text("SELECT * from marks where year=:y and average>:a;"),{"y":int("".join(re.findall(r'(?<![0-9])[0-9](?![0-9])', ss))),"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
-                    print(16)
                     return render_template("marks.html", results=result,sub=sub)
                 if (re.search('marks', ss) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.search('year',ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("SELECT * from marks where year=:y;"),{"y":int("".join(re.findall('(1|2|3|4)', ss)))}).fetchall()
-                    print(17)
                     if result[0].year==4:
                         sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":4}).fetchall()
                     if result[0].year==3:
@@ -352,7 +422,6 @@ def query_set():
                 if (re.search('marks', ss) or re.search('percentage', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('less than', ss) or re.findall('lessthan', ss) or re.findall('<', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("SELECT * from marks where councelor_id=:j and average<:a;"),{"j":session['user'],"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
-                    print("16-1")
                     if result[0].year==4:
                         sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":4}).fetchall()
                     if result[0].year==3:
@@ -363,7 +432,6 @@ def query_set():
                 if (re.search('marks', ss) or re.search('percentage', ss)) and re.search(r'(?<![1-4])[1-4](?![1-4])', ss) and re.findall(r"0*[4-9]\d", ss) and (re.findall('greater than', ss) or re.findall('greaterthan', ss) or re.findall('>', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("SELECT * from marks where councelor_id=:j and average>:a;"),{"j":session['user'],"a":int("".join(re.findall(r"0*[4-9]\d", ss)))}).fetchall()
-                    print("16-2")
                     if result[0].year==4:
                         sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":4}).fetchall()
                     if result[0].year==3:
@@ -374,7 +442,6 @@ def query_set():
                 if (re.search('marks', ss) and re.search('student', ss)):
                     flash("Showing Result...", "error")
                     result=db.execute(text("SELECT * from marks where councelor_id=:j;"),{"j":session['user']}).fetchall()
-                    print("17-1")
                     if result[0].year==4:
                         sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":4}).fetchall()
                     if result[0].year==3:
@@ -385,7 +452,6 @@ def query_set():
                 if re.search('fail', ss) and re.search('how',ss) and re.search('many',ss):
                     result=db.execute(text("SELECT count(*) ,year,departments.name FROM marks INNER JOIN departments ON departments.did=marks.dept_id and (sub1<40 or sub2<40 or sub3<40 or sub4<40 or sub5<40 or sub6<40 or sub7<40 or sub8<40 or sub9<40) and councelor_id=:y;"),{"y":session['user']}).fetchall()
                     flash("Showing Result...", "error")
-                    print("1-1")
                     return render_template("count_students.html", results=result)
             
             # <----------------Queries for Profile----------------------->
@@ -400,7 +466,6 @@ def query_set():
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":3}).fetchall()
                 if result[0].year==2:
                     sub = db.execute(text('select name,sem from subjects where year=:y and sem like "%_1"'),{"y":2}).fetchall()
-                print(19)
                 return render_template("student_profile.html", results=result,marks=marks,attend=attend,sub=sub)
                 
             else:
@@ -439,16 +504,26 @@ def profile():
     
     try:
         if session['usert'] == "Student":
+            # Try to find student profile by sid (student ID)
             res = db.query(Student_Profile).filter_by(sid=session['user']).all()
+            
+            # If not found by sid, student might exist but no profile record yet
+            if not res:
+                flash("Profile not yet created. Please contact your administrator.", "warning")
+                return redirect(url_for('dashboard'))
+            
             attend = db.query(Attendance).filter_by(student_id=session['user']).all()
             marks = db.query(Marks).filter_by(student_id=session['user']).all()
             return render_template("student_profile.html", results=res, marks=marks, attend=attend)
         else:
             user_id = session['user']
             res = db.query(Faculty_Profile).filter_by(id=user_id).all()
+            if not res:
+                flash("Profile not yet created.", "warning")
+                return redirect(url_for('dashboard'))
             return render_template("faculty_profile.html", results=res)
     except Exception as e:
-        flash("Error retrieving profile", "error")
+        flash(f"Error retrieving profile: {str(e)}", "error")
         return redirect(url_for('dashboard'))
 @app.route("/attendance")
 def attendance():
@@ -639,7 +714,7 @@ def admin_update():
                     for id, name, dept_id in reader:
                         db.execute(text("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)"), {"s":id, "n":name, "d":dept_id })
                     db.commit()
-            except:
+            except Exception as e:
                 message = "columns must be in correct order {}".format(str_to_class-olumns.keys())
                 return render_template('admin_updates.html', output=message,flist=faculty_list)
         except exc.SQLAlchemyError:
@@ -697,7 +772,7 @@ def load_data():
                     for id, name, dept_id in reader:
                         db.execute(text("INSERT INTO faculty(id, name, dept_id) VALUES(:s, :n, :d)"), {"s":id, "n":name, "d":dept_id })
                     db.commit()
-            except:
+            except Exception as e:
                 message = "columns must be in correct order {}".format(str_to_class(table).__table__.columns.keys())
                 return render_template('load_data.html', output=message,flist=faculty_list)
         except exc.SQLAlchemyError:
