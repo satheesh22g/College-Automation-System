@@ -1,56 +1,384 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<html>
-    <head>
-      <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <style>
-         
-            </style> 
-            
-    </head>
-<body style="background-image:url('/static/bg2.png');">
-  <div class = "panel panel-primary" style="width: 80%;margin-top: 5%;margin-left: 1.2%;">
-    <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Marks</h3>
-       <span class="col-md-4"></span>
-       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+{% block title %}Marks & Grades - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .marks-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .marks-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .marks-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0.5rem 0;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .marks-table-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table {
+        margin: 0;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 700;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        padding: 0.8rem 1rem;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .mark-score {
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        display: inline-block;
+        color: white;
+    }
+
+    .mark-excellent {
+        background-color: #10b981;
+    }
+
+    .mark-good {
+        background-color: #3b82f6;
+    }
+
+    .mark-satisfactory {
+        background-color: #f59e0b;
+    }
+
+    .mark-poor {
+        background-color: #ef4444;
+    }
+
+    .percentage-text {
+        font-weight: 600;
+    }
+
+    .percentage-excellent {
+        color: #10b981;
+    }
+
+    .percentage-good {
+        color: #3b82f6;
+    }
+
+    .percentage-satisfactory {
+        color: #f59e0b;
+    }
+
+    .percentage-poor {
+        color: #ef4444;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .help-section strong {
+        color: var(--primary-color);
+    }
+
+    .grading-scale {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .grade-item {
+        padding: 0.8rem;
+        border-radius: 6px;
+        text-align: center;
+        color: white;
+    }
+
+    .grade-a {
+        background-color: #10b981;
+    }
+
+    .grade-b {
+        background-color: #3b82f6;
+    }
+
+    .grade-c {
+        background-color: #f59e0b;
+    }
+
+    .grade-d {
+        background-color: #ef4444;
+    }
+
+    .back-link {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: var(--primary-dark);
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="marks-container">
+    <div class="marks-header">
+        <div>
+            <h2>
+                <i class="fas fa-chart-bar"></i> Marks & Grades
+            </h2>
+            <p class="mb-0">Semester 1 Academic Performance</p>
+        </div>
+        <a href="{{ url_for('dashboard.main') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
     </div>
-   
-    <table class = "table">
-       <tr style="background-color: beige;">
-          <th>SEM</th>
-          <th>Roll Number</th>
-          <th>Name</th>
-          {%for i in sub%}
-          <th>{{i.name}}</th>
-          {% endfor %}
-          <th>total</th>
-          <th>Percentage</th>
-       </tr>
-       {% for res in results%}
-       <tr>
-        
-            <td>1</td>
-            <td>{{res.student_id}}</td>
-            <td>{{res.name}}</td>
-            <td>{{res.sub1}}</td>
-            <td>{{res.sub2}}</td>
-            <td>{{res.sub3}}</td>
-            <td>{{res.sub4}}</td>
-            <td>{{res.sub5}}</td>
-            <td>{{res.sub6}}</td>
-            <td>{{res.sub7}}</td>
-            <td>{{res.sub8}}</td>
-            <th>{{res.total}}</th>
-            <th>({{'%0.2f' % res.average}}%)</th>
-       </tr>
-       {% endfor %}
-    </table>
- </div>
-    
-</body>
-    </html>
+
+    <!-- Help Section with Grading Scale -->
+    <div class="help-section">
+        <h5>
+            <i class="fas fa-lightbulb"></i> About Your Marks
+        </h5>
+        <p>
+            This page displays your examination marks across all subjects and your overall academic performance. 
+            Your grades are calculated based on a 100-point scale across different subjects.
+        </p>
+        <p>
+            <strong>Grading Scale:</strong>
+        </p>
+        <div class="grading-scale">
+            <div class="grade-item grade-a"><strong>A Grade</strong><br>75-100</div>
+            <div class="grade-item grade-b"><strong>B Grade</strong><br>60-74</div>
+            <div class="grade-item grade-c"><strong>C Grade</strong><br>50-59</div>
+            <div class="grade-item grade-d"><strong>D Grade</strong><br>&lt;50</div>
+        </div>
+    </div>
+
+    {% if results %}
+        <!-- Statistics Cards -->
+        <div class="marks-stats">
+            <div class="stat-box">
+                <i class="fas fa-book" style="color: var(--primary-color); font-size: 1.5rem;"></i>
+                <div class="stat-value">{{ results|length }}</div>
+                <div class="stat-label">Students in Class</div>
+            </div>
+            {% if results[0].average %}
+            <div class="stat-box">
+                <i class="fas fa-trophy" style="color: #f59e0b; font-size: 1.5rem;"></i>
+                <div class="stat-value">{{ '{:.1f}'.format(results|sum(attribute='average')/results|length) }}%</div>
+                <div class="stat-label">Class Average</div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Marks Table -->
+        <div class="marks-table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-graduation-cap"></i> Semester</th>
+                        <th><i class="fas fa-id-card"></i> Roll No</th>
+                        <th><i class="fas fa-user"></i> Student Name</th>
+                        {% for subject in sub %}
+                        <th>{{ subject.name }}</th>
+                        {% endfor %}
+                        <th><i class="fas fa-plus"></i> Total</th>
+                        <th><i class="fas fa-percent"></i> Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td><strong>1</strong></td>
+                        <td><strong>{{ result.student_id }}</strong></td>
+                        <td>{{ result.name }}</td>
+                        <td>
+                            {% if result.sub1 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub1 }}</span>
+                            {% elif result.sub1 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub1 }}</span>
+                            {% elif result.sub1 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub1 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub1 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub2 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub2 }}</span>
+                            {% elif result.sub2 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub2 }}</span>
+                            {% elif result.sub2 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub2 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub2 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub3 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub3 }}</span>
+                            {% elif result.sub3 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub3 }}</span>
+                            {% elif result.sub3 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub3 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub3 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub4 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub4 }}</span>
+                            {% elif result.sub4 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub4 }}</span>
+                            {% elif result.sub4 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub4 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub4 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub5 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub5 }}</span>
+                            {% elif result.sub5 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub5 }}</span>
+                            {% elif result.sub5 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub5 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub5 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub6 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub6 }}</span>
+                            {% elif result.sub6 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub6 }}</span>
+                            {% elif result.sub6 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub6 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub6 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub7 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub7 }}</span>
+                            {% elif result.sub7 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub7 }}</span>
+                            {% elif result.sub7 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub7 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub7 }}</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if result.sub8 >= 75 %}
+                                <span class="mark-score mark-excellent">{{ result.sub8 }}</span>
+                            {% elif result.sub8 >= 60 %}
+                                <span class="mark-score mark-good">{{ result.sub8 }}</span>
+                            {% elif result.sub8 >= 50 %}
+                                <span class="mark-score mark-satisfactory">{{ result.sub8 }}</span>
+                            {% else %}
+                                <span class="mark-score mark-poor">{{ result.sub8 }}</span>
+                            {% endif %}
+                        </td>
+                        <td><strong>{{ result.total }}</strong></td>
+                        <td>
+                            <span class="percentage-text {% if result.average >= 75 %}percentage-excellent{% elif result.average >= 60 %}percentage-good{% elif result.average >= 50 %}percentage-satisfactory{% else %}percentage-poor{% endif %}">
+                                {{'%0.1f' % result.average}}%
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="marks-table-container">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h4>No Marks Data Found</h4>
+                <p class="text-muted">There are no marks records available yet.</p>
+                <a href="{{ url_for('dashboard.main') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

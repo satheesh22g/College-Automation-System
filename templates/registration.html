@@ -1,119 +1,435 @@
+{% extends "layout.html" %}
 
+{% block title %}Register - College Automation System{% endblock %}
 
-<html>
-    <head>
-        <title>Register</title>
-                 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-      <script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-      <script type = "text/javascript" 
-         src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
-         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+{% block extra_css %}
+<style>
+    .register-page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.4rem;
+        min-height: 100vh;
+    }
 
-    <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    </head>
-   
-    <body>
+    .register-card {
+        width: 100%;
+        max-width: 360px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        background: white;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        max-height: calc(100vh - 0.8rem);
+    }
 
-        
-         <div class="container">
-          <a href="{{ url_for('dashboard') }}">
-            <img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
-    <div class="d-flex justify-content-center h-100">
-        <div class="card">
-            <div class="card-header">
-                <h3>Sign Up</h3>
-               
-            </div>
-            <div class="card-body">
-                  <form action="{{ url_for('register') }}" method="post">
-                    <div class="input-group form-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-user"></i></span>
-                    </div>
-                    <select name="usertyp" required maxlength="30">
-                      <option value="Student">Student</option>
-                      <option value="Faculty">Faculty</option>
-                      <option value="HOD">HOD</option>
-                      <option value="counselor">counselor</option>
-                    </select>
-                    </div>
-                    <div class="input-group form-group">
-                     
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-user"></i></span>
-                        </div>
-                        
-                      <input class="form-control" name="name" type="text" placeholder="Your Name" required>
-                        
-                    </div>
-                    <div class="input-group form-group">
-                     
-                      <div class="input-group-prepend">
-                          <span class="input-group-text"><i class="fas fa-user"></i></span>
-                      </div>
-                      
-                    <input class="form-control" name="username" type="text" placeholder="Roll Number" required maxlength="10">
-                      
-                  </div>
-                    
-                    
-                    <div class="input-group form-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        </div>
-                         <input class="form-control" name="password" type="password" placeholder="password" required maxlength="30" id="myInput"> 
-                      
-                    </div>
-                    <div class="input-group form-group">
-                      <div class="input-group-prepend">
-                        <span class="input-group-text"><i class="fas fa-key"></i></span>
-                        </div>
-                        <!--pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"-->
-                       <input class="form-control" type="password" placeholder="Confirm Password" id="confirm_password" required>
-                    </div>
-                     <div style="padding-left: 15px;color: white;">
-                      <input type="checkbox" onclick="myFunction()" style="padding-right: 5px;">Show Password
-                    </div>
-                   
-                    <div class="form-group">
-                        <input type="submit" value="SignUp" class="btn float-right login_btn">
-                    </div>
-                </form>
-                <p style="color: red;">{{message}}</p>
-            </div>
-            <div class="card-footer">
-                <div class="d-flex justify-content-center links">
-                    Do have an account?<a href="{{ url_for('login') }}">Login</a>
+    .register-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 0.9rem 1.1rem;
+        text-align: center;
+        flex-shrink: 0;
+    }
+
+    .register-header h2 {
+        margin: 0 0 0.15rem 0;
+        font-size: 1.35rem;
+        font-weight: 700;
+    }
+
+    .register-header p {
+        margin: 0;
+        font-size: 0.75rem;
+        opacity: 0.9;
+    }
+
+    .register-body {
+        padding: 0.9rem 1.1rem;
+        overflow-y: auto;
+        flex: 1;
+    }
+
+    .form-group {
+        margin-bottom: 0.75rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.2rem;
+        display: block;
+        font-size: 0.8rem;
+    }
+
+    .form-label i {
+        margin-right: 0.3rem;
+        color: #1e40af;
+    }
+
+    .form-control, .form-select {
+        width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.45rem 0.7rem;
+        font-size: 0.8rem;
+        transition: all 0.3s ease;
+        background: #f9fafb;
+        box-sizing: border-box;
+    }
+
+    .form-control:focus, .form-select:focus {
+        outline: none;
+        border-color: #1e40af;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.08);
+    }
+
+    .form-control::placeholder, .form-select::placeholder {
+        color: #9ca3af;
+    }
+
+    .help-text {
+        display: block;
+        font-size: 0.65rem;
+        color: #6b7280;
+        margin-top: 0.1rem;
+    }
+
+    .checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+        margin-bottom: 0.75rem;
+        color: #333;
+        font-size: 0.8rem;
+    }
+
+    .checkbox-group input[type="checkbox"] {
+        cursor: pointer;
+        width: 0.9rem;
+        height: 0.9rem;
+        accent-color: #1e40af;
+    }
+
+    .checkbox-group label {
+        margin: 0;
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .error-message {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 0.5rem;
+        border-radius: 6px;
+        margin-bottom: 0.75rem;
+        font-size: 0.75rem;
+    }
+
+    .error-message i {
+        margin-right: 0.3rem;
+    }
+
+    .btn-register {
+        width: 100%;
+        padding: 0.6rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-register:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn-register:active {
+        transform: translateY(0);
+    }
+
+    .btn-register i {
+        margin-right: 0.35rem;
+    }
+
+    .register-footer {
+        padding: 0.7rem 1.1rem;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        background: #f9fafb;
+        flex-shrink: 0;
+    }
+
+    .register-footer p {
+        color: #6b7280;
+        margin: 0.15rem 0;
+        font-size: 0.75rem;
+    }
+
+    .register-footer a {
+        color: #1e40af;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        font-size: 0.8rem;
+    }
+
+    .register-footer a:hover {
+        color: #7c3aed;
+        text-decoration: underline;
+    }
+
+    .register-footer a i {
+        margin-right: 0.25rem;
+    }
+
+    .role-description {
+        background: #eff6ff;
+        border-left: 3px solid #1e40af;
+        padding: 0.5rem;
+        border-radius: 4px;
+        margin-top: 0.3rem;
+        font-size: 0.7rem;
+        color: #1e3a8a;
+    }
+
+    .password-strength {
+        height: 2px;
+        background: #e5e7eb;
+        border-radius: 3px;
+        margin-top: 0.2rem;
+        overflow: hidden;
+    }
+
+    .password-strength-bar {
+        height: 100%;
+        background: #ef4444;
+        width: 0%;
+        transition: all 0.3s ease;
+    }
+
+    .password-strength.strong .password-strength-bar {
+        background: #10b981;
+        width: 100%;
+    }
+
+    .password-strength.medium .password-strength-bar {
+        background: #f59e0b;
+        width: 66%;
+    }
+
+    @media (max-width: 576px) {
+        .register-page {
+            padding: 0.2rem;
+        }
+
+        .register-card {
+            max-width: 100%;
+            max-height: calc(100vh - 0.4rem);
+        }
+
+        .register-header {
+            padding: 0.8rem 1rem;
+        }
+
+        .register-header h2 {
+            font-size: 1.25rem;
+        }
+
+        .register-body {
+            padding: 0.8rem 1rem;
+        }
+
+        .register-footer {
+            padding: 0.6rem 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="register-page">
+    <div class="card register-card">
+        <div class="register-header">
+            <h2><i class="fas fa-user-plus"></i> Create Account</h2>
+            <p>Join the College Automation System</p>
+        </div>
+
+        <div class="register-body">
+            {% if message %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ message }}
                 </div>
-               
-            </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('auth.register') }}" autocomplete="off" onsubmit="return validateForm()">
+                <div class="form-group">
+                    <label for="usertype" class="form-label">
+                        <i class="fas fa-briefcase"></i> Select Role
+                    </label>
+                    <select id="usertype" class="form-select" name="usertyp" required onchange="updateRoleDescription()">
+                        <option value="">Choose your role...</option>
+                        <option value="Student">Student</option>
+                        <option value="Faculty">Faculty Member</option>
+                        <option value="HOD">Head of Department (HOD)</option>
+                        <option value="counselor">Counselor</option>
+                        <option value="clerk">Clerk / Administrator</option>
+                    </select>
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Select the role that matches your position</span>
+                    <div id="roleDescription" class="role-description" style="display: none;"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="username" class="form-label">
+                        <i class="fas fa-id-card"></i> Username
+                    </label>
+                    <input type="text" id="username" class="form-control" name="username"
+                           placeholder="Enter username or roll number" required maxlength="30" autofocus>
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Unique identifier (alphanumeric, no spaces)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="name" class="form-label">
+                        <i class="fas fa-user"></i> Full Name
+                    </label>
+                    <input type="text" id="name" class="form-control" name="name"
+                           placeholder="Enter your full name" required maxlength="100">
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Your official full name</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="form-label">
+                        <i class="fas fa-lock"></i> Password
+                    </label>
+                    <input type="password" id="password" class="form-control" name="password"
+                           placeholder="Minimum 6 characters" required maxlength="50" onkeyup="checkPasswordStrength()">
+                    <div class="password-strength" id="passwordStrength">
+                        <div class="password-strength-bar"></div>
+                    </div>
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Use strong passwords (6+ characters)</span>
+                </div>
+
+                <div class="form-group">
+                    <label for="confirmPassword" class="form-label">
+                        <i class="fas fa-lock"></i> Confirm Password
+                    </label>
+                    <input type="password" id="confirmPassword" class="form-control" name="confirm_password"
+                           placeholder="Re-enter your password" required maxlength="50">
+                    <span id="passwordMatch" class="help-text"></span>
+                </div>
+
+                <div class="checkbox-group">
+                    <input type="checkbox" id="showPassword" onclick="togglePasswordVisibility()">
+                    <label for="showPassword">Show Password</label>
+                </div>
+
+                <button type="submit" class="btn btn-register">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+        </div>
+
+        <div class="register-footer">
+            <p>Already have an account?</p>
+            <a href="{{ url_for('auth.login') }}">
+                <i class="fas fa-sign-in-alt"></i> Sign In Here
+            </a>
+            <br><br>
+            <a href="{{ url_for('dashboard.index') }}">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
         </div>
     </div>
 </div>
+
 <script>
-function myFunction() {
-  var x = document.getElementById("myInput");
-  if (x.type === "password") {
-    x.type = "text";
-  } else {
-    x.type = "password";
-  }
-}
-var password = document.getElementById("myInput")
-  , confirm_password = document.getElementById("confirm_password");
+    const roleDescriptions = {
+        'Student': 'Access your attendance, marks, profile, and feedback.',
+        'Faculty': 'View student data, provide feedback, and manage coursework.',
+        'HOD': 'Administrative access to department data and analytics.',
+        'counselor': 'Counsel students and track their academic progress.',
+        'clerk': 'Administrative user with system management access.'
+    };
 
-function validatePassword(){
-  if(password.value != confirm_password.value) {
-    confirm_password.setCustomValidity("Passwords Don't Match");
-  } else {
-    confirm_password.setCustomValidity('');
-  }
-}
+    function updateRoleDescription() {
+        const select = document.getElementById('usertype');
+        const descDiv = document.getElementById('roleDescription');
+        if (select.value && roleDescriptions[select.value]) {
+            descDiv.textContent = roleDescriptions[select.value];
+            descDiv.style.display = 'block';
+        } else {
+            descDiv.style.display = 'none';
+        }
+    }
 
-password.onchange = validatePassword;
-confirm_password.onkeyup = validatePassword;
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const confirmInput = document.getElementById('confirmPassword');
+        const checkbox = document.getElementById('showPassword');
+        if (checkbox.checked) {
+            passwordInput.type = 'text';
+            confirmInput.type = 'text';
+        } else {
+            passwordInput.type = 'password';
+            confirmInput.type = 'password';
+        }
+    }
+
+    function checkPasswordStrength() {
+        const password = document.getElementById('password').value;
+        const strength = document.getElementById('passwordStrength');
+        const matchText = document.getElementById('passwordMatch');
+
+        if (password.length < 6) {
+            strength.classList.remove('medium', 'strong');
+            matchText.textContent = '';
+        } else if (password.length < 10) {
+            strength.classList.add('medium');
+            strength.classList.remove('strong');
+            matchText.textContent = '';
+        } else {
+            strength.classList.add('strong');
+            matchText.textContent = '';
+        }
+
+        const confirm = document.getElementById('confirmPassword').value;
+        if (confirm && password !== confirm) {
+            matchText.textContent = '❌ Passwords do not match';
+            matchText.style.color = '#dc3545';
+        } else if (confirm && password === confirm) {
+            matchText.textContent = '✓ Passwords match';
+            matchText.style.color = '#10b981';
+        }
+    }
+
+    function validateForm() {
+        const password = document.getElementById('password').value;
+        const confirm = document.getElementById('confirmPassword').value;
+        const username = document.getElementById('username').value;
+
+        if (password !== confirm) {
+            alert('Passwords do not match!');
+            return false;
+        }
+        if (password.length < 6) {
+            alert('Password must be at least 6 characters!');
+            return false;
+        }
+        if (!/^[a-zA-Z0-9_-]+$/.test(username)) {
+            alert('Username can only contain letters, numbers, hyphens, and underscores!');
+            return false;
+        }
+        return true;
+    }
+
+    // Check passwords on blur
+    document.getElementById('confirmPassword').addEventListener('blur', checkPasswordStrength);
 </script>
-    </body>
-</html>
+{% endblock %}

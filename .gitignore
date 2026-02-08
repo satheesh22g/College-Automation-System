@@ -22,6 +22,7 @@ env/
 instance/
 *.log
 *.pid
+flask_session/
 
 # SQLite databases
 *.db

@@ -1,38 +1,414 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Form in Bootstrap</title>
-  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-</head>
-<body>
-  {% include "nav.html" %}
+{% extends "layout.html" %}
 
-  <div class="container mt-4">
-    <div class="row">
-      <div class="col-lg-6 offset-lg-3">
-        <h1 class="text-center mb-4">Education Search Hub</h1>
-        <form action="{{ url_for('query_set') }}" method="POST">
-          <div class="input-group">
-            <input type="text" class="form-control" name = "query" placeholder="Search..." aria-label="Search input" required>
-            <div class="input-group-append">
-              <button class="btn btn-primary" type="submit">Search</button>
+{% block title %}Education Search Hub - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .search-hero {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .search-hero h1 {
+        font-weight: 700;
+        margin-bottom: 1rem;
+        font-size: 2.5rem;
+    }
+
+    .search-hero p {
+        opacity: 0.9;
+        font-size: 1.1rem;
+        margin: 0;
+    }
+
+    .search-container {
+        max-width: 600px;
+        margin: -2rem auto 2rem;
+        position: relative;
+        z-index: 10;
+    }
+
+    .search-box {
+        background: white;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+    }
+
+    .search-input-group {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .search-input {
+        flex: 1;
+        padding: 0.9rem 1.2rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+    }
+
+    .search-btn {
+        padding: 0.9rem 2rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .search-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+
+    .help-section h5 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+
+    .help-section p {
+        margin: 0.5rem 0;
+    }
+
+    .example-queries {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .example-queries h5 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .example-list {
+        list-style: none;
+        padding: 0;
+    }
+
+    .example-list li {
+        padding: 0.5rem 0;
+        border-bottom: 1px solid #e5e7eb;
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+    }
+
+    .example-list li:last-child {
+        border-bottom: none;
+    }
+
+    .example-list i {
+        color: var(--primary-color);
+        width: 20px;
+    }
+
+    .error-alert {
+        background: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+        margin: 0;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        word-wrap: break-word;
+        animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .success-badge {
+        background: #ecfdf5;
+        color: #065f46;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+
+    .suggestions-panel {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .suggestions-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .suggestions-header i {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+    }
+
+    .suggestions-header h5 {
+        color: #1f2937;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .suggestion-item {
+        background: #f9fafb;
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.8rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background: #f3f4f6;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .suggestion-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .suggestion-text {
+        color: #374151;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .suggestion-code {
+        background: white;
+        color: var(--primary-color);
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        font-size: 0.88rem;
+    }
+
+    .no-suggestions-text {
+        text-align: center;
+        color: #6b7280;
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="search-page">
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(category_filter=["error"]) %}
+        {% if messages %}
+            <div class="error-alert">
+                <i class="fas fa-exclamation-circle"></i>
+                {% for message in messages %}
+                    <strong>{{ message }}</strong>
+                {% endfor %}
             </div>
-          </div>
-        </form>
-      </div>
+        {% endif %}
+    {% endwith %}
+
+    {% with messages = get_flashed_messages(category_filter=["success"]) %}
+        {% if messages %}
+            <div class="success-badge">
+                <i class="fas fa-check-circle"></i>
+                {% for message in messages %}
+                    {{ message }}
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    <!-- Search Hero Section -->
+    <div class="search-hero">
+        <h1>
+            <i class="fas fa-search"></i> Education Search Hub
+        </h1>
+        <p>Find student information, attendance, marks, and academic data</p>
     </div>
-  </div>
-  {% with messages = get_flashed_messages(category_filter=["error"]) %}
-  {% if messages %}
-      <div class="alert text-center error-message">
-          {% for message in messages %}
-              <p style="color: brown;">{{ message }}</p>
-          {% endfor %}
-      </div>
-  {% endif %}
-{% endwith %}
-  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-</body>
-</html>
+
+    <!-- Search Box -->
+    <div class="search-container">
+        <div class="search-box">
+            <form method="POST" action="{{ url_for('query.query_set') }}">
+                <div class="search-input-group">
+                    <input 
+                        type="text" 
+                        class="search-input" 
+                        name="query" 
+                        placeholder="Enter roll number, name, or command..."
+                        required
+                        autofocus
+                    />
+                    <button type="submit" class="search-btn">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Suggestions Panel - Only shown when suggestions exist -->
+    {% if suggestions %}
+    <div class="suggestions-panel">
+        <div class="suggestions-header">
+            <i class="fas fa-lightbulb"></i>
+            <h5>Suggested Queries</h5>
+        </div>
+        <div class="suggestions-list">
+            {% for suggestion in suggestions %}
+                <div class="suggestion-item">
+                    <p class="suggestion-text">
+                        <span class="suggestion-code">{{ suggestion.split(' - ')[0] }}</span>
+                        {% if ' - ' in suggestion %}
+                            — {{ suggestion.split(' - ')[1] }}
+                        {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+        {% if not suggestions %}
+        <div class="no-suggestions-text">
+            <p>Try refining your search with more specific keywords</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5>
+            <i class="fas fa-lightbulb"></i> How to Use This Search
+        </h5>
+        <p>
+            This tool allows you to search for student information using various methods:
+        </p>
+        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+            <li><strong>By Roll Number:</strong> Enter a roll number like "161CS027"</li>
+            <li><strong>By Name:</strong> Search for a student by their full or partial name</li>
+            <li><strong>By Command:</strong> Use special commands to view specific data</li>
+        </ul>
+        <p class="mb-0">
+            Results will display matching student profiles with their academic information, 
+            attendance records, and marks if available.
+        </p>
+    </div>
+
+    <!-- Example Queries Section -->
+    <div class="example-queries">
+        <h5>
+            <i class="fas fa-info-circle"></i> Popular Queries
+        </h5>
+        
+        {% if "Student" in session['usert'] %}
+            <p style="margin-bottom: 1rem; color: #4b5563; font-weight: 500;"><strong>📚 For Students:</strong></p>
+            <ul class="example-list">
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show my attendance</code>
+                    <span class="text-muted">View your attendance records with percentages</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show my marks</code>
+                    <span class="text-muted">Check your academic marks and overall GPA</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">my profile</code>
+                    <span class="text-muted">View your personal and academic information</span>
+                </li>
+            </ul>
+        {% else %}
+            <p style="margin-bottom: 1rem; color: #4b5563; font-weight: 500;"><strong>👥 For Staff/Faculty:</strong></p>
+            <ul class="example-list">
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">161CS027 profile</code>
+                    <span class="text-muted">View student details by roll number</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">attendance shortage</code>
+                    <span class="text-muted">Show students with low attendance</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">how many fail year 2</code>
+                    <span class="text-muted">Count failed students in specific year</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show counsel students</code>
+                    <span class="text-muted">Display your guided/counselled students</span>
+                </li>
+            </ul>
+        {% endif %}
+        
+        <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-top: 1.5rem; border-radius: 6px;">
+            <p style="margin: 0; color: #1e40af; font-size: 0.95rem;">
+                <i class="fas fa-lightbulb" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                <strong>Tip:</strong> If your query doesn't match exactly, we'll suggest similar options based on keywords you use!
+            </p>
+        </div>
+    </div>
+</div>
+{% endblock %}

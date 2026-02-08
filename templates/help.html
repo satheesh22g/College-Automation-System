@@ -1,115 +1,366 @@
-{% include "nav.html" %}
-<html>
-    <head>
-        <style>
-            @import url(https://fonts.googleapis.com/css?family=Lato:300,400,700);
+{% extends "layout.html" %}
 
-body {
-  font-family: "Lato", sans-serif;
-  font-size: 18px;
-  background: #fff;
-  line-height:26px;
-}
+{% block title %}Help & FAQs - College Automation System{% endblock %}
 
-h1 {
- font-family: cursive;
-font-weight: 700;
-font-style: normal;
-color: #FF0000;
-  font-size: 32px;
-  
-}
+{% block extra_css %}
+<style>
+    .help-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 3rem 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
 
-.heading
-{
-    font-family: cursive;
-font-weight: 700;
-    color: White;
-    font-size: 24px;
-}
+    .help-header h1 {
+        margin: 0;
+        font-weight: 700;
+        font-size: 2.5rem;
+    }
 
-.content {
-  width: 80%;
-  padding: 20px;
-  margin: 0 auto;
-  padding: 0 60px 0 0;
-}
+    .help-header p {
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
 
-.centerplease {
-  margin: 0 auto;
-  max-width: 270px;
-  font-size: 40px;
-}
+    .faq-section {
+        margin-bottom: 3rem;
+    }
 
-.question {
-  color: #fff;
-  position: relative;
-  background: #296be6;
-  margin: 0;
-  padding: 10px 10px 10px 50px;
-  display: block;
-  width:100%;
-  cursor: pointer;
-}
+    .faq-section-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        font-size: 1.4rem;
+        padding-bottom: 1rem;
+        border-bottom: 3px solid var(--primary-color);
+        margin-bottom: 1.5rem;
+    }
 
-.answers {
-  font-weight:300;
-  background: #f2f2f2;
-  padding: 0px 15px;
-  margin: 0px 0;
-  height: 0;
-  overflow: hidden;
-  z-index: -1;
-  position: relative;
-  opacity: 0;
-  -webkit-transition: .7s ease;
-  -moz-transition: .7s ease;
-  -o-transition: .7s ease;
-  transition: .7s ease;
-}
+    .faq-item {
+        background: white;
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        transition: all 0.3s ease;
+    }
 
-.questions:checked ~ .answers{
-  height: auto;
-  opacity: 1;
-  padding: 15px;
-}
+    .faq-item:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    }
 
-.plus {
-  color:#fff;
-  position: absolute;
-  margin-left: 10px;
-  margin-top: 5px;
-  z-index: 5;
-  font-size: 2em;
-  line-height: 100%;
-  -webkit-user-select: none;    
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -o-user-select: none;
-  user-select: none;
-  -webkit-transition: .3s ease;
-  -moz-transition: .3s ease;
-  -o-transition: .3s ease;
-  transition: .3s ease;
-}
+    .faq-question {
+        padding: 1.2rem;
+        background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.3s ease;
+        user-select: none;
+    }
 
-.questions:checked ~ .plus {
-  -webkit-transform: rotate(45deg);
-  -moz-transform: rotate(45deg);
-  -o-transform: rotate(45deg);
-  transform: rotate(45deg);
-}
+    .faq-question:hover {
+        background: linear-gradient(135deg, #e5e7eb 0%, #d1d5db 100%);
+    }
 
-.questions {
-  display: none;
-}
-        </style>
-    </head>
-    <body style="background-image:url('/static/faq.png');">
+    .faq-question.active {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+    }
+
+    .faq-question-text {
+        font-weight: 600;
+        font-size: 1.05rem;
+        flex: 1;
+    }
+
+    .faq-toggle {
+        width: 30px;
+        height: 30px;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+        transition: all 0.3s ease;
+        margin-left: 1rem;
+    }
+
+    .faq-question.active .faq-toggle {
+        transform: rotate(45deg);
+        background: white;
+        color: var(--primary-color);
+    }
+
+    .faq-answer {
+        padding: 0;
+        max-height: 0;
+        overflow: hidden;
+        background: white;
+        transition: all 0.3s ease;
+    }
+
+    .faq-answer.active {
+        padding: 1.5rem;
+        max-height: 500px;
+    }
+
+    .faq-answer ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .faq-answer li {
+        padding: 0.5rem 0;
+        padding-left: 1.5rem;
+        color: #4b5563;
+        line-height: 1.6;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .faq-answer li:last-child {
+        border-bottom: none;
+    }
+
+    .faq-answer li:before {
+        content: "▸ ";
+        color: var(--primary-color);
+        font-weight: bold;
+        margin-left: -1rem;
+        margin-right: 0.5rem;
+    }
+
+    .search-help {
+        background: white;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    .search-help h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .role-badge {
+        display: inline-block;
+        padding: 0.25rem 0.8rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        margin: 0 0.25rem 0.5rem 0;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-top: 2rem;
+        padding: 0.7rem 1.5rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .no-results {
+        text-align: center;
+        padding: 2rem;
+        color: #999;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="help-container">
+    <!-- Header -->
+    <div class="help-header">
+        <h1><i class="fas fa-question-circle"></i> Help & FAQs</h1>
+        <p>Find answers to common questions and learn how to use different features</p>
+    </div>
+
+    <!-- General Help Section -->
+    <div class="search-help">
+        <h3><i class="fas fa-lightbulb"></i> Using the Search Feature</h3>
+        <p>
+            The Education Search Hub allows you to search for student information using natural language queries. 
+            You can search by:
+        </p>
+        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+            <li><strong>Roll Number:</strong> "161CS027" or similar format</li>
+            <li><strong>Student Name:</strong> "John Doe" or "Doe"</li>
+            <li><strong>Commands:</strong> "show my attendance", "show my marks", etc.</li>
+        </ul>
+    </div>
+
+    <!-- Counselor FAQs -->
+    <div class="faq-section">
+        <h2 class="faq-section-title">
+            <span class="role-badge">Counselor</span> Frequently Asked Questions
+        </h2>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-calendar-check"></i> How do I view student attendance?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>attendance of counseling students</li>
+                    <li>attendance greater than (any number, e.g., 75)</li>
+                    <li>attendance less than (any number, e.g., 75)</li>
+                    <li>attendance of (specific roll number, e.g., 164G1A0593)</li>
+                    <li>show my counsel students</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-chart-bar"></i> How do I check student marks?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>marks of students with less than (%), e.g., 60 percentage</li>
+                    <li>marks of students with greater than (%), e.g., 60 percentage</li>
+                    <li>marks of counseling students</li>
+                    <li>marks of (Roll Number, e.g., 164G1A0593)</li>
+                    <li>how many failed students</li>
+                    <li>how many all clear students in my counseling</li>
+                    <li>how many all clear students</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-user"></i> How do I view student profiles?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>Profile of (Roll Number, e.g., 164G1A0593)</li>
+                    <li>Profile of counseling students</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- HOD FAQs -->
+    <div class="faq-section">
+        <h2 class="faq-section-title">
+            <span class="role-badge" style="background: var(--secondary-color);">HOD</span> Frequently Asked Questions
+        </h2>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-calendar-check"></i> How do I view department attendance?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>attendance less than (%), e.g., attendance less than 75 of year 2</li>
+                    <li>attendance greater than (%), e.g., attendance greater than 75 of year 3</li>
+                    <li>attendance of (specific student, e.g., 164G1A0593)</li>
+                    <li>attendance of (year) year students, e.g., attendance of 2 year students</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-chart-bar"></i> How do I analyze student marks?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>marks with less than 60 percentage of 3 year</li>
+                    <li>marks with greater than 60 percentage of 3 year</li>
+                    <li>marks of 2 year (for specific year)</li>
+                    <li>marks of (roll number, e.g., 164G1A0593)</li>
+                    <li>how many failed students in (year, e.g., 2nd year)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <div class="faq-question" onclick="toggleFAQ(this)">
+                <span class="faq-question-text">
+                    <i class="fas fa-user-circle"></i> How do I view student profiles?
+                </span>
+                <span class="faq-toggle">+</span>
+            </div>
+            <div class="faq-answer">
+                <ul>
+                    <li>profile of (roll number, e.g., 164G1A0593)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <!-- General Tips -->
+    <div class="search-help" style="background: #f0f4ff; border-left: 4px solid var(--primary-color);">
+        <h3><i class="fas fa-tips"></i> Helpful Tips</h3>
+        <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+            <li>The system uses natural language processing, so your queries are auto-corrected</li>
+            <li>You can use keywords like "greater than", "less than", "of", "in" etc.</li>
+            <li>Year numbers are represented as 1, 2, 3, 4 for 1st, 2nd, 3rd, 4th year</li>
+            <li>If you don't find what you're looking for, try using the Education Search Hub with different keywords</li>
+            <li>Contact system administrator if you encounter any issues</li>
+        </ul>
+    </div>
+
+    <a href="{{ url_for('dashboard.main') }}" class="back-link">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<script>
+    function toggleFAQ(element) {
+        const question = element;
+        const answer = element.nextElementSibling;
         
-
-<div class="content" style="margin-top: 5%;">
-    <h1>FAQs</h1> <a style="float: right;padding-left: 18px;padding-right: 18px;" class="btn btn-default" href="{{ url_for('dashboard') }}">Back</a>
+        // Close all other FAQs
+        document.querySelectorAll('.faq-question.active').forEach(q => {
+            if (q !== question) {
+                q.classList.remove('active');
+                q.nextElementSibling.classList.remove('active');
+            }
+        });
+        
+        // Toggle current FAQ
+        question.classList.toggle('active');
+        answer.classList.toggle('active');
+    }
+</script>
+{% endblock %}
       
     <!-- __________________________ SECTIONS ___________________________ --> 
     

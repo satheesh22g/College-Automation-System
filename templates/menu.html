@@ -1,173 +1,523 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SRIT Campus Hub</title>
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='welcome.css') }}">
-    <style>
-        .error-message {
-                animation: fadeOut 2s forwards;
-                animation-delay: 5s;
-                color: rgb(241, 7, 7);
-                padding: 10px;
-                text-align: center;
-            }
+{% block title %}Dashboard - College Automation System{% endblock %}
 
-            @keyframes fadeOut {
-                from {opacity: 1;}
-                to {opacity: 0;}
-            }
-    </style>
-</head>
-<body style="background-image: url('static/bg.jpg');background-size: cover;">
-  <div class="wrapper">
-    <!-- Sidebar -->
-    <nav id="sidebar">
-        <div class="sidebar-header">
-            <h3>Menu</h3>
-        </div>
-        <button type="button" id="sidebarCollapseBtn" class="btn btn-dark">
-          <i class="fas fa-arrow-left"></i>
-      </button>
+{% block extra_css %}
+<style>
+    .dashboard-container {
+        padding: 2rem 0;
+    }
 
-        <ul class="list-unstyled components">
-            <!-- Sidebar links -->
-            <!-- Replace these with your links -->
-            <p>
-              {% if "admin" in session['usert'] %}
-              <ul>
-                  <li><a href="{{ url_for('reset') }}">Reset Password</a></li>
-                  <li><a href="{{ url_for('admin_update') }}">Updations</a></li>
-                  <li><a href="{{ url_for('load_data') }}">Load Data</a></li>
-                  <li><a href="{{ url_for('adminfeedbacks') }}">Feedbacks</a></li>
-                </ul>
-              {% elif "Student" in session['usert'] %}
-                  <ul>
-                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
-                    <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                  <li><a href="{{ url_for('attendance') }}">Attendance</a></li>
-                  <li><a href="{{ url_for('marks') }}">Marks</a></li>
-                 <li> <a href="{{ url_for('Suggestions') }}">Feedback</a></li>
-                 <li> <a href="{{ url_for('help') }}">Help</a></li>
-                  </ul>
-              {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
-                <ul>
-                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
-                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                  <li><a href="{{ url_for('show_feedback') }}">Feedback</a></li>
-                  <li><a href="{{ url_for('help') }}">Help</a></li>
-                </ul>
-              {% else %}
-                 <ul>
-                    <li><a href="{{ url_for('query_set') }}">Education Search Hub</a></li>
-                  <li><a href="{{ url_for('profile') }}">Profile</a></li>
-                  <li><a href="{{ url_for('Suggestions') }}">Feedback</a></li>
-                  <li><a href="{{ url_for('help') }}">Help</a></li>
-                 </ul>
-              {% endif %}
-          </p>
-        </ul>
-    </nav>
+    .welcome-section {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.2);
+    }
 
-  
-</div>
-        <div class="text-center" style="padding-top: 4%;padding-bottom: 7%;">
-          <h4>Welcome to SRIT Campus Hub</h4>
-          <button type="button" id="sidebarCollapse" class="btn btn-dark">
-            Menu
-        </button>
-        </div>
-        <div>
-            {% with messages = get_flashed_messages(category_filter=["greet"]) %}
-                {% if messages %}
-                    <div class="alert text-center error-message">
-                        {% for message in messages %}
-                            <h4><strong>{{ message }}</strong></h4>
-                        {% endfor %}
-                    </div>
-                {% endif %}
-            {% endwith %}
-            {% with messages = get_flashed_messages(category_filter=["alert"]) %}
-            {% if messages %}
-                <div class="alert text-center error-message">
-                    {% for message in messages %}
-                        <p><strong>{{ message }}</strong></p>
-                    {% endfor %}
-                </div>
-            {% endif %}
-        {% endwith %}
-        </div>
-       
-          <div class="container">
-            <div class="row">
-              <div class="col">
-                <div id="carouselExampleControls" class="carousel slide" data-ride="carousel">
-                  <div class="carousel-inner">
-                    <div class="carousel-item active">
-                      <div class="news-ticker">
-                        <img src="{{ url_for('static', filename='banner1.jpg') }}" class="d-block" alt="News Image 1">
-                        <div class="text-below">
-                          <h2>Admissions Now Open!</h2>
-                          <p>Join Us for an Exciting Academic Journey.</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="carousel-item">
-                      <div class="news-ticker">
-                        <img src="{{ url_for('static', filename='banner2.jpg') }}" class="d-block" alt="News Image 2">
-                        <div class="text-below">
-                          <h2>Explore Your Future:</h2>
-                          <p>Enroll Today for Cutting-Edge Courses.</p>
-                        </div>
-                      </div>
-                    </div>
-                    <div class="carousel-item">
-                      <div class="news-ticker">
-                        <img src="{{ url_for('static', filename='banner3.jpg') }}" class="d-block" alt="News Image 3">
-                        <div class="text-below">
-                          <h2>Scholarship Opportunities Available:</h2>
-                          <p>Pursue Your Dream Degree.</p>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- Add more carousel items as needed -->
-                  </div>
-                  <a class="carousel-control-prev" href="#carouselExampleControls" role="button" data-slide="prev" style="z-index: 0;">
-                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Previous</span>
-                  </a>
-                  <a class="carousel-control-next" href="#carouselExampleControls" role="button" data-slide="next">
-                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                    <span class="sr-only">Next</span>
-                  </a>
-                </div>
-              </div>
+    .welcome-section h1 {
+        font-weight: 700;
+        margin: 0;
+        font-size: 2rem;
+    }
+
+    .welcome-section .subtitle {
+        opacity: 0.9;
+        margin-top: 0.5rem;
+    }
+
+    .dashboard-card {
+        border: none;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.3s ease;
+        height: 100%;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.12);
+    }
+
+    .card-icon {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .dashboard-card.student .card-icon {
+        color: var(--primary-color);
+    }
+
+    .dashboard-card.faculty .card-icon {
+        color: var(--secondary-color);
+    }
+
+    .dashboard-card.admin .card-icon {
+        color: var(--danger, #dc3545);
+    }
+
+    .dashboard-link {
+        text-decoration: none;
+        color: inherit;
+        display: block;
+    }
+
+    .dashboard-link:hover {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .nav-section {
+        margin-top: 2rem;
+        padding-top: 2rem;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .nav-section-title {
+        font-size: 0.9rem;
+        font-weight: 700;
+        color: #666;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 1rem;
+    }
+
+    .nav-links {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1rem;
+    }
+
+    .nav-link-btn {
+        padding: 0.8rem 1.2rem;
+        border: 1px solid var(--primary-color);
+        background: white;
+        color: var(--primary-color);
+        border-radius: 8px;
+        text-decoration: none;
+        text-align: center;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        display: inline-block;
+    }
+
+    .nav-link-btn:hover {
+        background: var(--primary-color);
+        color: white;
+        text-decoration: none;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-top: 2rem;
+    }
+
+    .help-section strong {
+        color: var(--primary-color);
+    }
+
+    .stat-card {
+        text-align: center;
+        padding: 1.5rem;
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+        border-radius: 8px;
+    }
+
+    .stat-number {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+        margin-top: 0.5rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <h1>
+            <i class="fas fa-home"></i> Welcome to Campus Hub
+        </h1>
+        <p class="subtitle">College Automation System Dashboard</p>
+    </div>
+
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(category_filter=["greet"]) %}
+        {% if messages %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                <i class="fas fa-info-circle"></i>
+                {% for message in messages %}
+                    <strong>{{ message }}</strong>
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-          </div>
-        
+        {% endif %}
+    {% endwith %}
 
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <script>
-      // Script to handle sidebar toggle
-      $(document).ready(function () {
-          $('#sidebarCollapse').on('click', function () {
-              $('#sidebar').toggleClass('active');
-          });
-          $('#sidebarCollapseBtn').on('click', function () {
-                $('#sidebar').toggleClass('active');
-            });
-      });
-  </script>
+    {% with messages = get_flashed_messages(category_filter=["alert"]) %}
+        {% if messages %}
+            <div class="alert alert-warning alert-dismissible fade show" role="alert">
+                <i class="fas fa-exclamation-triangle"></i>
+                {% for message in messages %}
+                    <strong>{{ message }}</strong>
+                {% endfor %}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        {% endif %}
+    {% endwith %}
 
-<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <!-- Role-based Quick Access Cards -->
+    <div class="row mb-4">
+        {% if "Student" in session['usert'] %}
+            <!-- Student Dashboard -->
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.attendance') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-calendar-check"></i>
+                            </div>
+                            <h5 class="card-title">Attendance</h5>
+                            <p class="card-text text-muted">View your attendance records</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
 
-</body>
-</html>
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.marks') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-chart-bar"></i>
+                            </div>
+                            <h5 class="card-title">Marks & Grades</h5>
+                            <p class="card-text text-muted">Check your academic performance</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-user-circle"></i>
+                            </div>
+                            <h5 class="card-title">My Profile</h5>
+                            <p class="card-text text-muted">View and manage your profile</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="card-title">Education Search</h5>
+                            <p class="card-text text-muted">Search academic data</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Chat with our AI assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('feedback.suggestions') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <h5 class="card-title">Feedback</h5>
+                            <p class="card-text text-muted">Submit suggestions and feedback</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
+                    <div class="card dashboard-card student">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h5 class="card-title">Help & Support</h5>
+                            <p class="card-text text-muted">Get help with the system</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        {% elif "admin" in session['usert'] %}
+            <!-- Admin Dashboard -->
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('admin.load_data') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-upload"></i>
+                            </div>
+                            <h5 class="card-title">Load Data</h5>
+                            <p class="card-text text-muted">Import student and course data</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('admin.admin_update') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-cogs"></i>
+                            </div>
+                            <h5 class="card-title">System Updates</h5>
+                            <p class="card-text text-muted">Manage system settings</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('admin.feedback_management') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-comments"></i>
+                            </div>
+                            <h5 class="card-title">User Feedback</h5>
+                            <p class="card-text text-muted">Review user feedback and suggestions</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('auth.reset') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-redo"></i>
+                            </div>
+                            <h5 class="card-title">Password Reset</h5>
+                            <p class="card-text text-muted">Reset user passwords</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Interactive query assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
+            <!-- Faculty/HOD Dashboard -->
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="card-title">Education Search</h5>
+                            <p class="card-text text-muted">Query student data</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Interactive query assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-user-tie"></i>
+                            </div>
+                            <h5 class="card-title">My Profile</h5>
+                            <p class="card-text text-muted">View faculty information</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('feedback.show_feedback') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <h5 class="card-title">Feedback</h5>
+                            <p class="card-text text-muted">View student feedback</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h5 class="card-title">Help</h5>
+                            <p class="card-text text-muted">Get help with the system</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+        {% else %}
+            <!-- Faculty Default Dashboard -->
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-search"></i>
+                            </div>
+                            <h5 class="card-title">Education Search</h5>
+                            <p class="card-text text-muted">Query academic data</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Interactive query assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <h5 class="card-title">Profile</h5>
+                            <p class="card-text text-muted">View your profile</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('feedback.suggestions') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-comment"></i>
+                            </div>
+                            <h5 class="card-title">Feedback</h5>
+                            <p class="card-text text-muted">Send feedback</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-question-circle"></i>
+                            </div>
+                            <h5 class="card-title">Help</h5>
+                            <p class="card-text text-muted">Get assistance</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5>
+            <i class="fas fa-lightbulb"></i> About This Dashboard
+        </h5>
+        <p>
+            This is your personalized dashboard for the College Automation System. The cards above show quick access to all features available for your role:
+            {% if "Student" in session['usert'] %}
+            <strong>As a student,</strong> you can view your attendance records, academic marks, personal profile, search for course information, provide feedback, and get help.
+            {% elif "admin" in session['usert'] %}
+            <strong>As an administrator,</strong> you can manage user data, configure system settings, review feedback from students and faculty, and reset passwords.
+            {% elif "HOD" in session['usert'] %}
+            <strong>As a Head of Department,</strong> you can search student data, manage faculty information, view feedback, and get system support.
+            {% elif "clerk" in session['usert'] %}
+            <strong>As a clerk,</strong> you can search academic data, manage records, view feedback, and access system help.
+            {% else %}
+            <strong>As faculty,</strong> you can search student data, maintain your profile, view student feedback, and get help with the system.
+            {% endif %}
+        </p>
+        <p class="mb-0">Click any card above to access that feature, or use the navigation menu at the top of the page.</p>
+    </div>
+</div>
+{% endblock %}

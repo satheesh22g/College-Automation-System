@@ -1,70 +1,283 @@
-{% include "nav.html" %}
+{% extends "layout.html" %}
 
-<html>
-    <head>
-      <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
-  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
-  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
-        <style>
-         
-            </style> 
-            
-    </head>
-<body style="background-image:url('/static/bg2.png');">
-  <div class = "panel panel-primary" style="width: fit-content;margin-top: 4%;margin-left: 1%;">
-    <div class = "panel-heading col-md-12">
-       <h3 class = "panel-title col-md-6">Attendance of {{results[0].year}} year students
-       
-       </h3>
-       <span class="col-md-4"></span>
-       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+{% block title %}Attendance Records - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .attendance-header {
+        background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .attendance-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .attendance-stats {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        margin: 0.5rem 0;
+    }
+
+    .stat-label {
+        color: #666;
+        font-size: 0.9rem;
+    }
+
+    .attendance-table-container {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .table {
+        margin: 0;
+    }
+
+    .table thead {
+        background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    .table thead th {
+        border: none;
+        padding: 1rem;
+        font-weight: 700;
+        color: #333;
+        vertical-align: middle;
+    }
+
+    .table tbody td {
+        padding: 0.8rem 1rem;
+        vertical-align: middle;
+        border-color: #e5e7eb;
+    }
+
+    .table tbody tr:hover {
+        background-color: #f9fafb;
+    }
+
+    .attendance-percentage {
+        font-weight: 600;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        display: inline-block;
+        color: white;
+    }
+
+    .attendance-excellent {
+        background-color: #10b981;
+    }
+
+    .attendance-good {
+        background-color: #3b82f6;
+    }
+
+    .attendance-warning {
+        background-color: #f59e0b;
+    }
+
+    .attendance-critical {
+        background-color: #ef4444;
+    }
+
+    .subject-attendance {
+        padding: 0.4rem 0.8rem;
+        border-radius: 4px;
+        font-size: 0.85rem;
+        text-align: center;
+    }
+
+    .subject-present {
+        background-color: #dbeafe;
+        color: #1e40af;
+    }
+
+    .subject-absent {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .help-section strong {
+        color: var(--primary-color);
+    }
+
+    .back-link {
+        display: inline-block;
+        padding: 0.6rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 6px;
+        text-decoration: none;
+        transition: all 0.3s ease;
+    }
+
+    .back-link:hover {
+        background: var(--primary-dark);
+        text-decoration: none;
+        transform: translateY(-2px);
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 3rem 2rem;
+    }
+
+    .empty-state-icon {
+        font-size: 3rem;
+        color: #d1d5db;
+        margin-bottom: 1rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-container">
+    <div class="attendance-header">
+        <div>
+            <h2>
+                <i class="fas fa-calendar-check"></i> Attendance Records
+            </h2>
+            <p class="mb-0">Year: <strong>{% if results %}{{ results[0].year }}{% else %}N/A{% endif %}</strong></p>
+        </div>
+        <a href="{{ url_for('dashboard.main') }}" class="back-link">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
     </div>
-   
-    <table class = "table">
-       <tr style="background-color: beige;">
-          <th>Roll Number</th>
-          <th>Name</th>
-          <th>Sub1</th>
-          <th>Sub2</th>
-          <th>Sub3</th>
-          <th>Sub4</th>
-          <th>Sub5</th>
-          <th>Sub6</th>
-          <th>Sub7</th>
-          <th>Sub8</th>
-          <th>Sub9</th>
-          <th>Sub10</th>
-          <th>Sub11</th>
-          <th>Sub12</th>
-          <th>Sub13</th>
-          <th>Attendance</th>
-          <th>Percentage</th>
-       </tr>
-        {% for result in results %}
-       <tr>
-     <td>{{ result.student_id }}</td>
-     <td>{{ result.student_name }}</td>
-     <td>{{ result.sub1 }}</td>
-     <td>{{ result.sub2 }}</td>
-     <td>{{ result.sub3 }}</td>
-     <td>{{ result.sub4 }}</td>
-     <td>{{ result.sub5 }}</td>
-     <td>{{ result.sub6 }}</td>
-     <td>{{ result.sub7 }}</td>
-     <td>{{ result.sub8 }}</td>
-     <td>{{ result.sub9 }}</td>
-     <td>{{ result.sub10 }}</td>
-     <td>{{ result.sub11}}</td>
-     <td>{{ result.sub12 }}</td>
-     <td>{{ result.sub13 }}</td>
-     <td>{{ result.attend }}</td>
-     <td>{{ result.attend_perc }}</td>
-       </tr>
-       {% endfor %}
-    </table>
- </div>    
-</body>
 
-    </html>
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5>
+            <i class="fas fa-lightbulb"></i> About Attendance
+        </h5>
+        <p>
+            This page displays your attendance records across all subjects this semester. Each cell shows your attendance status for that subject.
+            The attendance percentage at the right shows your overall attendance. Most institutions require a minimum of 75% attendance to be eligible for exams.
+        </p>
+        <p class="mb-0">
+            <strong>Color Legend:</strong>
+            <span class="subject-present" style="margin: 0 0.5rem;">✓ Present</span>
+            <span class="subject-absent" style="margin: 0 0.5rem;">✗ Absent</span>
+            <span class="attendance-percentage attendance-excellent" style="margin: 0 0.5rem;">≥85% Excellent</span>
+            <span class="attendance-percentage attendance-good" style="margin: 0 0.5rem;">75-84% Good</span>
+            <span class="attendance-percentage attendance-warning" style="margin: 0 0.5rem;">65-74% Warning</span>
+            <span class="attendance-percentage attendance-critical" style="margin: 0 0.5rem;">&lt;65% At Risk</span>
+        </p>
+    </div>
+
+    {% if results %}
+        <!-- Statistics Cards -->
+        <div class="attendance-stats">
+            <div class="stat-box">
+                <i class="fas fa-users" style="color: var(--primary-color); font-size: 1.5rem;"></i>
+                <div class="stat-value">{{ results|length }}</div>
+                <div class="stat-label">Total Students</div>
+            </div>
+        </div>
+
+        <!-- Attendance Table -->
+        <div class="attendance-table-container">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-id-card"></i> Roll No</th>
+                        <th><i class="fas fa-user"></i> Name</th>
+                        <th>Sub 1</th>
+                        <th>Sub 2</th>
+                        <th>Sub 3</th>
+                        <th>Sub 4</th>
+                        <th>Sub 5</th>
+                        <th>Sub 6</th>
+                        <th>Sub 7</th>
+                        <th>Sub 8</th>
+                        <th>Sub 9</th>
+                        <th>Sub 10</th>
+                        <th>Sub 11</th>
+                        <th>Sub 12</th>
+                        <th>Sub 13</th>
+                        <th>Total</th>
+                        <th><i class="fas fa-percent"></i> Percentage</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td><strong>{{ result.student_id }}</strong></td>
+                        <td>{{ result.student_name }}</td>
+                        <td><span class="subject-attendance {% if result.sub1 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub1 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub2 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub2 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub3 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub3 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub4 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub4 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub5 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub5 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub6 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub6 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub7 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub7 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub8 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub8 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub9 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub9 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub10 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub10 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub11 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub11 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub12 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub12 }}</span></td>
+                        <td><span class="subject-attendance {% if result.sub13 == 'P' %}subject-present{% else %}subject-absent{% endif %}">{{ result.sub13 }}</span></td>
+                        <td><strong>{{ result.attend }}</strong></td>
+                        <td>
+                            {% if result.attend_perc >= 85 %}
+                                <span class="attendance-percentage attendance-excellent">{{ result.attend_perc }}%</span>
+                            {% elif result.attend_perc >= 75 %}
+                                <span class="attendance-percentage attendance-good">{{ result.attend_perc }}%</span>
+                            {% elif result.attend_perc >= 65 %}
+                                <span class="attendance-percentage attendance-warning">{{ result.attend_perc }}%</span>
+                            {% else %}
+                                <span class="attendance-percentage attendance-critical">{{ result.attend_perc }}%</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="attendance-table-container">
+            <div class="empty-state">
+                <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
+                </div>
+                <h4>No Attendance Data Found</h4>
+                <p class="text-muted">There are no attendance records available for your search criteria.</p>
+                <a href="{{ url_for('dashboard.main') }}" class="back-link">
+                    <i class="fas fa-arrow-left"></i> Go Back
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

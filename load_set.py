@@ -1,14 +1,16 @@
 import sys
 import csv
 import os
-from database import Base, Attendance, Marks, Accounts, Student_Profile,Feedback,Faculty_Feedback,Departments,Students,Faculty,Faculty_Profile
+from database import (Base, Attendance, Marks, Accounts, Student_Profile, 
+                      Feedback, Faculty_Feedback, Departments, Students, Faculty, Faculty_Profile)
 from sqlalchemy import create_engine
 from sqlalchemy.orm import scoped_session, sessionmaker
 from flask_bcrypt import Bcrypt
 from flask import Flask
 import pandas as pd
+
 app = Flask(__name__)
-engine = create_engine('sqlite:///database.db',connect_args={'check_same_thread': False},echo=True)
+engine = create_engine('sqlite:///database.db', connect_args={'check_same_thread': False}, echo=False)
 Base.metadata.bind = engine
 db = scoped_session(sessionmaker(bind=engine))
 bcrypt = Bcrypt(app)

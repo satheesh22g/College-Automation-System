@@ -1,103 +1,325 @@
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Update</title>
-    <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.5.0/css/all.css" integrity="sha384-B4dIYHKNBt8Bc12p+WXckhzcICo0wtJAoU8YZTY5qE0Id1GSseTk6S+L3BlXeVIU" crossorigin="anonymous">
-    <style>
-      html, body {
-      min-height: 100%;
-      }
-      body, div, form, input, select, textarea, p { 
-      padding: 0;
-      margin: 0;
-      outline: none;
-      font-family: Roboto, Arial, sans-serif;
-      font-size: 14px;
-      color: #666;
-      line-height: 22px;
-      }
-      h1 {
-      margin: 15px 0;
-      font-weight: 400;
-      }
-      .testbox {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      height: inherit;
-      padding: 3px;
-      }
-      form {
-      width: 100%;
-      padding: 20px;
-      background: #fff;
-      box-shadow: 0 2px 5px #ccc; 
-      }
-      input, select, textarea {
-      margin-bottom: 10px;
-      border: 1px solid #ccc;
-      border-radius: 3px;
-      }
-      input:hover, select:hover, textarea:hover {
-      outline: none;
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      input {
-      width: calc(100% - 10px);
-      padding: 5px;
-      }
-      select {
-      width: 100%;
-      padding: 7px 0;
-      background: transparent;
-      }
-      textarea {
-      width: calc(100% - 2px);
-      padding: 5px;
-      }
-      .item {
-      position: relative;
-      margin: 10px 0;
-      }
-      .item:hover p, .item:hover i {
-      color: #095484;
-      }
-      input:hover, select:hover, textarea:hover {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status:hover input {
-      box-shadow: none;
-      }
-      .status label:hover input {
-      box-shadow: 0 0 5px 0 #095484;
-      }
-      .status-item input, .status-item span {
-      width: auto;
-      vertical-align: middle;
-      }
-      .status-item input {
-      margin: 0;
-      }
-      .status-item span {
-      margin: 0 20px 0 5px;
-      }
-      input[type="date"]::-webkit-inner-spin-button {
-      display: none;
-      }
-      input[type="time"]::-webkit-inner-spin-button {
-      margin: 2px 22px 0 0;
-      }
-      .item i, input[type="date"]::-webkit-calendar-picker-indicator {
-      position: absolute;
-      font-size: 20px;
-      color: #a9a9a9;
-      }
-      .item i {
-      right: 1%;
-      top: 30px;
-      z-index: 1;
-      }
+{% extends "layout.html" %}
+
+{% block title %}Load Data - College Automation System Admin{% endblock %}
+
+{% block extra_css %}
+<style>
+    .admin-header {
+        background: linear-gradient(135deg, var(--danger, #dc3545) 0%, #c82333 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 12px;
+        margin-bottom: 2rem;
+    }
+
+    .admin-header h2 {
+        margin: 0;
+        font-weight: 700;
+    }
+
+    .form-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        max-width: 700px;
+        margin: 0 auto;
+    }
+
+    .form-section {
+        margin-bottom: 2rem;
+    }
+
+    .form-section-title {
+        color: var(--primary-color);
+        font-weight: 700;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 2px solid var(--primary-color);
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+
+    .form-label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 600;
+        color: #333;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 0.8rem;
+        border: 2px solid #e5e7eb;
+        border-radius: 8px;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(30, 64, 175, 0.1);
+        outline: none;
+    }
+
+    .form-control[type="file"] {
+        padding: 0.6rem;
+    }
+
+    .radio-group {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+
+    .radio-item {
+        display: flex;
+        align-items: center;
+    }
+
+    .radio-item input[type="radio"] {
+        width: auto;
+        margin: 0;
+        margin-right: 0.5rem;
+        cursor: pointer;
+    }
+
+    .radio-item label {
+        margin: 0;
+        cursor: pointer;
+        flex: 1;
+    }
+
+    .submit-btn {
+        width: 100%;
+        padding: 0.9rem;
+        background: var(--primary-color);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .submit-btn:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+    }
+
+    .output-message {
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1.5rem;
+        font-weight: 600;
+    }
+
+    .output-success {
+        background: #ecfdf5;
+        color: #065f46;
+        border-left: 4px solid #10b981;
+    }
+
+    .output-error {
+        background: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+    }
+
+    .help-section {
+        background: #f0f4ff;
+        border-left: 4px solid var(--primary-color);
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 2rem;
+    }
+
+    .help-section h5 {
+        color: var(--primary-color);
+        margin-bottom: 0.5rem;
+    }
+
+    .file-input-wrapper {
+        position: relative;
+    }
+
+    .file-input-label {
+        display: inline-block;
+        padding: 0.8rem 1.2rem;
+        background: var(--primary-color);
+        color: white;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        font-weight: 600;
+    }
+
+    .file-input-label:hover {
+        background: var(--primary-dark);
+    }
+
+    .file-input-wrapper input[type="file"] {
+        display: none;
+    }
+
+    .file-name {
+        display: inline-block;
+        margin-top: 0.5rem;
+        color: #666;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <!-- Admin Header -->
+    <div class="admin-header">
+        <h2><i class="fas fa-lock"></i> Load Data - Admin Tool</h2>
+        <p class="mb-0">Import student data, attendance records, marks, and faculty information</p>
+    </div>
+
+    <!-- Help Section -->
+    <div class="help-section">
+        <h5><i class="fas fa-lightbulb"></i> Data Loading Instructions</h5>
+        <p>
+            This tool allows system administrators to load and import data from Excel spreadsheets into the College Automation System. 
+            You can import:
+        </p>
+        <ul style="margin: 0.5rem 0; padding-left: 1.5rem;">
+            <li><strong>Attendance:</strong> Student attendance records</li>
+            <li><strong>Marks:</strong> Academic marks and grades</li>
+            <li><strong>Profile:</strong> Student profile information</li>
+            <li><strong>Faculty:</strong> Faculty member information</li>
+        </ul>
+        <p class="mb-0" style="margin-top: 0.5rem;">
+            Ensure that your Excel file follows the correct format before uploading.
+        </p>
+    </div>
+
+    <!-- Form -->
+    <div class="form-container">
+        <form method="POST" action="{{ url_for('admin.load_data') }}" enctype="multipart/form-data">
+            
+            <!-- Department Selection -->
+            <div class="form-section">
+                <h4 class="form-section-title"><i class="fas fa-building"></i> Select Department</h4>
+                <div class="form-group">
+                    <label class="form-label">Department <span style="color: red;">*</span></label>
+                    <select name="dept_id" class="form-control" required>
+                        <option value="">-- Choose Department --</option>
+                        <option value="1">Civil Engineering</option>
+                        <option value="2">Electrical Engineering</option>
+                        <option value="3">Mechanical Engineering</option>
+                        <option value="4">Electronics and Communication Engineering</option>
+                        <option value="5">Computer Science and Engineering</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Faculty and Year Selection -->
+            <div class="form-section">
+                <h4 class="form-section-title"><i class="fas fa-user-tie"></i> Select Faculty & Year</h4>
+                <div class="form-group">
+                    <label class="form-label">Faculty Advisor (Optional)</label>
+                    <select name="faculty" class="form-control">
+                        <option value="">-- Choose Faculty --</option>
+                        {% for f in flist %}
+                        <option value="{{ f.id }}">{{ f.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Academic Year <span style="color: red;">*</span></label>
+                    <select name="year" class="form-control" required>
+                        <option value="">-- Choose Year --</option>
+                        <option value="1">1st Year</option>
+                        <option value="2">2nd Year</option>
+                        <option value="3">3rd Year</option>
+                        <option value="4">4th Year</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Data Type Selection -->
+            <div class="form-section">
+                <h4 class="form-section-title"><i class="fas fa-database"></i> Select Data Type</h4>
+                <div class="form-group">
+                    <label class="form-label">Choose data to import <span style="color: red;">*</span></label>
+                    <div class="radio-group">
+                        <div class="radio-item">
+                            <input type="radio" id="attendance" name="table" value="Attendance" required>
+                            <label for="attendance">
+                                <i class="fas fa-calendar-check"></i> Attendance
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="marks" name="table" value="Marks" required>
+                            <label for="marks">
+                                <i class="fas fa-chart-bar"></i> Marks
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="profile" name="table" value="Profile" required>
+                            <label for="profile">
+                                <i class="fas fa-user-circle"></i> Profile
+                            </label>
+                        </div>
+                        <div class="radio-item">
+                            <input type="radio" id="faculty" name="table" value="Faculty" required>
+                            <label for="faculty">
+                                <i class="fas fa-user-tie"></i> Faculty
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="form-section">
+                <h4 class="form-section-title"><i class="fas fa-file-upload"></i> Upload Excel File</h4>
+                <div class="form-group">
+                    <label class="form-label">Excel File (.xlsx, .xls) <span style="color: red;">*</span></label>
+                    <div class="file-input-wrapper">
+                        <label for="fileInput" class="file-input-label">
+                            <i class="fas fa-cloud-upload-alt"></i> Choose File
+                        </label>
+                        <input type="file" id="fileInput" name="file" accept=".xlsx,.xls" required onchange="updateFileName(this)">
+                        <div class="file-name" id="fileName">No file selected</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Output Message -->
+            {% if output %}
+            <div class="output-message {% if 'successfully' in output.lower() or 'success' in output.lower() %}output-success{% else %}output-error{% endif %}">
+                <i class="fas {% if 'successfully' in output.lower() or 'success' in output.lower() %}fa-check-circle{% else %}fa-exclamation-circle{% endif %}"></i>
+                {{ output }}
+            </div>
+            {% endif %}
+
+            <!-- Submit Button -->
+            <button type="submit" class="submit-btn">
+                <i class="fas fa-upload"></i> Load Data
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    function updateFileName(input) {
+        const fileName = document.getElementById('fileName');
+        if (input.files && input.files[0]) {
+            fileName.textContent = 'Selected: ' + input.files[0].name;
+        } else {
+            fileName.textContent = 'No file selected';
+        }
+    }
+</script>
+{% endblock %}
       [type="date"]::-webkit-calendar-picker-indicator {
       right: 0;
       z-index: 2;
@@ -138,7 +360,7 @@
   <body>
     <h1>IN Progress</h1>
     <div class="testbox">
-      <form action="{{ url_for('load_data') }}"  method = "POST" enctype = "multipart/form-data">
+      <form action="{{ url_for('admin.load_data') }}"  method = "POST" enctype = "multipart/form-data">
      
        
         <div class="item">

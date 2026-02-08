@@ -1,17 +1,85 @@
-{% include "nav.html" %}
-<html>
-    <head>
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-       <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.1.0/css/all.css" integrity="sha384-lKuwvrZot6UHsBSfcMvOkWwlCMgc0TaWr+30HWe3a4ltaBwTZhyTEggF5tJv8tbt" crossorigin="anonymous">
-       <link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-   <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
- <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
- <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-  </head>
-    <body>
-        
-<img src="{{ url_for('static', filename='graph.png') }}" style="display: block;margin-left: auto;margin-right: auto;margin-top:1.8%;width: 90%;float: left;height: 90%;">
-    </body>
-</html>
+{% extends "layout.html" %}
+
+{% block title %}Analytics - College Automation System{% endblock %}
+
+{% block extra_css %}
+<style>
+    .results-page {
+        background: #f3f4f6;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 60px);
+    }
+
+    .results-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
+
+    .results-card {
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
+
+    .results-body {
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .chart-container {
+        margin: 2rem 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 300px;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
+    .chart-image {
+        max-width: 100%;
+        max-height: 400px;
+    }
+
+    .back-button {
+        display: inline-block;
+        padding: 0.75rem 1.5rem;
+        background: #1e40af;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .back-button:hover {
+        background: #7c3aed;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+    <div class="results-container">
+        <div class="results-card">
+            <div class="results-body">
+                <h2 style="color: #1e40af; margin-bottom: 1.5rem;">
+                    <i class="fas fa-chart-line"></i> Analytics & Visualization
+                </h2>
+                
+                <div class="chart-container">
+                    <div style="text-align: center; color: #999;">
+                        <i class="fas fa-chart-bar" style="font-size: 3rem; margin-bottom: 1rem; display: block;"></i>
+                        <p>Analytics chart will be displayed here</p>
+                    </div>
+                </div>
+
+                <a href="{{ url_for('dashboard.main') }}" class="back-button">
+                    <i class="fas fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

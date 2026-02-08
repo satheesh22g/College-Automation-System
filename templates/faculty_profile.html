@@ -1,162 +1,129 @@
-<head>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+{% extends "layout.html" %}
 
-    <style>
-        
-body, button {
-	font: 1em -apple-system, BlinkMacSystemFont,"Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
-}
-button {
-	background-color: #eee;
-	border: 0;
-	border-radius: 0.125em;
-	box-shadow:
-		-0.2em -0.125em 0.125em rgba(0, 0, 0, 0.25), 
-		0 0 0 0.04em rgba(0, 0, 0, 0.3), 
-		0.02em 0.02em 0.02em rgba(0, 0, 0, 0.4) inset, 
-		-0.05em -0.05em 0.02em rgba(255, 255, 255, 0.8) inset;
-	color: #777;
-	margin:5px;
-	font-size: 1em;
-	outline: 0;
-	position: relative;
-	vertical-align: top;
-	-webkit-appearance: none;
-	-moz-appearance: none;
-	appearance: none;
-	-webkit-tap-highlight-color: transparent;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-button:not(:last-of-type) {
-	margin-right: 0.35em;
-}
+{% block title %}Faculty Profile - College Automation System{% endblock %}
 
-button > span {
-	
-	font-size: 0.5em;
+{% block extra_css %}
+<style>
+    .results-page {
+        background: #f3f4f6;
+        padding: 2rem 1rem;
+        min-height: calc(100vh - 60px);
+    }
 
-}
+    .results-container {
+        max-width: 900px;
+        margin: 0 auto;
+    }
 
-/* Keyboard */
-.keyboard {
-	float: left;
-	background-image: linear-gradient(90deg, #888, #ccc);
-	border-radius: 0.5em;
-	box-shadow: -1em -1em 1.5em rgba(245, 243, 243, 0.233), 0 0 0 1px #aaa inset;
-	display: grid;
-	grid-gap: 0.375em 0.875em;
-	font-size: 36px;
-    margin-top: 1%;
-    margin-left: 10%;
-	padding: 1%;
-	width: 48%;
-	height: 90%;
-	padding-bottom: 2%;
-	margin-bottom: 2%;
-}
+    .results-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 2rem;
+        border-radius: 15px 15px 0 0;
+        text-align: center;
+    }
 
-.btn2 {
-	width: 45%;
-	height: 1.125em;
-}
-.sm {
-    width:fit-content
-	font-size: 0.4em;
-	line-height: 1.25;
-}
-.collapsible {
-  background-color: rgb(72, 182, 255);
-  color: black;
-  cursor: pointer;
-  padding: 12px;
-  width: 100%;
-  border: none;
-  text-align: left;
-  outline: none;
-  font-size: 25px;
-  font-family: 'Courier New';
-  font-style: oblique;
-}
+    .results-header h2 {
+        margin: 0 0 0.5rem 0;
+        font-size: 1.8rem;
+        font-weight: 700;
+    }
 
-.active, .collapsible:hover {
-  background-color: rgb(0, 140, 255);
-}
+    .results-card {
+        background: white;
+        border-radius: 0 0 15px 15px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+    }
 
-.content {
-  padding: 0 18px;
-  display: none;
-  overflow: hidden;
-  background-color: #f1f1f1;
-}
-.btn
-{
-	padding: 15px;
-	padding-top:5px ;
-	padding-bottom: 5px;
-	font-size: medium;
-	text-decoration: none;
-	float: right;
-	background-color: rgb(72, 182, 255);
-	color: black;
-	border-radius: 6px;
-}
+    .results-body {
+        padding: 2rem;
+    }
 
-    </style>
-</head>
+    .profile-item {
+        display: grid;
+        grid-template-columns: 200px 1fr;
+        gap: 1rem;
+        padding: 1rem 0;
+        border-bottom: 1px solid #e5e7eb;
+    }
 
-<body style="background-image:url('static/bg2.png');">
-	<button type="button" class="collapsible"><strong>Profile</strong>	<a class="btn" href="{{ url_for('dashboard') }}"><strong>Back</strong></a></button>
+    .profile-label {
+        font-weight: 600;
+        color: #1e40af;
+    }
 
-	<div class="content">
-	{% for result in results %}
-	
+    .profile-value {
+        color: #666;
+    }
 
-	
-    <div class="keyboard" ontouchstart="">
-       
-        <div class="row">
-		
-			<p style="height: 2px;font-size: large;padding-bottom: 2%;text-align: center;">Bio Data</p>
-            <button type="button" class="btn2"><span class="sm">Roll Number</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.id}} {{result.sid}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Name</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.name}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Department</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.branch}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Gender</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.gender}}</span></button>
-            <button type="button" class="btn2"><span class="sm">DoB</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.dob}}</span></button>
-            <button type="button" class="btn2"><span class="sm">Phone Number</span></button>
-            <button type="button" class="btn2"><span class="sm">{{result.number}}</span></button>
-            </div>
-	
+    .back-button {
+        display: inline-block;
+        margin-top: 1rem;
+        padding: 0.75rem 1.5rem;
+        background: #1e40af;
+        color: white;
+        text-decoration: none;
+        border-radius: 8px;
+    }
+
+    .back-button:hover {
+        background: #7c3aed;
+        text-decoration: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="results-page">
+    <div class="results-container">
+        <div class="results-header">
+            <h2><i class="fas fa-chalkboard-user"></i> Faculty Profile</h2>
         </div>
 
-
-  {% endfor %}
-  
-   </div>
-
-   
-
-   <script>
-	var coll = document.getElementsByClassName("collapsible");
-	var i;
-	
-	for (i = 0; i < coll.length; i++) {
-	  coll[i].addEventListener("click", function() {
-		this.classList.toggle("active");
-		var content = this.nextElementSibling;
-		if (content.style.display === "block") {
-		  content.style.display = "none";
-		} else {
-		  content.style.display = "block";
-		}
-	  });
-	}
-	</script>
-</body>
+        <div class="results-card">
+            <div class="results-body">
+                {% if results %}
+                    <div class="profile-section">
+                        <div class="section-title"><i class="fas fa-user"></i> Faculty Information</div>
+                        <div class="profile-item">
+                            <span class="profile-label">Faculty ID:</span>
+                            <span class="profile-value">{{ results[0].id if results[0].id else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Name:</span>
+                            <span class="profile-value">{{ results[0].name if results[0].name else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Branch/Department:</span>
+                            <span class="profile-value">{{ results[0].branch if results[0].branch else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Gender:</span>
+                            <span class="profile-value">{{ results[0].gender if results[0].gender else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Date of Birth:</span>
+                            <span class="profile-value">{{ results[0].dob if results[0].dob else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Phone:</span>
+                            <span class="profile-value">{{ results[0].phone if results[0].phone else 'N/A' }}</span>
+                        </div>
+                    </div>
+                    <a href="{{ url_for('dashboard.main') }}" class="back-button">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </a>
+                {% else %}
+                    <div style="text-align: center; padding: 2rem; color: #666;">
+                        <p>No faculty profile found.</p>
+                        <a href="{{ url_for('dashboard.main') }}" class="back-button">
+                            <i class="fas fa-arrow-left"></i> Back
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

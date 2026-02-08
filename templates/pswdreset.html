@@ -1,44 +1,260 @@
-<head>
-    <link rel="stylesheet" href="style.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-<script src="https://code.jquery.com/jquery-3.3.1.js"></script>
-<script type = "text/javascript" 
-  src = "{{ url_for('static', filename = 'nav.js') }}" ></script>
-  <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='login.css') }}">
+{% extends "layout.html" %}
 
-<link href="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
-<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-</head>
-<body>
+{% block title %}Reset Password - College Automation System Admin{% endblock %}
 
-<div class="container">
- <a href="{{ url_for('dashboard') }}"><img height="90px" width="220px" style=" display: block;margin-left: auto;margin-right: auto;margin-top: 20px;" src="{{ url_for('static', filename='largeicon.png') }}"></a>
-<div class="d-flex justify-content-center h-100">
- <div class="card">
-     <div class="card-header">
-         <h3>Reset Password</h3>
-        
-     </div>
-     <div class="card-body">
-          <form action="{{ url_for('reset') }}" method="POST">
-            <div class="input-group form-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text"><i class="fas fa-key"></i></span>
+{% block extra_css %}
+<style>
+    .reset-page {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.5rem;
+        min-height: 100vh;
+    }
+
+    .reset-card {
+        width: 100%;
+        max-width: 380px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        background: white;
+        overflow: hidden;
+    }
+
+    .reset-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 1rem 1.2rem;
+        text-align: center;
+    }
+
+    .reset-header h2 {
+        margin: 0 0 0.2rem 0;
+        font-size: 1.4rem;
+        font-weight: 700;
+    }
+
+    .reset-header p {
+        margin: 0;
+        font-size: 0.8rem;
+        opacity: 0.9;
+    }
+
+    .reset-body {
+        padding: 1rem 1.2rem;
+    }
+
+    .form-group {
+        margin-bottom: 0.8rem;
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.25rem;
+        display: block;
+        font-size: 0.85rem;
+    }
+
+    .form-label i {
+        margin-right: 0.35rem;
+        color: #1e40af;
+    }
+
+    .form-control {
+        width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
+        transition: all 0.3s ease;
+        background: #f9fafb;
+    }
+
+    .form-control:focus {
+        outline: none;
+        border-color: #1e40af;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.08);
+    }
+
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .help-text {
+        display: block;
+        font-size: 0.7rem;
+        color: #6b7280;
+        margin-top: 0.15rem;
+    }
+
+    .error-message {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 0.6rem;
+        border-radius: 6px;
+        margin-bottom: 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .error-message i {
+        margin-right: 0.3rem;
+    }
+
+    .btn-reset {
+        width: 100%;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+        border-radius: 6px;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .btn-reset:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 20px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn-reset:active {
+        transform: translateY(0);
+    }
+
+    .btn-reset i {
+        margin-right: 0.4rem;
+    }
+
+    .reset-footer {
+        padding: 0.8rem 1.2rem;
+        border-top: 1px solid #e5e7eb;
+        text-align: center;
+        background: #f9fafb;
+        font-size: 0.8rem;
+    }
+
+    .reset-footer a {
+        color: #1e40af;
+        text-decoration: none;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+
+    .reset-footer a:hover {
+        color: #7c3aed;
+        text-decoration: underline;
+    }
+
+    .reset-footer a i {
+        margin-right: 0.3rem;
+    }
+
+    .help-section {
+        background-color: #eff6ff;
+        border-left: 4px solid #1e40af;
+        color: #1e3a8a;
+        padding: 0.6rem;
+        border-radius: 6px;
+        margin-top: 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .help-section strong {
+        display: block;
+        margin-bottom: 0.25rem;
+        color: #1e40af;
+        font-weight: 700;
+    }
+
+    .help-section i {
+        margin-right: 0.4rem;
+    }
+
+    .help-section ul {
+        margin: 0.3rem 0 0 1.2rem !important;
+        padding: 0 !important;
+    }
+
+    .help-section li {
+        margin: 0.15rem 0;
+        font-size: 0.75rem;
+    }
+
+    @media (max-width: 576px) {
+        .reset-page {
+            padding: 0.5rem;
+        }
+
+        .reset-card {
+            max-width: 100%;
+        }
+
+        .reset-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .reset-body,
+        .reset-footer {
+            padding: 1rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="reset-page">
+    <div class="reset-card">
+        <div class="reset-header">
+            <h2><i class="fas fa-lock"></i> Reset Password</h2>
+            <p>Admin Tool - Reset User Password</p>
+        </div>
+
+        <div class="reset-body">
+            {% if m %}
+                <div class="error-message">
+                    <i class="fas fa-exclamation-circle"></i> {{ m }}
                 </div>
-                 <input class="form-control" name="rollno" type="text" placeholder="Roll Number" required maxlength="30">
+            {% endif %}
 
+            <form method="POST" action="{{ url_for('auth.reset') }}">
+                <div class="form-group">
+                    <label for="rollno" class="form-label">
+                        <i class="fas fa-id-card"></i> User Roll Number / ID
+                    </label>
+                    <input 
+                        type="text" 
+                        id="rollno"
+                        class="form-control" 
+                        name="rollno"
+                        placeholder="Enter user's roll number or ID" 
+                        required 
+                        maxlength="30"
+                        autofocus
+                    >
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Enter the unique identifier of the user</span>
+                </div>
+
+                <button type="submit" class="btn-reset">
+                    <i class="fas fa-redo"></i> Reset Password
+                </button>
+            </form>
+
+            <div class="help-section">
+                <strong><i class="fas fa-info-circle"></i> About This Tool</strong>
+                <p style="margin: 0.3rem 0 0 0;">This tool allows administrators to reset user passwords. After reset, the user will need to use the default password and change it on their next login.</p>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Reset" class="btn float-right login_btn">
-            </div>
-           
-         </form>
-         <p style="color: red;">{{m}}</p>
-     </div>
+        </div>
 
- </div>
+        <div class="reset-footer">
+            <a href="{{ url_for('dashboard.main') }}">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
 </div>
-</div>
-
-</body>
+{% endblock %}
