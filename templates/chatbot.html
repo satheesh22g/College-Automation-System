@@ -427,55 +427,19 @@
             <i class="fas fa-list"></i> Quick Queries
         </div>
         <div class="sidebar-content">
-            <!-- Student Queries -->
+            {% for category in quick_queries %}
+            <!-- Dynamic Query Category -->
             <div class="query-category">
-                <div class="category-title"><i class="fas fa-graduation-cap"></i> Student Info</div>
-                <div class="query-item" onclick="sendQuery('Show my attendance')">
-                    <i class="fas fa-clipboard-list"></i> My Attendance
+                <div class="category-title">
+                    <i class="{{ category.icon }}"></i> {{ category.title }}
                 </div>
-                <div class="query-item" onclick="sendQuery('Show my marks')">
-                    <i class="fas fa-chart-bar"></i> My Marks
+                {% for item in category['items'] %}
+                <div class="query-item" onclick="sendQuery('{{ item.query }}')">
+                    <i class="{{ item.icon }}"></i> {{ item.text }}
                 </div>
-                <div class="query-item" onclick="sendQuery('Show my profile')">
-                    <i class="fas fa-id-card"></i> My Profile
-                </div>
+                {% endfor %}
             </div>
-
-            <!-- Admin Queries -->
-            <div class="query-category">
-                <div class="category-title"><i class="fas fa-users"></i> Admin Queries</div>
-                <div class="query-item" onclick="sendQuery('How many students failed in year 1')">
-                    <i class="fas fa-search"></i> Failed Students
-                </div>
-                <div class="query-item" onclick="sendQuery('Show attendance shortage in year 2')">
-                    <i class="fas fa-exclamation-triangle"></i> Attendance Issues
-                </div>
-                <div class="query-item" onclick="sendQuery('Show all students year 1 clear')">
-                    <i class="fas fa-check-circle"></i> Passed Students
-                </div>
-            </div>
-
-            <!-- Counselor Queries -->
-            <div class="query-category">
-                <div class="category-title"><i class="fas fa-user-tie"></i> Counselor</div>
-                <div class="query-item" onclick="sendQuery('Show my counsel students')">
-                    <i class="fas fa-users"></i> My Students
-                </div>
-                <div class="query-item" onclick="sendQuery('Show counsel students marks')">
-                    <i class="fas fa-book"></i> Students Marks
-                </div>
-            </div>
-
-            <!-- Support -->
-            <div class="query-category">
-                <div class="category-title"><i class="fas fa-question-circle"></i> Help</div>
-                <div class="query-item" onclick="showHelp()">
-                    <i class="fas fa-info-circle"></i> How to Use
-                </div>
-                <div class="query-item" onclick="showFeatures()">
-                    <i class="fas fa-star"></i> Features
-                </div>
-            </div>
+            {% endfor %}
         </div>
     </div>
 
@@ -633,7 +597,7 @@
         showTyping();
 
         // Send to backend API
-        fetch('{{ url_for("chat_api") }}', {
+        fetch('{{ url_for("chatbot.chat_api") }}', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -690,7 +654,7 @@
     }
 
     function goBack() {
-        window.location.href = "{{ url_for('dashboard') }}";
+        window.location.href = "{{ url_for('dashboard.main') }}";
     }
 
     function loadUserProfile() {

@@ -66,7 +66,7 @@
                 <div class="count-label">{{ results[0][3] if results[0]|length > 3 else 'From Query' }}</div>
                 <div class="count-number">{{ results[0][0] }}</div>
             {% endif %}
-            <a href="{{ url_for('dashboard') }}" class="back-button">
+            <a href="{{ url_for('dashboard.main') }}" class="back-button">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>

@@ -84,25 +84,40 @@
         <div class="results-card">
             <div class="results-body">
                 {% if results %}
-                    <div class="profile-item">
-                        <span class="profile-label">Faculty ID:</span>
-                        <span class="profile-value">{{ results[0] if results else 'N/A' }}</span>
+                    <div class="profile-section">
+                        <div class="section-title"><i class="fas fa-user"></i> Faculty Information</div>
+                        <div class="profile-item">
+                            <span class="profile-label">Faculty ID:</span>
+                            <span class="profile-value">{{ results[0].id if results[0].id else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Name:</span>
+                            <span class="profile-value">{{ results[0].name if results[0].name else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Branch/Department:</span>
+                            <span class="profile-value">{{ results[0].branch if results[0].branch else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Gender:</span>
+                            <span class="profile-value">{{ results[0].gender if results[0].gender else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Date of Birth:</span>
+                            <span class="profile-value">{{ results[0].dob if results[0].dob else 'N/A' }}</span>
+                        </div>
+                        <div class="profile-item">
+                            <span class="profile-label">Phone:</span>
+                            <span class="profile-value">{{ results[0].phone if results[0].phone else 'N/A' }}</span>
+                        </div>
                     </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Name:</span>
-                        <span class="profile-value">{{ results[1] if results|length > 1 else 'N/A' }}</span>
-                    </div>
-                    <div class="profile-item">
-                        <span class="profile-label">Department:</span>
-                        <span class="profile-value">{{ results[2] if results|length > 2 else 'N/A' }}</span>
-                    </div>
-                    <a href="{{ url_for('dashboard') }}" class="back-button">
+                    <a href="{{ url_for('dashboard.main') }}" class="back-button">
                         <i class="fas fa-arrow-left"></i> Back
                     </a>
                 {% else %}
                     <div style="text-align: center; padding: 2rem; color: #666;">
                         <p>No faculty profile found.</p>
-                        <a href="{{ url_for('dashboard') }}" class="back-button">
+                        <a href="{{ url_for('dashboard.main') }}" class="back-button">
                             <i class="fas fa-arrow-left"></i> Back
                         </a>
                     </div>

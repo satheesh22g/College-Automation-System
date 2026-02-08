@@ -183,7 +183,7 @@
         {% if "Student" in session['usert'] %}
             <!-- Student Dashboard -->
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('attendance') }}" class="dashboard-link">
+                <a href="{{ url_for('student.attendance') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -197,7 +197,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('marks') }}" class="dashboard-link">
+                <a href="{{ url_for('student.marks') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -211,7 +211,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('profile') }}" class="dashboard-link">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -225,7 +225,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('query_set') }}" class="dashboard-link">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -239,7 +239,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('chatbot') }}" class="dashboard-link">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -253,7 +253,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('Suggestions') }}" class="dashboard-link">
+                <a href="{{ url_for('feedback.suggestions') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -267,7 +267,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('help') }}" class="dashboard-link">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
                     <div class="card dashboard-card student">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -283,7 +283,7 @@
         {% elif "admin" in session['usert'] %}
             <!-- Admin Dashboard -->
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('load_data') }}" class="dashboard-link">
+                <a href="{{ url_for('admin.load_data') }}" class="dashboard-link">
                     <div class="card dashboard-card admin">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -297,7 +297,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('admin_update') }}" class="dashboard-link">
+                <a href="{{ url_for('admin.admin_update') }}" class="dashboard-link">
                     <div class="card dashboard-card admin">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -311,7 +311,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('adminfeedbacks') }}" class="dashboard-link">
+                <a href="{{ url_for('admin.feedback_management') }}" class="dashboard-link">
                     <div class="card dashboard-card admin">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -325,7 +325,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('reset') }}" class="dashboard-link">
+                <a href="{{ url_for('auth.reset') }}" class="dashboard-link">
                     <div class="card dashboard-card admin">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -338,10 +338,24 @@
                 </a>
             </div>
 
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card admin">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Interactive query assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
         {% elif "HOD" in session['usert'] or "clerk" in session['usert'] %}
             <!-- Faculty/HOD Dashboard -->
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('query_set') }}" class="dashboard-link">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -355,7 +369,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('chatbot') }}" class="dashboard-link">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -369,7 +383,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('profile') }}" class="dashboard-link">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -383,7 +397,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('show_feedback') }}" class="dashboard-link">
+                <a href="{{ url_for('feedback.show_feedback') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -397,7 +411,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('help') }}" class="dashboard-link">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -413,7 +427,7 @@
         {% else %}
             <!-- Faculty Default Dashboard -->
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('query_set') }}" class="dashboard-link">
+                <a href="{{ url_for('query.query_set') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -427,7 +441,21 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('profile') }}" class="dashboard-link">
+                <a href="{{ url_for('chatbot.chatbot_page') }}" class="dashboard-link">
+                    <div class="card dashboard-card faculty">
+                        <div class="card-body text-center">
+                            <div class="card-icon">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <h5 class="card-title">Smart Assistant</h5>
+                            <p class="card-text text-muted">Interactive query assistant</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <div class="col-md-6 col-lg-4 mb-3">
+                <a href="{{ url_for('student.profile') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -441,7 +469,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('Suggestions') }}" class="dashboard-link">
+                <a href="{{ url_for('feedback.suggestions') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">
@@ -455,7 +483,7 @@
             </div>
 
             <div class="col-md-6 col-lg-4 mb-3">
-                <a href="{{ url_for('help') }}" class="dashboard-link">
+                <a href="{{ url_for('dashboard.help') }}" class="dashboard-link">
                     <div class="card dashboard-card faculty">
                         <div class="card-body text-center">
                             <div class="card-icon">

@@ -74,15 +74,21 @@ h2 {
   letter-spacing: -2px;
 }
 
-
-alert {
+/* Alert styling - prevent page shift */
+.alert {
   background-color: orange;
   text-align: center;
+  margin: 0;
+  overflow: hidden;
+  word-wrap: break-word;
 }
  
-alert-danger {
+.alert-danger {
   background-color: green;
   text-align: center;
+  margin: 0;
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 h3 {

@@ -291,11 +291,7 @@
         <div class="form-section" style="width: 90%; max-width: 600px; margin: 2rem;">
             <button onclick="closeModal('feedbackModal')" style="float: right; background: none; border: none; font-size: 1.5rem; cursor: pointer;">×</button>
             <h4>Submit Your Feedback</h4>
-            <form method="POST" action="{{ url_for('Suggestions') }}">
-                <div class="form-group">
-                    <label class="form-label">Name (Optional)</label>
-                    <input type="text" name="name" class="form-control" placeholder="Your name (if you want to be contacted)">
-                </div>
+            <form method="POST" action="{{ url_for('feedback.suggestions') }}">
                 <div class="form-group">
                     <label class="form-label">Subject <span style="color: red;">*</span></label>
                     <input type="text" name="subject" class="form-control" placeholder="Brief subject of your feedback" required>
@@ -318,7 +314,7 @@
             <h4>Faculty Feedback Form</h4>
             <p style="color: #666; margin-bottom: 1.5rem;">Rate your faculty members on the following criteria. Select the rating that best describes your experience.</p>
             
-            <form method="POST" action="{{ url_for('Faculty_Feedback') }}">
+            <form method="POST" action="{{ url_for('feedback.faculty_feedback') }}">
                 <table class="rating-table">
                     <thead>
                         <tr>
@@ -432,7 +428,7 @@
     <div class="form-section">
         <h4><i class="fas fa-comments"></i> User Feedback</h4>
         <p style="color: #666;">Go to the Admin Dashboard to view and manage all user feedback.</p>
-        <a href="{{ url_for('adminfeedbacks') }}" style="display: inline-block; padding: 0.7rem 1.5rem; background: var(--primary-color); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
+        <a href="{{ url_for('admin.feedback_management') }}" style="display: inline-block; padding: 0.7rem 1.5rem; background: var(--primary-color); color: white; border-radius: 8px; text-decoration: none; font-weight: 600;">
             <i class="fas fa-chart-bar"></i> View All Feedback
         </a>
     </div>
@@ -687,12 +683,12 @@ right: 0;
 	<div class="contact1">
 		<div class="container-contact1" style="height:80%;">
 			<div class="contact1-pic js-tilt" data-tilt>
-        <a href="{{ url_for('dashboard') }}">
+        <a href="{{ url_for('dashboard.main') }}">
         <img src="{{ url_for('static', filename='email.png') }}" alt="">
         </a>
        
 			</div>
-			<form class="contact1-form validate-form" action="{{ url_for('Suggestions') }}" method="post">
+			<form class="contact1-form validate-form" action="{{ url_for('feedback.suggestions') }}" method="post">
 				<span class="contact1-form-title">
 					Feedback/Suggestion/Complaint
 				</span>
@@ -740,7 +736,7 @@ right: 0;
                 </div>
         <div class="modal-body">
           <div class="testbox">
-            <form action="{{ url_for('Faculty_Feedback') }}" method="post">
+            <form action="{{ url_for('feedback.faculty_feedback') }}" method="post">
               <h1>Faculty Feedback Form</h1>
               <table>
                 <tr>
@@ -827,7 +823,7 @@ right: 0;
       </div>
       </div>
   </div>
-  <br/><a type="button" href="{{url_for('dashboard')}}" class="btn btn-info btn-lg" style="margin: 2%;font-family: cursive;"> Back</a>
+  <br/><a type="button" href="{{url_for('dashboard.main')}}" class="btn btn-info btn-lg" style="margin: 2%;font-family: cursive;"> Back</a>
   <h2 style="font-family:cursive;color:rgb(233, 88, 88); text-align: center;" id="div3">{{msg1}}</h2>
 <h2 style="font-family:cursive;color:rgb(233, 88, 88); text-align: center;" id="div4">{{msg2}}</h2>
   
@@ -835,7 +831,7 @@ right: 0;
  <div class="contact1">
   <div class="container-contact1" style="height:80%;">
     <div class="contact1-pic js-tilt" data-tilt>
-      <a href="{{ url_for('dashboard') }}">
+      <a href="{{ url_for('dashboard.main') }}">
       <img src="{{ url_for('static', filename='email.png') }}" alt="">
       </a>
       <h2 style="font-family:cursive;color:rgb(233, 88, 88); text-align: center;" >{{msg1}}</h2>

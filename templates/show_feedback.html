@@ -202,7 +202,7 @@
             <h2><i class="fas fa-star"></i> Faculty Feedback Records</h2>
             <p class="mb-0">View all submitted faculty ratings and feedback</p>
         </div>
-        <a href="{{ url_for('dashboard') }}" class="back-link">
+        <a href="{{ url_for('dashboard.main') }}" class="back-link">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
     </div>
@@ -365,7 +365,7 @@
             <h4 style="color: var(--secondary-color); margin-bottom: 1.5rem;">
                 <i class="fas fa-star"></i> Submit Your Feedback
             </h4>
-            <form method="POST" action="{{ url_for('Suggestions') }}">
+            <form method="POST" action="{{ url_for('feedback.suggestions') }}">
                 <div class="form-group">
                     <label class="form-label">Name (Optional)</label>
                     <input type="text" name="name" class="form-control" placeholder="Your name">
@@ -537,12 +537,9 @@ right: 0;
 	<div class="contact1">
 		<div class="container-contact1" style="height:80%;">
 			<div class="contact1-pic js-tilt" data-tilt>
-        <a href="{{ url_for('dashboard') }}">
-        <img src="{{ url_for('static', filename='email.png') }}" alt="">
-        </a>
-       
+		       
 			</div>
-			<form class="contact1-form validate-form" action="{{ url_for('Suggestions') }}" method="post">
+			<form class="contact1-form validate-form" action="{{ url_for('feedback.suggestions') }}" method="post">
 				<span class="contact1-form-title">
 					Feedback/Suggestion/Complaint
 				</span>
@@ -583,7 +580,7 @@ right: 0;
     <div class = "panel-heading col-md-12">
        <h3 class = "panel-title col-md-6">Attendance</h3>
        <span class="col-md-4"></span>
-       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard') }}">Back</a>
+       <a class="btn btn-default col-md-2" href="{{ url_for('dashboard.main') }}">Back</a>
     </div>
    
     <table class = "table">

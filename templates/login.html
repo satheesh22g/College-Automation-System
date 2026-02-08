@@ -278,7 +278,7 @@
                 </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('login') }}" autocomplete="off">
+            <form method="POST" action="{{ url_for('auth.login') }}" autocomplete="off">
                 <div class="form-group">
                     <label for="username" class="form-label">
                         <i class="fas fa-user"></i> Username / Roll Number
@@ -318,11 +318,11 @@
 
         <div class="login-footer">
             <p>Don't have an account?</p>
-            <a href="{{ url_for('register') }}">
+            <a href="{{ url_for('auth.register') }}">
                 <i class="fas fa-user-plus"></i> Create New Account
             </a>
             <br><br>
-            <a href="{{ url_for('index') }}">
+            <a href="{{ url_for('dashboard.index') }}">
                 <i class="fas fa-home"></i> Back to Home
             </a>
         </div>

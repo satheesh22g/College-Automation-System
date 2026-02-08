@@ -269,7 +269,7 @@
                 </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('register') }}" autocomplete="off" onsubmit="return validateForm()">
+            <form method="POST" action="{{ url_for('auth.register') }}" autocomplete="off" onsubmit="return validateForm()">
                 <div class="form-group">
                     <label for="usertype" class="form-label">
                         <i class="fas fa-briefcase"></i> Select Role
@@ -338,11 +338,11 @@
 
         <div class="register-footer">
             <p>Already have an account?</p>
-            <a href="{{ url_for('login') }}">
+            <a href="{{ url_for('auth.login') }}">
                 <i class="fas fa-sign-in-alt"></i> Sign In Here
             </a>
             <br><br>
-            <a href="{{ url_for('index') }}">
+            <a href="{{ url_for('dashboard.index') }}">
                 <i class="fas fa-home"></i> Back to Home
             </a>
         </div>

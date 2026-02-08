@@ -4,83 +4,113 @@
 
 {% block extra_css %}
 <style>
-    body {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        min-height: 100vh;
+    .reset-page {
         display: flex;
         align-items: center;
-    }
-
-    .reset-container {
-        display: flex;
         justify-content: center;
-        align-items: center;
-        min-height: calc(100vh - 120px);
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 0.5rem;
+        min-height: 100vh;
     }
 
     .reset-card {
         width: 100%;
-        max-width: 500px;
-        border-radius: 15px;
-        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+        max-width: 380px;
+        border-radius: 10px;
+        box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        background: white;
+        overflow: hidden;
     }
 
     .reset-header {
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
+        color: white;
+        padding: 1rem 1.2rem;
         text-align: center;
-        padding: 2rem;
-        background: white;
     }
 
     .reset-header h2 {
-        margin: 0;
-        color: var(--primary-color);
+        margin: 0 0 0.2rem 0;
+        font-size: 1.4rem;
         font-weight: 700;
-        font-size: 1.8rem;
     }
 
-    .reset-header i {
-        font-size: 2rem;
-        color: var(--primary-color);
-        margin-bottom: 0.5rem;
+    .reset-header p {
+        margin: 0;
+        font-size: 0.8rem;
+        opacity: 0.9;
+    }
+
+    .reset-body {
+        padding: 1rem 1.2rem;
     }
 
     .form-group {
-        margin-bottom: 1.5rem;
+        margin-bottom: 0.8rem;
     }
 
     .form-label {
         font-weight: 600;
-        color: white;
-        margin-bottom: 0.5rem;
+        color: #333;
+        margin-bottom: 0.25rem;
         display: block;
+        font-size: 0.85rem;
+    }
+
+    .form-label i {
+        margin-right: 0.35rem;
+        color: #1e40af;
     }
 
     .form-control {
-        border: none;
-        border-radius: 8px;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
         width: 100%;
+        border: 2px solid #e5e7eb;
+        border-radius: 6px;
+        padding: 0.5rem 0.75rem;
+        font-size: 0.85rem;
         transition: all 0.3s ease;
+        background: #f9fafb;
     }
 
     .form-control:focus {
-        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-        border-color: #3b82f6;
         outline: none;
+        border-color: #1e40af;
+        background: white;
+        box-shadow: 0 0 0 2px rgba(30, 64, 175, 0.08);
     }
 
-    .reset-body {
-        padding: 2rem;
+    .form-control::placeholder {
+        color: #9ca3af;
+    }
+
+    .help-text {
+        display: block;
+        font-size: 0.7rem;
+        color: #6b7280;
+        margin-top: 0.15rem;
+    }
+
+    .error-message {
+        background-color: #fee2e2;
+        color: #7f1d1d;
+        border-left: 4px solid #ef4444;
+        padding: 0.6rem;
+        border-radius: 6px;
+        margin-bottom: 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .error-message i {
+        margin-right: 0.3rem;
     }
 
     .btn-reset {
         width: 100%;
-        padding: 0.8rem;
-        font-size: 1.1rem;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
         font-weight: 600;
-        border-radius: 8px;
-        background: var(--primary-color);
+        border-radius: 6px;
+        background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%);
         color: white;
         border: none;
         transition: all 0.3s ease;
@@ -88,58 +118,100 @@
     }
 
     .btn-reset:hover {
-        background: var(--primary-dark);
         transform: translateY(-2px);
-        box-shadow: 0 5px 15px rgba(30, 64, 175, 0.4);
+        box-shadow: 0 5px 20px rgba(30, 64, 175, 0.4);
+    }
+
+    .btn-reset:active {
+        transform: translateY(0);
+    }
+
+    .btn-reset i {
+        margin-right: 0.4rem;
     }
 
     .reset-footer {
-        padding: 1.5rem 2rem;
+        padding: 0.8rem 1.2rem;
         border-top: 1px solid #e5e7eb;
         text-align: center;
+        background: #f9fafb;
+        font-size: 0.8rem;
     }
 
     .reset-footer a {
-        color: #3b82f6;
+        color: #1e40af;
         text-decoration: none;
         font-weight: 600;
+        transition: all 0.3s ease;
     }
 
     .reset-footer a:hover {
+        color: #7c3aed;
         text-decoration: underline;
     }
 
-    .error-message {
-        background-color: #fee2e2;
-        color: #7f1d1d;
-        border-left: 4px solid #ef4444;
-        padding: 1rem;
-        border-radius: 8px;
-        margin-bottom: 1rem;
+    .reset-footer a i {
+        margin-right: 0.3rem;
     }
 
-    .help-text {
-        font-size: 0.85rem;
-        color: rgba(255, 255, 255, 0.7);
+    .help-section {
+        background-color: #eff6ff;
+        border-left: 4px solid #1e40af;
+        color: #1e3a8a;
+        padding: 0.6rem;
+        border-radius: 6px;
+        margin-top: 0.8rem;
+        font-size: 0.75rem;
+    }
+
+    .help-section strong {
         display: block;
-        margin-top: 0.25rem;
+        margin-bottom: 0.25rem;
+        color: #1e40af;
+        font-weight: 700;
     }
 
-    .navbar {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    .help-section i {
+        margin-right: 0.4rem;
+    }
+
+    .help-section ul {
+        margin: 0.3rem 0 0 1.2rem !important;
+        padding: 0 !important;
+    }
+
+    .help-section li {
+        margin: 0.15rem 0;
+        font-size: 0.75rem;
+    }
+
+    @media (max-width: 576px) {
+        .reset-page {
+            padding: 0.5rem;
+        }
+
+        .reset-card {
+            max-width: 100%;
+        }
+
+        .reset-header h2 {
+            font-size: 1.3rem;
+        }
+
+        .reset-body,
+        .reset-footer {
+            padding: 1rem;
+        }
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<div class="reset-container">
-    <div class="card reset-card">
-        <div class="card-header reset-header">
-            <div style="font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0.5rem;">
-                <i class="fas fa-lock"></i>
-            </div>
-            <h2>Reset Password</h2>
-            <p class="text-muted mb-0">Admin Tool - Reset User Password</p>
+<div class="reset-page">
+    <div class="reset-card">
+        <div class="reset-header">
+            <h2><i class="fas fa-lock"></i> Reset Password</h2>
+            <p>Admin Tool - Reset User Password</p>
         </div>
 
         <div class="reset-body">
@@ -149,10 +221,10 @@
                 </div>
             {% endif %}
 
-            <form method="POST" action="{{ url_for('reset') }}">
+            <form method="POST" action="{{ url_for('auth.reset') }}">
                 <div class="form-group">
                     <label for="rollno" class="form-label">
-                        <i class="fas fa-id-card"></i> User Roll Number / ID <span class="text-danger">*</span>
+                        <i class="fas fa-id-card"></i> User Roll Number / ID
                     </label>
                     <input 
                         type="text" 
@@ -164,7 +236,7 @@
                         maxlength="30"
                         autofocus
                     >
-                    <span class="help-text">Enter the unique identifier of the user whose password needs to be reset</span>
+                    <span class="help-text"><i class="fas fa-info-circle"></i> Enter the unique identifier of the user</span>
                 </div>
 
                 <button type="submit" class="btn-reset">
@@ -172,16 +244,14 @@
                 </button>
             </form>
 
-            <div style="background: #f0f4ff; border-left: 4px solid var(--primary-color); padding: 1rem; border-radius: 8px; margin-top: 1.5rem;">
-                <p style="color: #1e40af; margin: 0; font-weight: 600;">ℹ️ About This Tool</p>
-                <p style="color: #4b5563; margin: 0.5rem 0 0 0; font-size: 0.9rem;">
-                    This tool allows administrators to reset user passwords. After reset, the user will need to use the default password set by the system and change it on their next login.
-                </p>
+            <div class="help-section">
+                <strong><i class="fas fa-info-circle"></i> About This Tool</strong>
+                <p style="margin: 0.3rem 0 0 0;">This tool allows administrators to reset user passwords. After reset, the user will need to use the default password and change it on their next login.</p>
             </div>
         </div>
 
-        <div class="reset-footer card-footer">
-            <a href="{{ url_for('dashboard') }}">
+        <div class="reset-footer">
+            <a href="{{ url_for('dashboard.main') }}">
                 <i class="fas fa-arrow-left"></i> Back to Dashboard
             </a>
         </div>

@@ -171,7 +171,7 @@
             </h2>
             <p class="mb-0">Year: <strong>{% if results %}{{ results[0].year }}{% else %}N/A{% endif %}</strong></p>
         </div>
-        <a href="{{ url_for('dashboard') }}" class="back-link">
+        <a href="{{ url_for('dashboard.main') }}" class="back-link">
             <i class="fas fa-arrow-left"></i> Back to Dashboard
         </a>
     </div>
@@ -273,7 +273,7 @@
                 </div>
                 <h4>No Attendance Data Found</h4>
                 <p class="text-muted">There are no attendance records available for your search criteria.</p>
-                <a href="{{ url_for('dashboard') }}" class="back-link">
+                <a href="{{ url_for('dashboard.main') }}" class="back-link">
                     <i class="fas fa-arrow-left"></i> Go Back
                 </a>
             </div>

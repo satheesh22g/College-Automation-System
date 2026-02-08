@@ -136,6 +136,10 @@
         padding: 1rem;
         border-radius: 8px;
         margin-bottom: 1.5rem;
+        margin: 0;
+        margin-bottom: 1.5rem;
+        overflow: hidden;
+        word-wrap: break-word;
         animation: slideDown 0.3s ease;
     }
 
@@ -158,6 +162,93 @@
         font-size: 0.9rem;
         margin-top: 0.5rem;
     }
+
+    .suggestions-panel {
+        background: white;
+        border: 2px solid #e5e7eb;
+        border-radius: 12px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        animation: slideUp 0.4s ease;
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .suggestions-header {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 2px solid #f3f4f6;
+    }
+
+    .suggestions-header i {
+        color: var(--primary-color);
+        font-size: 1.3rem;
+    }
+
+    .suggestions-header h5 {
+        color: #1f2937;
+        font-weight: 700;
+        margin: 0;
+        font-size: 1.1rem;
+    }
+
+    .suggestion-item {
+        background: #f9fafb;
+        border-left: 4px solid var(--primary-color);
+        padding: 1rem 1.2rem;
+        margin-bottom: 0.8rem;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+    .suggestion-item:hover {
+        background: #f3f4f6;
+        transform: translateX(4px);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
+    .suggestion-item:last-child {
+        margin-bottom: 0;
+    }
+
+    .suggestion-text {
+        color: #374151;
+        font-size: 0.95rem;
+        line-height: 1.5;
+    }
+
+    .suggestion-code {
+        background: white;
+        color: var(--primary-color);
+        padding: 0.3rem 0.6rem;
+        border-radius: 4px;
+        font-family: 'Courier New', monospace;
+        font-weight: 600;
+        font-size: 0.88rem;
+    }
+
+    .no-suggestions-text {
+        text-align: center;
+        color: #6b7280;
+        padding: 1.5rem;
+        background: #f9fafb;
+        border-radius: 8px;
+    }
+
 </style>
 {% endblock %}
 
@@ -197,7 +288,7 @@
     <!-- Search Box -->
     <div class="search-container">
         <div class="search-box">
-            <form method="POST" action="{{ url_for('query_set') }}">
+            <form method="POST" action="{{ url_for('query.query_set') }}">
                 <div class="search-input-group">
                     <input 
                         type="text" 
@@ -214,6 +305,33 @@
             </form>
         </div>
     </div>
+
+    <!-- Suggestions Panel - Only shown when suggestions exist -->
+    {% if suggestions %}
+    <div class="suggestions-panel">
+        <div class="suggestions-header">
+            <i class="fas fa-lightbulb"></i>
+            <h5>Suggested Queries</h5>
+        </div>
+        <div class="suggestions-list">
+            {% for suggestion in suggestions %}
+                <div class="suggestion-item">
+                    <p class="suggestion-text">
+                        <span class="suggestion-code">{{ suggestion.split(' - ')[0] }}</span>
+                        {% if ' - ' in suggestion %}
+                            — {{ suggestion.split(' - ')[1] }}
+                        {% endif %}
+                    </p>
+                </div>
+            {% endfor %}
+        </div>
+        {% if not suggestions %}
+        <div class="no-suggestions-text">
+            <p>Try refining your search with more specific keywords</p>
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
 
     <!-- Help Section -->
     <div class="help-section">
@@ -237,30 +355,60 @@
     <!-- Example Queries Section -->
     <div class="example-queries">
         <h5>
-            <i class="fas fa-info-circle"></i> Example Queries
+            <i class="fas fa-info-circle"></i> Popular Queries
         </h5>
-        <ul class="example-list">
-            <li>
-                <i class="fas fa-keyboard"></i>
-                <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">show my attendance</code>
-                <span class="text-muted">- View your attendance records</span>
-            </li>
-            <li>
-                <i class="fas fa-keyboard"></i>
-                <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">show my marks</code>
-                <span class="text-muted">- Check your academic marks and grades</span>
-            </li>
-            <li>
-                <i class="fas fa-keyboard"></i>
-                <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">161CS027</code>
-                <span class="text-muted">- Search by roll number</span>
-            </li>
-            <li>
-                <i class="fas fa-keyboard"></i>
-                <code style="background: #f3f4f6; padding: 0.25rem 0.5rem; border-radius: 4px;">John Doe</code>
-                <span class="text-muted">- Search by student name</span>
-            </li>
-        </ul>
+        
+        {% if "Student" in session['usert'] %}
+            <p style="margin-bottom: 1rem; color: #4b5563; font-weight: 500;"><strong>📚 For Students:</strong></p>
+            <ul class="example-list">
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show my attendance</code>
+                    <span class="text-muted">View your attendance records with percentages</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show my marks</code>
+                    <span class="text-muted">Check your academic marks and overall GPA</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">my profile</code>
+                    <span class="text-muted">View your personal and academic information</span>
+                </li>
+            </ul>
+        {% else %}
+            <p style="margin-bottom: 1rem; color: #4b5563; font-weight: 500;"><strong>👥 For Staff/Faculty:</strong></p>
+            <ul class="example-list">
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">161CS027 profile</code>
+                    <span class="text-muted">View student details by roll number</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">attendance shortage</code>
+                    <span class="text-muted">Show students with low attendance</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">how many fail year 2</code>
+                    <span class="text-muted">Count failed students in specific year</span>
+                </li>
+                <li>
+                    <i class="fas fa-keyboard"></i>
+                    <code style="background: #f3f4f6; padding: 0.3rem 0.6rem; border-radius: 4px; font-size: 0.85rem;">show counsel students</code>
+                    <span class="text-muted">Display your guided/counselled students</span>
+                </li>
+            </ul>
+        {% endif %}
+        
+        <div style="background: #eff6ff; border-left: 4px solid #3b82f6; padding: 1rem; margin-top: 1.5rem; border-radius: 6px;">
+            <p style="margin: 0; color: #1e40af; font-size: 0.95rem;">
+                <i class="fas fa-lightbulb" style="color: #f59e0b; margin-right: 0.5rem;"></i>
+                <strong>Tip:</strong> If your query doesn't match exactly, we'll suggest similar options based on keywords you use!
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}

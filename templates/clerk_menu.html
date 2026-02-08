@@ -74,7 +74,10 @@
     .alert {
         padding: 1rem;
         border-radius: 8px;
+        margin: 0;
         margin-bottom: 1.5rem;
+        overflow: hidden;
+        word-wrap: break-word;
         animation: slideDown 0.3s ease;
     }
 
@@ -117,7 +120,7 @@
     <!-- Clerk Administrative Options -->
     <div class="row mb-4">
         <div class="col-md-6 col-lg-4 mb-3">
-            <a href="{{ url_for('load_data') }}" class="dashboard-link">
+            <a href="{{ url_for('admin.load_data') }}" class="dashboard-link">
                 <div class="card dashboard-card">
                     <div class="card-body text-center">
                         <div class="card-icon">
@@ -131,7 +134,7 @@
         </div>
 
         <div class="col-md-6 col-lg-4 mb-3">
-            <a href="{{ url_for('admin_update') }}" class="dashboard-link">
+            <a href="{{ url_for('admin.admin_update') }}" class="dashboard-link">
                 <div class="card dashboard-card">
                     <div class="card-body text-center">
                         <div class="card-icon">
@@ -145,7 +148,7 @@
         </div>
 
         <div class="col-md-6 col-lg-4 mb-3">
-            <a href="{{ url_for('adminfeedbacks') }}" class="dashboard-link">
+            <a href="{{ url_for('admin.feedback_management') }}" class="dashboard-link">
                 <div class="card dashboard-card">
                     <div class="card-body text-center">
                         <div class="card-icon">
@@ -378,9 +381,9 @@
      {% if 'user' in session %}
                <div class="sidenav">
             
-                <a href="{{url_for('admin_update')}}">Updations</a>
-                <a href="{{url_for('load_data')}}">Load Data</a>
-                <a href="{{url_for('adminfeedbacks')}}">Feedbacks</a>
+                <a href="{{url_for('admin.admin_update')}}">Updations</a>
+                <a href="{{url_for('admin.load_data')}}">Load Data</a>
+                <a href="{{url_for('admin.feedback_management')}}">Feedbacks</a>
         
 </div>
            

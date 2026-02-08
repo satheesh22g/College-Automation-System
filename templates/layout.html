@@ -102,6 +102,9 @@
             border-radius: 8px;
             padding: 1rem 1.5rem;
             border-left: 4px solid;
+            margin: 0;
+            overflow: hidden;
+            word-wrap: break-word;
         }
 
         .alert-success {
@@ -115,6 +118,23 @@
             color: #7f1d1d;
             border-left-color: var(--danger-color);
         }
+
+        .alert-warning {
+            background-color: #fef3c7;
+            color: #78350f;
+            border-left-color: #f59e0b;
+        }
+
+        .alert-info {
+            background-color: #dbeafe;
+            color: #1e3a8a;
+            border-left-color: #3b82f6;
+        }
+
+        /* Force consistent scrollbar space to prevent page shift */
+        html {
+            overflow-y: scroll;
+        }
     </style>
     
     {% block extra_css %}{% endblock %}
@@ -123,7 +143,7 @@
     <!-- Navigation Bar -->
     <nav class="navbar navbar-expand-lg navbar-dark sticky-top">
         <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">
+            <a class="navbar-brand" href="{{ url_for('dashboard.index') }}">
                 <i class="fas fa-graduation-cap"></i> College Automation
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -138,13 +158,13 @@
                             </span>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('logout') }}">
+                            <a class="nav-link" href="{{ url_for('auth.logout') }}">
                                 <i class="fas fa-sign-out-alt"></i> Logout
                             </a>
                         </li>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ url_for('login') }}">
+                            <a class="nav-link" href="{{ url_for('auth.login') }}">
                                 <i class="fas fa-sign-in-alt"></i> Login
                             </a>
                         </li>
