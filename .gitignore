@@ -23,6 +23,7 @@ instance/
 *.log
 *.pid
 flask_session/
+__pycache__/
 
 # SQLite databases
 *.db
