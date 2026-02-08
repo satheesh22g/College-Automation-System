@@ -281,7 +281,7 @@ For technical support or issues, please contact your college IT department.
 
 ## License
 
-This project is developed for educational purposes at SRIT (Sri Ramakrishna Institute of Technology).
+This project is developed for educational purposes at SRIT (Sri Ramanujan Institute of Technology).
 
 ## Author
 
